@@ -57,6 +57,10 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+                                <version>3.5.7</version>
+            <configuration>
+                <mainClass>com.digis01.PokeAPICliente.PokeApiClienteApplication</mainClass>
+            </configuration>
 			</plugin>
 		</plugins>
 	</build>
