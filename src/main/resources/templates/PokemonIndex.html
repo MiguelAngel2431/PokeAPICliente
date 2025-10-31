@@ -1,15 +1,338 @@
-<!DOCTYPE html>
-<!--
-Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
--->
-<html>
-    <head>
-        <title>TODO supply a title</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body>
-        <div>TODO write content</div>
-    </body>
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PokéAPI · Pokemons</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{ --red:#ef4444; --red-700:#b91c1c; --ink:#0f172a; --muted:#64748b;
+           --chip:#fee2e2; --shadow:0 12px 28px rgba(15,23,42,.12); --radius:18px; }
+    *{box-sizing:border-box} html,body{margin:0;background:#fff}
+    body{font-family:Poppins,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink)}
+
+    /* NAV creativa */
+    .nav{position:sticky;top:0;z-index:50;
+      background:linear-gradient(180deg,#fff 0,#fff 60%, #000 60%, #000 63%, #ef4444 63%, #ef4444 100%);
+      box-shadow:0 10px 20px rgba(239,68,68,.25);}
+    .nav-in{max-width:1160px;margin:0 auto;padding:18px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;gap:12px;align-items:center;font-weight:800;letter-spacing:.5px}
+    .ball{width:34px;height:34px;border-radius:50%;background:
+      radial-gradient(circle at 50% 48%, #fff 0 12px, transparent 13px),
+      linear-gradient(#fff 50%, #000 0 52%, #ef4444 0);
+      border:3px solid #000; box-shadow: inset 0 0 0 2px #fff;}
+    .brand span{font-size:18px}
+    .login{background:#fff;color:var(--red);font-weight:800;padding:10px 14px;border-radius:12px;border:1px solid #fecaca}
+    .login:hover{background:#ffe8e8}
+
+    .wrap{max-width:1160px;margin:18px auto;padding:0 16px}
+    .title{font-size:28px;font-weight:800;margin:0 0 10px}
+    .toolbar{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}
+    @media (max-width:780px){ .toolbar{grid-template-columns:1fr} }
+    .search{position:relative}
+    .search input{width:100%;padding:12px 44px 12px 14px;border-radius:999px;border:1px solid #e5e7eb;outline:0}
+    .search svg{position:absolute;right:12px;top:50%;transform:translateY(-50%);opacity:.6}
+    .meta-line{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .pill{background:var(--chip);color:var(--red-700);padding:8px 12px;border-radius:999px;font-weight:800}
+
+    /* FILTROS */
+    .filters{margin-top:12px; display:grid; gap:10px; grid-template-columns:1fr auto auto auto; align-items:center;}
+    @media (max-width:1024px){ .filters{grid-template-columns:1fr 1fr 1fr} }
+    @media (max-width:740px){ .filters{grid-template-columns:1fr 1fr} }
+    @media (max-width:560px){ .filters{grid-template-columns:1fr} }
+    .type-chips{display:flex;gap:8px;flex-wrap:wrap}
+    .chip{padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800;text-transform:capitalize;
+      background:#fff;border:1px solid #ffd1d1;color:var(--red);cursor:pointer;user-select:none}
+    .chip.is-on{background:var(--red);color:#fff;border-color:var(--red)}
+    .range{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+    .range input[type=range]{width:200px}
+    @media (max-width:560px){ .range{justify-content:space-between} .range input[type=range]{flex:1} }
+    .sort{display:flex;align-items:center;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+
+    /* GRID */
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px;margin-top:16px}
+    @media (max-width:1160px){ .grid{grid-template-columns:repeat(8,1fr)} }
+    @media (max-width:780px){ .grid{grid-template-columns:repeat(6,1fr)} }
+    @media (max-width:560px){ .grid{grid-template-columns:repeat(2,1fr)} }
+
+    /* CARD + flip */
+    .card{grid-column:span 3; perspective:1000px; min-height:330px}
+    @media (max-width:1160px){ .card{grid-column:span 4} }
+    @media (max-width:780px){ .card{grid-column:span 3} }
+    @media (max-width:560px){ .card{grid-column:span 2; min-height:300px} }
+    .card-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.2,.8,.2,1)}
+    .card.flipped .card-inner{transform:rotateY(180deg)}
+    .face{position:absolute;inset:0;border-radius:var(--radius);overflow:hidden;backface-visibility:hidden;background:#fff;box-shadow:var(--shadow);border:1px solid #f1f5f9}
+    .front .top{height:160px;position:relative;display:flex;align-items:center;justify-content:center;
+      background: radial-gradient(120px 80px at 70% -20%, rgba(239,68,68,.18), transparent 60%),
+                  radial-gradient(140px 90px at 0% 0%, rgba(239,68,68,.12), transparent 70%),
+                  linear-gradient(180deg,#fff 0,#ffecec 100%);}
+    .halo{position:absolute;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.9);filter:blur(10px)}
+    .front img{max-width:88%;max-height:140px;object-fit:contain;z-index:1;filter:drop-shadow(0 10px 18px rgba(0,0,0,.12))}
+    .front .body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:10px}
+    .name{font-weight:800;font-size:16px;text-transform:capitalize}
+    .chips{display:flex;gap:6px;flex-wrap:wrap}
+    .chip-type{background:var(--chip);color:var(--red-700);padding:4px 8px;border-radius:999px;font-size:12px;font-weight:800;text-transform:capitalize}
+    .hint{font-size:12px;color:var(--muted)}
+    .tap{position:absolute;right:10px;top:10px;background:rgba(239,68,68,.08);border:1px dashed #fecaca;border-radius:999px;padding:4px 8px;font-size:10px;color:var(--red-700);font-weight:800}
+
+    .back{transform:rotateY(180deg)}
+    .back-head{padding:12px 14px;background:linear-gradient(0deg,#fff 0,#ffe8e8 100%);border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between}
+    .back-title{font-weight:800;text-transform:capitalize}
+    .flip-note{font-size:12px;color:var(--muted)}
+    .stats{padding:14px;display:flex;flex-direction:column;gap:12px}
+    .stat-row{display:grid;grid-template-columns:86px 1fr 40px;gap:10px;align-items:center}
+    @media (max-width:560px){ .stat-row{grid-template-columns:70px 1fr 36px} }
+    .stat-label{font-size:12px;color:#475569;text-transform:uppercase;font-weight:800;letter-spacing:.5px}
+    .bar{height:10px;border-radius:999px;background:#fee2e2;overflow:hidden}
+    .bar i{display:block;height:100%;background:var(--red);transform-origin:left center;transition:width .35s ease}
+    .meta{display:flex;gap:10px;flex-wrap:wrap}
+    .meta .pill{background:#fff0f0;border:1px solid #ffd1d1}
+
+    .pagi{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px}
+    .p-btn{padding:10px 12px;border-radius:10px;border:1px solid #fecaca;background:#fff;color:var(--red);font-weight:800}
+    .p-btn[disabled]{opacity:.5;cursor:not-allowed}
+  </style>
+</head>
+<body>
+
+  <!-- NAV con Login -->
+  <nav class="nav" aria-label="Principal">
+    <div class="nav-in">
+      <div class="brand"><div class="ball" aria-hidden="true"></div><span>PokéAPI Cliente</span></div>
+      <a class="login" href="/login">Login</a>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <h1 class="title">Pokemons</h1>
+
+    <!-- BÚSQUEDA + META -->
+    <div class="toolbar">
+      <div class="search" role="search">
+        <input id="q" type="search" placeholder="Buscar por nombre…" aria-label="Buscar pokémon" />
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M21 21l-4.35-4.35M10 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="meta-line">
+        <span class="pill" th:text="'Total: ' + ${count}">Total: 0</span>
+        <span class="pill" th:text="'Página ' + ${page} + ' / ' + ${totalPages}">Página 1 / 1</span>
+      </div>
+    </div>
+
+    <!-- FILTROS + ORDENAMIENTO -->
+    <section class="filters" aria-label="Filtros">
+      <div class="type-chips" id="typeChips">
+        <span class="chip is-on" data-type="__all">Todos</span>
+        <span class="chip" th:each="t : ${typesAll}" th:text="${t}" th:attr="data-type=${t}">fire</span>
+      </div>
+
+      <div class="range">
+        <label for="statKey"><strong>Stat</strong></label>
+        <select id="statKey">
+          <option value="hp">HP</option>
+          <option value="attack">Attack</option>
+          <option value="defense">Defense</option>
+          <option value="speed">Speed</option>
+        </select>
+      </div>
+
+      <div class="range">
+        <label for="minStat"><strong>Mín.</strong> <span id="minStatVal">0</span></label>
+        <input id="minStat" type="range" min="0" max="200" step="1" value="0"/>
+      </div>
+
+      <div class="sort">
+        <label for="sortBy"><strong>Ordenar</strong></label>
+        <select id="sortBy">
+          <option value="name-asc">Nombre A–Z</option>
+          <option value="name-desc">Nombre Z–A</option>
+          <option value="stat-desc">Stat ↓</option>
+          <option value="stat-asc">Stat ↑</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- GRID -->
+    <section class="grid" id="grid">
+      <div class="card"
+           th:each="p : ${pokemones}"
+           th:attr="data-name=${p.name},
+                    data-types=${#strings.arrayJoin(p.types, ',')},
+                    data-hp=${p.stats.hp},
+                    data-attack=${p.stats.attack},
+                    data-defense=${p.stats.defense},
+                    data-speed=${p.stats.speed}">
+        <div class="card-inner" onclick="flip(this.parentElement)" tabindex="0" onkeypress="if(event.key==='Enter'){flip(this.parentElement);}">
+          <!-- FRONT -->
+          <article class="face front" aria-label="Frente">
+            <div class="top">
+              <div class="halo" aria-hidden="true"></div>
+              <span class="tap">Tap/Click</span>
+              <img th:src="${p.image}" th:alt="${p.name} + ' image'" loading="lazy"/>
+            </div>
+            <div class="body">
+              <div class="name" th:text="${p.name}">pikachu</div>
+              <div class="chips">
+                <span class="chip-type" th:each="t : ${p.types}" th:text="${t}">electric</span>
+              </div>
+              <div class="hint">Toca para ver estadísticas</div>
+            </div>
+          </article>
+
+          <!-- BACK -->
+          <article class="face back" aria-label="Reverso">
+            <div class="back-head">
+              <div class="back-title" th:text="${p.name}">pikachu</div>
+              <div class="flip-note">Click para volver</div>
+            </div>
+            <div class="stats">
+              <div class="stat-row">
+                <div class="stat-label">HP</div>
+                <div class="bar"><i class="bar-hp" style="width:0%"></i></div>
+                <strong th:text="${p.stats.hp}">0</strong>
+              </div>
+              <div class="stat-row">
+                <div class="stat-label">Attack</div>
+                <div class="bar"><i class="bar-attack" style="width:0%"></i></div>
+                <strong th:text="${p.stats.attack}">0</strong>
+              </div>
+              <div class="stat-row">
+                <div class="stat-label">Defense</div>
+                <div class="bar"><i class="bar-defense" style="width:0%"></i></div>
+                <strong th:text="${p.stats.defense}">0</strong>
+              </div>
+              <div class="stat-row">
+                <div class="stat-label">Speed</div>
+                <div class="bar"><i class="bar-speed" style="width:0%"></i></div>
+                <strong th:text="${p.stats.speed}">0</strong>
+              </div>
+              <div class="meta">
+                <span class="pill" th:text="'Altura: ' + ${#numbers.formatDecimal(p.heightM,1,1)} + ' m'">Altura: 0.0 m</span>
+                <span class="pill" th:text="'Peso: ' + ${#numbers.formatDecimal(p.weightKg,1,1)} + ' kg'">Peso: 0.0 kg</span>
+                <span class="pill" th:text="'EXP: ' + ${p.baseExp}">EXP: 0</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGINACIÓN -->
+    <div class="pagi">
+      <a class="p-btn" th:href="@{'/pokemon'(page=${page-1}, size=${size})}" th:attr="disabled=${page<=1}? 'disabled' : null">← Anterior</a>
+      <div class="pill" th:text="'Página ' + ${page} + ' de ' + ${totalPages}">Página 1 de 1</div>
+      <a class="p-btn" th:href="@{'/pokemon'(page=${page+1}, size=${size})}" th:attr="disabled=${page>=totalPages}? 'disabled' : null">Siguiente →</a>
+    </div>
+  </main>
+
+  <script>
+    /* FLIP */
+    function flip(card){ card.classList.toggle('flipped'); }
+
+    /* Estado de filtros */
+    const state = { term:'', types:new Set(['__all']), statKey:'hp', minStat:0 };
+
+    const grid = document.getElementById('grid');
+    const inputQ = document.getElementById('q');
+    const minStat = document.getElementById('minStat');
+    const minStatVal = document.getElementById('minStatVal');
+    const statKeySel = document.getElementById('statKey');
+    const sortSel = document.getElementById('sortBy');
+    const typeChips = document.getElementById('typeChips');
+
+    inputQ.addEventListener('input', ()=>{ state.term = inputQ.value.trim().toLowerCase(); applyFilters(); });
+    statKeySel.addEventListener('change', ()=>{ state.statKey = statKeySel.value; applyFilters(); });
+    sortSel.addEventListener('change', ()=>{ sortGrid(); });
+    minStat.addEventListener('input', ()=>{ state.minStat = +minStat.value; minStatVal.textContent = state.minStat; applyFilters(); });
+    minStatVal.textContent = state.minStat;
+
+    typeChips.addEventListener('click',(e)=>{
+      const el = e.target.closest('.chip'); if(!el) return;
+      const t = el.dataset.type;
+      if(t==='__all'){
+        state.types = new Set(['__all']);
+        for(const c of typeChips.querySelectorAll('.chip')) c.classList.remove('is-on');
+        typeChips.querySelector('[data-type="__all"]').classList.add('is-on');
+      }else{
+        state.types.delete('__all');
+        const on = el.classList.toggle('is-on');
+        if(on) state.types.add(t); else state.types.delete(t);
+        if(state.types.size===0){
+          state.types = new Set(['__all']);
+          for(const c of typeChips.querySelectorAll('.chip')) c.classList.remove('is-on');
+          typeChips.querySelector('[data-type="__all"]').classList.add('is-on');
+        }else{
+          typeChips.querySelector('[data-type="__all"]').classList.remove('is-on');
+        }
+      }
+      applyFilters();
+    });
+
+    function applyFilters(){
+      const cards = Array.from(grid.children);
+      for(const card of cards){
+        const name = (card.getAttribute('data-name') || '').toLowerCase();
+        const types = (card.getAttribute('data-types') || '').toLowerCase().split(',').filter(Boolean);
+        const stats = {
+          hp:+card.getAttribute('data-hp')||0,
+          attack:+card.getAttribute('data-attack')||0,
+          defense:+card.getAttribute('data-defense')||0,
+          speed:+card.getAttribute('data-speed')||0
+        };
+        let visible = true;
+        if(state.term && !name.includes(state.term)) visible=false;
+        if(visible && !state.types.has('__all')){
+          const wanted = Array.from(state.types);
+          visible = types.some(t=>wanted.includes(t));
+        }
+        if(visible && (stats[state.statKey] < state.minStat)) visible=false;
+        card.style.display = visible ? '' : 'none';
+      }
+      refreshBars();
+      sortGrid();
+    }
+
+    /* Recalcular barras normalizadas por máximos visibles */
+    function refreshBars(){
+      const visible = Array.from(grid.children).filter(c=>c.style.display!=='none');
+      const max = {hp:1,attack:1,defense:1,speed:1};
+      for(const c of visible){
+        max.hp = Math.max(max.hp, +c.getAttribute('data-hp')||0);
+        max.attack = Math.max(max.attack, +c.getAttribute('data-attack')||0);
+        max.defense = Math.max(max.defense, +c.getAttribute('data-defense')||0);
+        max.speed = Math.max(max.speed, +c.getAttribute('data-speed')||0);
+      }
+      for(const c of visible){
+        const setW = (cls,val,m)=>{ const bar=c.querySelector('.'+cls); if(!bar) return; bar.style.width=Math.max(6,Math.round((val/m)*100))+'%';};
+        setW('bar-hp', +c.getAttribute('data-hp')||0, max.hp);
+        setW('bar-attack', +c.getAttribute('data-attack')||0, max.attack);
+        setW('bar-defense', +c.getAttribute('data-defense')||0, max.defense);
+        setW('bar-speed', +c.getAttribute('data-speed')||0, max.speed);
+      }
+    }
+
+    /* Ordenamiento (Nombre/Stat) sobre los visibles */
+    function sortGrid(){
+      const mode = sortSel.value;
+      const collator = new Intl.Collator('es',{sensitivity:'base'});
+      const visible = Array.from(grid.children).filter(c=>c.style.display!=='none');
+      const getStat = c => +c.getAttribute('data-'+state.statKey)||0;
+      visible.sort((a,b)=>{
+        if(mode==='name-asc') return collator.compare(a.dataset.name, b.dataset.name);
+        if(mode==='name-desc') return collator.compare(b.dataset.name, a.dataset.name);
+        if(mode==='stat-asc') return getStat(a) - getStat(b);
+        if(mode==='stat-desc') return getStat(b) - getStat(a);
+        return 0;
+      });
+      for(const c of visible) grid.appendChild(c);
+    }
+
+    window.addEventListener('load', ()=>{ typeChips.querySelector('[data-type="__all"]').classList.add('is-on'); applyFilters(); });
+    window.addEventListener('resize', refreshBars);
+  </script>
+</body>
 </html>
