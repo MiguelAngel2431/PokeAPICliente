@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- Bootstrap -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+        
+        <!-- Animate CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+        
+        <style>
+            html, body {
+                height: 100%; /* necesario para que 100vh funcione bien */
+                margin: 0;
+            }
+
+            .container-fluid {
+                height: 100vh; /* ocupa toda la altura visible */
+            }
+
+            .banner-red {
+                background-color: red;
+                height: 100%; /* ocupa toda la altura del contenedor padre */
+                border-radius: 0 20px 20px 0;
+            }
+
+            .banner-white {
+                background-color: white;
+                height: 100%;
+            }
+
+            .image {
+                border-radius: 50%;
+                border: 1px solid;
+                background-color: black;
+            }
+
+            h1, h3 {
+                color: white;
+            }
+            
+            .pokeapi-img {
+                width: 300px;
+            }
+            
+            .title-iniciarsesion {
+                color: red;
+            }
+            
+            .text {
+                color: black;
+            }
+            
+            .form {
+                border: 1px solid;
+            }
+            
+            .register {
+                color: red;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="container-fluid">
+            <div class="row h-100">
+                <div class="col-md-6 banner-red d-flex flex-column align-items-center justify-content-center animate__animated animate__fadeInLeft animate__delay-1s">
+                    <div class="image">
+                        <img src="https://pokestop.io/img/pokemon/psyduck-256x256.png" alt="alt"/>
+                    </div>
+                    <br>
+                    <!--<h1>PokeAPI</h1>-->
+                    <img class="pokeapi-img" src="https://res.cloudinary.com/dioxkbk6g/image/upload/v1569205776/Pokeapi/logo-6221638601ef7fa7c835eae08ef67a16_xokydx.png" alt="alt"/>
+                    <h3>Accede al mundo pokemóm</h3>    
+                </div>
+                <div class="col-md-6 banner-white d-flex flex-column align-items-center justify-content-center animate__animated animate__fadeInRight animate__delay-1s">
+                    <h1 class="title-iniciarsesion">Iniciar Sesión</h1>
+                    <b class="text">Ingresa tus credenciales para acceder a la PokeAPI</b>
+                    <br>
+                    <div class="form border p-4 rounded w-75">
+                        <form>
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Usuario</label>
+                                <input type="text" class="form-control" id="usuario" aria-describedby="emailHelp" placeholder="Ingresa tu username">
+                                <!--<small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>-->
+                            </div>
+                            <br>
+                            <div class="form-group">
+                                <label for="exampleInputPassword1">Contraseña</label>
+                                <input type="password" class="form-control" id="password" placeholder="Ingresa contraseña">
+                            </div>
+                            <br>
+                            <button type="submit" class="btn btn-danger w-100">Iniciar sesión</button>
+                            <br>
+                            <br>
+                            <a href="#">¿Olvidaste tu contraseña?</a>
+                        </form>
+                    </div>
+                    <br>
+                    <p>¿No tienes cuenta? <a href="#" class="register">Registrate aquí</a></p>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
