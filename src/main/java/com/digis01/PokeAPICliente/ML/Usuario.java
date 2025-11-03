@@ -1,0 +1,91 @@
+
+package com.digis01.PokeAPICliente.ML;
+
+public class Usuario {
+    
+    private int IdUsuario;
+    private String Nombre;
+    private String ApellidoPaterno;
+    private String ApellidoMaterno;
+    private String Username;
+    private String Email;
+    private String Password;
+    
+    public Rol Rol;
+    
+    public Usuario() {}
+    
+    public Usuario(int idUsuario, String nombre, String apellidoPaterno, String apellidoMaterno, String username, String email, String password) {
+        this.IdUsuario = idUsuario;
+        this.Nombre = nombre;
+        this.ApellidoPaterno = apellidoMaterno;
+        this.ApellidoMaterno = apellidoMaterno;
+        this.Username = username;
+        this.Email = email;
+        this.Password = password;
+    }
+
+    public int getIdUsuario() {
+        return IdUsuario;
+    }
+
+    public void setIdUsuario(int IdUsuario) {
+        this.IdUsuario = IdUsuario;
+    }
+
+    public String getNombre() {
+        return Nombre;
+    }
+
+    public void setNombre(String Nombre) {
+        this.Nombre = Nombre;
+    }
+
+    public String getApellidoPaterno() {
+        return ApellidoPaterno;
+    }
+
+    public void setApellidoPaterno(String ApellidoPaterno) {
+        this.ApellidoPaterno = ApellidoPaterno;
+    }
+
+    public String getApellidoMaterno() {
+        return ApellidoMaterno;
+    }
+
+    public void setApellidoMaterno(String ApellidoMaterno) {
+        this.ApellidoMaterno = ApellidoMaterno;
+    }
+
+    public String getUsername() {
+        return Username;
+    }
+
+    public void setUsername(String Username) {
+        this.Username = Username;
+    }
+
+    public String getEmail() {
+        return Email;
+    }
+
+    public void setEmail(String Email) {
+        this.Email = Email;
+    }
+
+    public String getPassword() {
+        return Password;
+    }
+
+    public void setPassword(String Password) {
+        this.Password = Password;
+    }
+
+    public Rol getRol() {
+        return Rol;
+    }
+
+    public void setRol(Rol Rol) {
+        this.Rol = Rol;
+    }
+}
