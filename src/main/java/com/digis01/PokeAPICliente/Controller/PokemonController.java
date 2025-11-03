@@ -161,16 +161,25 @@ public class PokemonController {
     }
 
 
+// Helper para agregar sprites si existen
+private void addSprite(List<Map<String,String>> sprites, String label, Object urlObj){
+    if (urlObj instanceof String url && url != null && !url.isBlank()) {
+        sprites.add(Map.of("label", label, "url", url));
+    }
+}
 
 @GetMapping("/{idPokemon}")
 public String GetById(Model model, @PathVariable int idPokemon) {
+
     RestTemplate restTemplate = new RestTemplate();
 
-    // detalle base
     Map<String, Object> d = restTemplate.getForObject("https://pokeapi.co/api/v2/pokemon/" + idPokemon, Map.class);
-    if (d == null) { model.addAttribute("p", null); return "PokemonDetail"; }
+    if (d == null) {
+        model.addAttribute("p", null);
+        return "PokemonDetail";
+    }
 
-    // imagen
+    // ===== Imagen principal (respaldo por rutas) =====
     String image = "";
     Object spritesObj = d.get("sprites");
     if (spritesObj instanceof Map) {
@@ -181,16 +190,20 @@ public String GetById(Model model, @PathVariable int idPokemon) {
                 Map<String, Object> official = (Map<String, Object>) other.get("official-artwork");
                 if (official != null) image = (String) official.get("front_default");
                 if (image == null) {
+                    Map<String, Object> home = (Map<String, Object>) other.get("home");
+                    if (home != null) image = (String) home.get("front_default");
+                }
+                if (image == null) {
                     Map<String, Object> dream = (Map<String, Object>) other.get("dream_world");
                     if (dream != null) image = (String) dream.get("front_default");
                 }
             }
             if (image == null) image = (String) sprites.get("front_default");
-        } catch (ClassCastException ignored) { }
+        } catch (ClassCastException ignored) {}
     }
     if (image == null) image = "";
 
-    // tipos
+    // ===== Tipos =====
     List<String> types = new ArrayList<>();
     Object typesObj = d.get("types");
     if (typesObj instanceof List) {
@@ -201,10 +214,15 @@ public String GetById(Model model, @PathVariable int idPokemon) {
         }
     }
 
-    // stats
+    // ===== Stats =====
     Map<String, Integer> stats = new HashMap<>();
-    stats.put("hp", 0); stats.put("attack", 0); stats.put("defense", 0);
-    stats.put("specialAttack", 0); stats.put("specialDefense", 0); stats.put("speed", 0);
+    stats.put("hp", 0);
+    stats.put("attack", 0);
+    stats.put("defense", 0);
+    stats.put("specialAttack", 0);
+    stats.put("specialDefense", 0);
+    stats.put("speed", 0);
+
     Object statsObj = d.get("stats");
     if (statsObj instanceof List) {
         for (Object s : (List<?>) statsObj) {
@@ -225,18 +243,70 @@ public String GetById(Model model, @PathVariable int idPokemon) {
         }
     }
 
-    // abilities
-    List<String> abilities = new ArrayList<>();
+    // ===== Habilidades (con hidden) =====
+    List<Map<String, Object>> abilities = new ArrayList<>();
     Object abilitiesObj = d.get("abilities");
     if (abilitiesObj instanceof List) {
         for (Object a : (List<?>) abilitiesObj) {
             Map<String, Object> aMap = (Map<String, Object>) a;
             Map<String, Object> ability = (Map<String, Object>) aMap.get("ability");
-            if (ability != null && ability.get("name") != null) abilities.add((String) ability.get("name"));
+            boolean hidden = Boolean.TRUE.equals(aMap.get("is_hidden"));
+            if (ability != null && ability.get("name") != null) {
+                abilities.add(Map.of(
+                        "name", (String) ability.get("name"),
+                        "hidden", hidden
+                ));
+            }
         }
     }
 
-    // species → genus + flavor
+    // ===== Cries (audio) =====
+    String cry = null;
+    try {
+        Map<String, Object> cries = (Map<String, Object>) d.get("cries");
+        if (cries != null) {
+            cry = (String) (cries.get("latest") != null ? cries.get("latest") : cries.get("legacy"));
+        }
+    } catch (Exception ignored) {}
+
+    // ===== Sprites (para carrusel) =====
+    List<Map<String, Object>> sprites = new ArrayList<>();
+    try {
+        Map<String, Object> s = (Map<String, Object>) d.get("sprites");
+        Map<String, Object> other = s != null ? (Map<String, Object>) s.get("other") : null;
+        Map<String, Object> official = other != null ? (Map<String, Object>) other.get("official-artwork") : null;
+        Map<String, Object> home = other != null ? (Map<String, Object>) other.get("home") : null;
+        Map<String, Object> dream = other != null ? (Map<String, Object>) other.get("dream_world") : null;
+        Map<String, Object> showdown = other != null ? (Map<String, Object>) other.get("showdown") : null;
+
+        // helper
+        java.util.function.BiConsumer<String,String> add = (url,label) -> {
+            if (url != null && !url.isBlank()) sprites.add(Map.of("url", url, "label", label));
+        };
+
+        // Orden propuesto
+        add.accept(official != null ? (String) official.get("front_default") : null, "Artwork");
+        add.accept(home != null ? (String) home.get("front_default") : null, "Home");
+        add.accept(home != null ? (String) home.get("front_shiny") : null, "Home Shiny");
+        if (showdown != null) {
+            add.accept((String) showdown.get("front_default"), "Showdown Front");
+            add.accept((String) showdown.get("back_default"), "Showdown Back");
+            add.accept((String) showdown.get("front_shiny"), "Showdown Shiny");
+        }
+        add.accept(s != null ? (String) s.get("front_default") : null, "Front");
+        add.accept(s != null ? (String) s.get("front_shiny") : null, "Front Shiny");
+        add.accept(s != null ? (String) s.get("back_default") : null, "Back");
+        add.accept(s != null ? (String) s.get("back_shiny") : null, "Back Shiny");
+        add.accept(s != null ? (String) s.get("front_female") : null, "Front Female");
+        add.accept(s != null ? (String) s.get("front_shiny_female") : null, "Front Female Shiny");
+        add.accept(s != null ? (String) s.get("back_female") : null, "Back Female");
+        add.accept(s != null ? (String) s.get("back_shiny_female") : null, "Back Female Shiny");
+        add.accept(dream != null ? (String) dream.get("front_default") : null, "Dream World");
+
+        if (sprites.isEmpty()) sprites.add(Map.of("url", image, "label", "Sprite"));
+    } catch (Exception ignored) {}
+
+    // ===== Species (genus + flavor) =====
     String genus = "", flavor = "";
     try {
         Map<String, Object> species = (Map<String, Object>) d.get("species");
@@ -257,7 +327,7 @@ public String GetById(Model model, @PathVariable int idPokemon) {
                 }
                 List<Map<String, Object>> fts = (List<Map<String, Object>>) sp.get("flavor_text_entries");
                 if (fts != null) {
-                    String fEs="", fEn="";
+                    String fEs = "", fEn = "";
                     for (Map<String, Object> ft : fts) {
                         Map<String, Object> lang = (Map<String, Object>) ft.get("language");
                         String ln = lang != null ? (String) lang.get("name") : "";
@@ -269,9 +339,10 @@ public String GetById(Model model, @PathVariable int idPokemon) {
                 }
             }
         }
-    } catch (Exception ignored) { }
+    } catch (Exception ignored) {}
 
     int id = ((Number) d.getOrDefault("id", idPokemon)).intValue();
+
     Map<String, Object> p = new HashMap<>();
     p.put("id", id);
     p.put("name", (String) d.getOrDefault("name", "pokemon"));
@@ -281,13 +352,16 @@ public String GetById(Model model, @PathVariable int idPokemon) {
     p.put("weightKg", ((Number) d.getOrDefault("weight", 0)).doubleValue()/10.0);
     p.put("baseExp", ((Number) d.getOrDefault("base_experience", 0)).intValue());
     p.put("stats", stats);
-    p.put("abilities", abilities);
+    p.put("abilities", abilities);        // << nombre + hidden
     p.put("genus", genus);
     p.put("flavor", flavor);
+    p.put("sprites", sprites);            // << para carrusel
+    p.put("cry", cry);                    // << audio
 
     model.addAttribute("p", p);
     return "PokemonDetail";
 }
+
 
     
     
