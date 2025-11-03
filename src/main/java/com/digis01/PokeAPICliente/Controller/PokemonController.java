@@ -162,34 +162,136 @@ public class PokemonController {
 
 
 
+@GetMapping("/{idPokemon}")
+public String GetById(Model model, @PathVariable int idPokemon) {
+    RestTemplate restTemplate = new RestTemplate();
+
+    // detalle base
+    Map<String, Object> d = restTemplate.getForObject("https://pokeapi.co/api/v2/pokemon/" + idPokemon, Map.class);
+    if (d == null) { model.addAttribute("p", null); return "PokemonDetail"; }
+
+    // imagen
+    String image = "";
+    Object spritesObj = d.get("sprites");
+    if (spritesObj instanceof Map) {
+        Map<String, Object> sprites = (Map<String, Object>) spritesObj;
+        try {
+            Map<String, Object> other = (Map<String, Object>) sprites.get("other");
+            if (other != null) {
+                Map<String, Object> official = (Map<String, Object>) other.get("official-artwork");
+                if (official != null) image = (String) official.get("front_default");
+                if (image == null) {
+                    Map<String, Object> dream = (Map<String, Object>) other.get("dream_world");
+                    if (dream != null) image = (String) dream.get("front_default");
+                }
+            }
+            if (image == null) image = (String) sprites.get("front_default");
+        } catch (ClassCastException ignored) { }
+    }
+    if (image == null) image = "";
+
+    // tipos
+    List<String> types = new ArrayList<>();
+    Object typesObj = d.get("types");
+    if (typesObj instanceof List) {
+        for (Object t : (List<?>) typesObj) {
+            Map<String, Object> tMap = (Map<String, Object>) t;
+            Map<String, Object> type = (Map<String, Object>) tMap.get("type");
+            if (type != null && type.get("name") != null) types.add((String) type.get("name"));
+        }
+    }
+
+    // stats
+    Map<String, Integer> stats = new HashMap<>();
+    stats.put("hp", 0); stats.put("attack", 0); stats.put("defense", 0);
+    stats.put("specialAttack", 0); stats.put("specialDefense", 0); stats.put("speed", 0);
+    Object statsObj = d.get("stats");
+    if (statsObj instanceof List) {
+        for (Object s : (List<?>) statsObj) {
+            Map<String, Object> sMap = (Map<String, Object>) s;
+            Number base = (Number) sMap.getOrDefault("base_stat", 0);
+            Map<String, Object> stat = (Map<String, Object>) sMap.get("stat");
+            if (stat == null) continue;
+            String n = (String) stat.get("name");
+            if (n == null) continue;
+            switch (n) {
+                case "hp" -> stats.put("hp", base.intValue());
+                case "attack" -> stats.put("attack", base.intValue());
+                case "defense" -> stats.put("defense", base.intValue());
+                case "special-attack" -> stats.put("specialAttack", base.intValue());
+                case "special-defense" -> stats.put("specialDefense", base.intValue());
+                case "speed" -> stats.put("speed", base.intValue());
+            }
+        }
+    }
+
+    // abilities
+    List<String> abilities = new ArrayList<>();
+    Object abilitiesObj = d.get("abilities");
+    if (abilitiesObj instanceof List) {
+        for (Object a : (List<?>) abilitiesObj) {
+            Map<String, Object> aMap = (Map<String, Object>) a;
+            Map<String, Object> ability = (Map<String, Object>) aMap.get("ability");
+            if (ability != null && ability.get("name") != null) abilities.add((String) ability.get("name"));
+        }
+    }
+
+    // species → genus + flavor
+    String genus = "", flavor = "";
+    try {
+        Map<String, Object> species = (Map<String, Object>) d.get("species");
+        if (species != null && species.get("url") != null) {
+            String sUrl = (String) species.get("url");
+            Map<String, Object> sp = restTemplate.getForObject(sUrl, Map.class);
+            if (sp != null) {
+                List<Map<String, Object>> genera = (List<Map<String, Object>>) sp.get("genera");
+                if (genera != null) {
+                    String gEs = "", gEn = "";
+                    for (Map<String, Object> g : genera) {
+                        Map<String, Object> lang = (Map<String, Object>) g.get("language");
+                        String ln = lang != null ? (String) lang.get("name") : "";
+                        String gv = (String) g.get("genus");
+                        if ("es".equals(ln)) gEs = gv; if ("en".equals(ln)) gEn = gv;
+                    }
+                    genus = !gEs.isEmpty() ? gEs : gEn;
+                }
+                List<Map<String, Object>> fts = (List<Map<String, Object>>) sp.get("flavor_text_entries");
+                if (fts != null) {
+                    String fEs="", fEn="";
+                    for (Map<String, Object> ft : fts) {
+                        Map<String, Object> lang = (Map<String, Object>) ft.get("language");
+                        String ln = lang != null ? (String) lang.get("name") : "";
+                        String txt = ((String) ft.get("flavor_text")).replaceAll("[\\n\\f]", " ");
+                        if ("es".equals(ln) && fEs.isEmpty()) fEs = txt;
+                        if ("en".equals(ln) && fEn.isEmpty()) fEn = txt;
+                    }
+                    flavor = !fEs.isEmpty() ? fEs : fEn;
+                }
+            }
+        }
+    } catch (Exception ignored) { }
+
+    int id = ((Number) d.getOrDefault("id", idPokemon)).intValue();
+    Map<String, Object> p = new HashMap<>();
+    p.put("id", id);
+    p.put("name", (String) d.getOrDefault("name", "pokemon"));
+    p.put("image", image);
+    p.put("types", types);
+    p.put("heightM", ((Number) d.getOrDefault("height", 0)).doubleValue()/10.0);
+    p.put("weightKg", ((Number) d.getOrDefault("weight", 0)).doubleValue()/10.0);
+    p.put("baseExp", ((Number) d.getOrDefault("base_experience", 0)).intValue());
+    p.put("stats", stats);
+    p.put("abilities", abilities);
+    p.put("genus", genus);
+    p.put("flavor", flavor);
+
+    model.addAttribute("p", p);
+    return "PokemonDetail";
+}
 
     
-    @GetMapping("/{idPokemon}")
-    public String GetById(Model model, @PathVariable int idPokemon) {
-        
-        RestTemplate restTemplate = new RestTemplate();
-        
-    Map<String, Object> d = restTemplate.getForObject("https://pokeapi.co/api/v2/pokemon/" + idPokemon, Map.class);
-    if(d == null){model.addAttribute( "p", null); return "PokemonDetil";}
     
-    String image = "";
-//    Object
-//        String url = "https://pokeapi.co/api/v2/pokemon/" + idPokemon;
-//        
-//        ResponseEntity<Map> responseEntity = restTemplate.getForEntity(url, Map.class);
-//        
-//        Map<String, Object> responseBody = responseEntity.getBody();
-//        
-//        List<Map<String, Object>> detallePokemon = (List<Map<String, Object>>) responseBody.get("results");
-//        
-//        if (responseEntity.getStatusCode() == HttpStatus.OK) {
-//
-//            model.addAttribute("detallePokemon", detallePokemon);
-//        }
-        
-        return "PokemonDetail";
-        
-    }
+    
     
     
     
