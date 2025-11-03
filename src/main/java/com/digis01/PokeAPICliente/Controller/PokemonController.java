@@ -169,18 +169,23 @@ public class PokemonController {
         
         RestTemplate restTemplate = new RestTemplate();
         
-        String url = "https://pokeapi.co/api/v2/pokemon/" + idPokemon;
-        
-        ResponseEntity<Map> responseEntity = restTemplate.getForEntity(url, Map.class);
-        
-        Map<String, Object> responseBody = responseEntity.getBody();
-        
-        List<Map<String, Object>> detallePokemon = (List<Map<String, Object>>) responseBody.get("results");
-        
-        if (responseEntity.getStatusCode() == HttpStatus.OK) {
-
-            model.addAttribute("detallePokemon", detallePokemon);
-        }
+    Map<String, Object> d = restTemplate.getForObject("https://pokeapi.co/api/v2/pokemon/" + idPokemon, Map.class);
+    if(d == null){model.addAttribute( "p", null); return "PokemonDetil";}
+    
+    String image = "";
+//    Object
+//        String url = "https://pokeapi.co/api/v2/pokemon/" + idPokemon;
+//        
+//        ResponseEntity<Map> responseEntity = restTemplate.getForEntity(url, Map.class);
+//        
+//        Map<String, Object> responseBody = responseEntity.getBody();
+//        
+//        List<Map<String, Object>> detallePokemon = (List<Map<String, Object>>) responseBody.get("results");
+//        
+//        if (responseEntity.getStatusCode() == HttpStatus.OK) {
+//
+//            model.addAttribute("detallePokemon", detallePokemon);
+//        }
         
         return "PokemonDetail";
         
