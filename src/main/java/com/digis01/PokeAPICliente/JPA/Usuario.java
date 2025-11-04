@@ -28,7 +28,7 @@ public class Usuario {
     private String ApellidoMaterno;
     
     @Column(name = "username")
-    private String Username;
+    private String username;
     
     @Column(name = "email")
     private String Email;
@@ -48,7 +48,7 @@ public class Usuario {
         this.Nombre = usuarioML.getNombre();
         this.ApellidoPaterno = usuarioML.getApellidoPaterno();
         this.ApellidoMaterno = usuarioML.getApellidoMaterno();
-        this.Username = usuarioML.getUsername();
+        this.username = usuarioML.getUsername();
         this.Email = usuarioML.getEmail();
         this.Password = usuarioML.getPassword();
         
@@ -89,11 +89,11 @@ public class Usuario {
     }
 
     public String getUsername() {
-        return Username;
+        return username;
     }
 
     public void setUsername(String Username) {
-        this.Username = Username;
+        this.username = Username;
     }
 
     public String getEmail() {
