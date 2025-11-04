@@ -26,7 +26,7 @@ public class PokemonController {
     @GetMapping
 public String index(Model model,
                     @RequestParam(defaultValue = "1") int page,
-                    @RequestParam(defaultValue = "12") int size,
+                    @RequestParam(defaultValue = "20") int size,
                     @RequestParam(name = "q", required = false) String q) {
 
     svc.warmupAsync(false);

@@ -8,9 +8,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
-    :root{ --red:#ef4444; --red-700:#b91c1c; --ink:#0f172a; --muted:#64748b;
-           --chip:#fee2e2; --shadow:0 12px 28px rgba(15,23,42,.12); --radius:18px; }
-    *{box-sizing:border-box} html,body{margin:0;background:#fff}
+    :root{
+      --red:#ef4444; --red-700:#b91c1c; --ink:#0f172a; --muted:#64748b;
+      --chip:#fee2e2; --shadow:0 12px 28px rgba(15,23,42,.12);
+      --radius:18px; --bg:#ffffff;
+      --ring:#ffd1d1; --soft:#fff0f0;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;background:var(--bg)}
     body{font-family:Poppins,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink)}
 
     /* NAV creativa */
@@ -28,30 +33,49 @@
     .login:hover{background:#ffe8e8}
 
     .wrap{max-width:1160px;margin:18px auto;padding:0 16px}
-    .title{font-size:28px;font-weight:800;margin:0 0 10px}
+    .title{font-size:28px;font-weight:800;margin:0 0 12px}
+
+    /* TOOLBAR superior */
     .toolbar{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}
     @media (max-width:780px){ .toolbar{grid-template-columns:1fr} }
     .search{position:relative}
-    .search input{width:100%;padding:12px 44px 12px 14px;border-radius:999px;border:1px solid #e5e7eb;outline:0}
+    .search input{
+      width:100%;padding:12px 44px 12px 14px;border-radius:999px;border:1px solid #e5e7eb;outline:0;
+      box-shadow:var(--shadow);
+    }
     .search svg{position:absolute;right:12px;top:50%;transform:translateY(-50%);opacity:.6}
-    .meta-line{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-    .pill{background:var(--chip);color:var(--red-700);padding:8px 12px;border-radius:999px;font-weight:800}
+    .meta-line{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+    .pill{background:var(--chip);color:var(--red-700);padding:8px 12px;border-radius:999px;font-weight:800;border:1px solid #fecaca}
 
-    /* FILTROS */
-    .filters{margin-top:12px; display:grid; gap:10px; grid-template-columns:1fr auto auto auto; align-items:center;}
-    @media (max-width:1024px){ .filters{grid-template-columns:1fr 1fr 1fr} }
+    /* PANEL de filtros */
+    .filters{
+      margin-top:12px; background:#fff; border:1px solid #f1f5f9; border-radius:16px; box-shadow:var(--shadow);
+      padding:10px; display:grid; gap:8px; align-items:center;
+      grid-template-columns: 1fr auto auto auto auto;
+    }
+    @media (max-width:1100px){ .filters{grid-template-columns:1fr 1fr 1fr} }
     @media (max-width:740px){ .filters{grid-template-columns:1fr 1fr} }
     @media (max-width:560px){ .filters{grid-template-columns:1fr} }
-    .type-chips{display:flex;gap:8px;flex-wrap:wrap}
-    .chip{padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800;text-transform:capitalize;
-      background:#fff;border:1px solid #ffd1d1;color:var(--red);cursor:pointer;user-select:none}
-    .chip.is-on{background:var(--red);color:#fff;border-color:var(--red)}
-    .range{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
-    .range input[type=range]{width:200px}
-    @media (max-width:560px){ .range{justify-content:space-between} .range input[type=range]{flex:1} }
-    .sort{display:flex;align-items:center;gap:8px;justify-content:flex-end;flex-wrap:wrap}
 
-    /* GRID */
+    .types-wrap{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .type-chips{display:flex;gap:6px;flex-wrap:wrap;max-height:72px;overflow:auto;padding-right:4px}
+    .chip{
+      padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800;text-transform:capitalize;
+      background:#fff;border:1px solid var(--ring);color:var(--red);cursor:pointer;user-select:none;white-space:nowrap;
+    }
+    .chip.is-on{background:var(--red);color:#fff;border-color:var(--red)}
+    .tools{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .ctrl{
+      display:flex;align-items:center;gap:8px;background:var(--soft);border:1px solid var(--ring);
+      padding:8px 10px;border-radius:12px;
+    }
+    .ctrl select, .ctrl input[type=range]{
+      border:1px solid #e5e7eb; border-radius:8px; padding:6px 8px; outline:0; background:#fff;
+    }
+    .btn{padding:10px 12px;border-radius:12px;border:1px solid #fecaca;background:#fff;color:var(--red);font-weight:800;cursor:pointer}
+    .btn:hover{background:#ffe8e8}
+
+    /* GRID responsivo */
     .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px;margin-top:16px}
     @media (max-width:1160px){ .grid{grid-template-columns:repeat(8,1fr)} }
     @media (max-width:780px){ .grid{grid-template-columns:repeat(6,1fr)} }
@@ -91,14 +115,15 @@
     .meta{display:flex;gap:10px;flex-wrap:wrap}
     .meta .pill{background:#fff0f0;border:1px solid #ffd1d1}
 
-    .pagi{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px}
+    /* PAGINACIÓN + page size */
+    .pagi{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px;flex-wrap:wrap}
     .p-btn{padding:10px 12px;border-radius:10px;border:1px solid #fecaca;background:#fff;color:var(--red);font-weight:800}
     .p-btn[disabled]{opacity:.5;cursor:not-allowed}
-    .name a.name-link,
-.back-title a.name-link{ color:inherit; text-decoration:none; }
-.name a.name-link:hover,
-.back-title a.name-link:hover{ text-decoration:underline; }
+    .page-size{display:flex;align-items:center;gap:8px}
+    .page-size select{border:1px solid #e5e7eb;border-radius:8px;padding:6px 8px;background:#fff}
 
+    .name a.name-link, .back-title a.name-link{ color:inherit; text-decoration:none; }
+    .name a.name-link:hover, .back-title a.name-link:hover{ text-decoration:underline; }
   </style>
 </head>
 <body>
@@ -117,9 +142,10 @@
     <!-- BÚSQUEDA + META -->
     <div class="toolbar">
       <div class="search" role="search">
-        <input id="q" type="search" placeholder="Buscar por nombre…" aria-label="Buscar pokémon" />
+        <input id="q" type="search" placeholder="Buscar por nombre…" aria-label="Buscar pokémon"
+               th:value="${q}"/>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M21 21l-4.35-4.35M10 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M21 21l-4.35-4.35M10 18a 8 8 0 1 1 0-16 8 8 0 0 1 0 16Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>
       </div>
       <div class="meta-line">
@@ -128,14 +154,19 @@
       </div>
     </div>
 
-    <!-- FILTROS + ORDENAMIENTO -->
+    <!-- FILTROS mejorados -->
     <section class="filters" aria-label="Filtros">
-      <div class="type-chips" id="typeChips">
-        <span class="chip is-on" data-type="__all">Todos</span>
-        <span class="chip" th:each="t : ${typesAll}" th:text="${t}" th:attr="data-type=${t}">fire</span>
+      <!-- Tipos -->
+      <div class="types-wrap">
+        <strong>Tipos:</strong>
+        <div class="type-chips" id="typeChips">
+          <span class="chip is-on" data-type="__all">Todos</span>
+          <span class="chip" th:each="t : ${typesAll}" th:text="${t}" th:attr="data-type=${t}">fire</span>
+        </div>
       </div>
 
-      <div class="range">
+      <!-- Stat -->
+      <div class="tools ctrl">
         <label for="statKey"><strong>Stat</strong></label>
         <select id="statKey">
           <option value="hp">HP</option>
@@ -145,12 +176,14 @@
         </select>
       </div>
 
-      <div class="range">
+      <!-- Min stat -->
+      <div class="tools ctrl">
         <label for="minStat"><strong>Mín.</strong> <span id="minStatVal">0</span></label>
         <input id="minStat" type="range" min="0" max="200" step="1" value="0"/>
       </div>
 
-      <div class="sort">
+      <!-- Orden -->
+      <div class="tools ctrl">
         <label for="sortBy"><strong>Ordenar</strong></label>
         <select id="sortBy">
           <option value="name-asc">Nombre A–Z</option>
@@ -158,6 +191,11 @@
           <option value="stat-desc">Stat ↓</option>
           <option value="stat-asc">Stat ↑</option>
         </select>
+      </div>
+
+      <!-- Limpiar -->
+      <div class="tools">
+        <button class="btn" id="clearFilters" type="button">Limpiar filtros</button>
       </div>
     </section>
 
@@ -181,11 +219,11 @@
             </div>
             <div class="body">
               <div class="name">
-  <a class="name-link"
-     th:href="@{'/pokemon/' + ${p.id}}"
-     onclick="event.stopPropagation()"
-     th:text="${p.name}">pikachu</a>
-</div>
+                <a class="name-link"
+                   th:href="@{'/pokemon/' + ${p.id}}"
+                   onclick="event.stopPropagation()"
+                   th:text="${p.name}">pikachu</a>
+              </div>
               <div class="chips">
                 <span class="chip-type" th:each="t : ${p.types}" th:text="${t}">electric</span>
               </div>
@@ -196,12 +234,13 @@
           <!-- BACK -->
           <article class="face back" aria-label="Reverso">
             <div class="back-head">
-<div class="back-title">
-  <a class="name-link"
-     th:href="@{'/pokemon/' + ${p.id}}"
-     onclick="event.stopPropagation()"
-     th:text="${p.name}">pikachu</a>
-</div>              <div class="flip-note">Click para volver</div>
+              <div class="back-title">
+                <a class="name-link"
+                   th:href="@{'/pokemon/' + ${p.id}}"
+                   onclick="event.stopPropagation()"
+                   th:text="${p.name}">pikachu</a>
+              </div>
+              <div class="flip-note">Click para volver</div>
             </div>
             <div class="stats">
               <div class="stat-row">
@@ -235,11 +274,21 @@
       </div>
     </section>
 
-    <!-- PAGINACIÓN -->
+    <!-- PAGINACIÓN + tamaño de página -->
     <div class="pagi">
-      <a class="p-btn" th:href="@{'/pokemon'(page=${page-1}, size=${size})}" th:attr="disabled=${page<=1}? 'disabled' : null">← Anterior</a>
+      <a class="p-btn" th:href="@{'/pokemon'(page=${page-1}, size=${size}, q=${q})}" th:attr="disabled=${page<=1}? 'disabled' : null">← Anterior</a>
       <div class="pill" th:text="'Página ' + ${page} + ' de ' + ${totalPages}">Página 1 de 1</div>
-      <a class="p-btn" th:href="@{'/pokemon'(page=${page+1}, size=${size})}" th:attr="disabled=${page>=totalPages}? 'disabled' : null">Siguiente →</a>
+      <a class="p-btn" th:href="@{'/pokemon'(page=${page+1}, size=${size}, q=${q})}" th:attr="disabled=${page>=totalPages}? 'disabled' : null">Siguiente →</a>
+
+      <div class="page-size">
+        <label for="pageSize"><strong>Tamaño:</strong></label>
+        <select id="pageSize" th:value="${size}">
+          <option th:selected="${size==12}" value="12">12</option>
+          <option th:selected="${size==24}" value="24">24</option>
+          <option th:selected="${size==48}" value="48">48</option>
+          <option th:selected="${size==96}" value="96">96</option>
+        </select>
+      </div>
     </div>
   </main>
 
@@ -247,7 +296,7 @@
     /* FLIP */
     function flip(card){ card.classList.toggle('flipped'); }
 
-    /* Estado de filtros */
+    /* Estado de filtros (cliente) */
     const state = { term:'', types:new Set(['__all']), statKey:'hp', minStat:0 };
 
     const grid = document.getElementById('grid');
@@ -257,12 +306,38 @@
     const statKeySel = document.getElementById('statKey');
     const sortSel = document.getElementById('sortBy');
     const typeChips = document.getElementById('typeChips');
+    const clearBtn = document.getElementById('clearFilters');
+    const pageSizeSel = document.getElementById('pageSize');
 
-    inputQ.addEventListener('input', ()=>{ state.term = inputQ.value.trim().toLowerCase(); applyFilters(); });
+    /* --- BÚSQUEDA GLOBAL (debounce -> navega con ?q=) --- */
+    let qTimer = null;
+    inputQ.addEventListener('input', () => {
+      const term = inputQ.value.trim();
+      clearTimeout(qTimer);
+      qTimer = setTimeout(() => {
+        const base = new URL(window.location.href);
+        base.searchParams.set('page', '1');
+        if (term) base.searchParams.set('q', term);
+        else base.searchParams.delete('q');
+        window.location.href = base.toString();
+      }, 350);
+    });
+
+    /* Page size -> recarga manteniendo q */
+    pageSizeSel.addEventListener('change', () => {
+      const base = new URL(window.location.href);
+      base.searchParams.set('page', '1');
+      base.searchParams.set('size', pageSizeSel.value);
+      const term = inputQ.value.trim();
+      if (term) base.searchParams.set('q', term);
+      else base.searchParams.delete('q');
+      window.location.href = base.toString();
+    });
+
+    /* Filtros cliente (no navegan) */
     statKeySel.addEventListener('change', ()=>{ state.statKey = statKeySel.value; applyFilters(); });
     sortSel.addEventListener('change', ()=>{ sortGrid(); });
     minStat.addEventListener('input', ()=>{ state.minStat = +minStat.value; minStatVal.textContent = state.minStat; applyFilters(); });
-    minStatVal.textContent = state.minStat;
 
     typeChips.addEventListener('click',(e)=>{
       const el = e.target.closest('.chip'); if(!el) return;
@@ -286,6 +361,21 @@
       applyFilters();
     });
 
+    clearBtn.addEventListener('click', ()=>{
+      // tipos -> Todos
+      state.types = new Set(['__all']);
+      for(const c of typeChips.querySelectorAll('.chip')) c.classList.remove('is-on');
+      typeChips.querySelector('[data-type="__all"]').classList.add('is-on');
+      // stat / min
+      statKeySel.value = 'hp'; state.statKey = 'hp';
+      minStat.value = 0; state.minStat = 0; minStatVal.textContent = '0';
+      // orden
+      sortSel.value = 'name-asc';
+      // filtros visuales
+      applyFilters();
+      // (NO cambiamos la búsqueda q del servidor)
+    });
+
     function applyFilters(){
       const cards = Array.from(grid.children);
       for(const card of cards){
@@ -298,8 +388,8 @@
           speed:+card.getAttribute('data-speed')||0
         };
         let visible = true;
-        if(state.term && !name.includes(state.term)) visible=false;
-        if(visible && !state.types.has('__all')){
+        // NOTA: la búsqueda global se hace en servidor; aquí no filtramos por term (se podría si quieres doble filtro)
+        if(!state.types.has('__all')){
           const wanted = Array.from(state.types);
           visible = types.some(t=>wanted.includes(t));
         }
@@ -334,18 +424,27 @@
       const mode = sortSel.value;
       const collator = new Intl.Collator('es',{sensitivity:'base'});
       const visible = Array.from(grid.children).filter(c=>c.style.display!=='none');
-      const getStat = c => +c.getAttribute('data-'+state.statKey)||0;
+      const getStat = c => {
+        const key = statKeySel.value;
+        return +c.getAttribute('data-'+key)||0;
+      };
       visible.sort((a,b)=>{
-        if(mode==='name-asc') return collator.compare(a.dataset.name, b.dataset.name);
+        if(mode==='name-asc')  return collator.compare(a.dataset.name, b.dataset.name);
         if(mode==='name-desc') return collator.compare(b.dataset.name, a.dataset.name);
-        if(mode==='stat-asc') return getStat(a) - getStat(b);
+        if(mode==='stat-asc')  return getStat(a) - getStat(b);
         if(mode==='stat-desc') return getStat(b) - getStat(a);
         return 0;
       });
       for(const c of visible) grid.appendChild(c);
     }
 
-    window.addEventListener('load', ()=>{ typeChips.querySelector('[data-type="__all"]').classList.add('is-on'); applyFilters(); });
+    // Init
+    window.addEventListener('load', ()=>{
+      // Marcar "Todos"
+      const all = typeChips.querySelector('[data-type="__all"]');
+      if(all) all.classList.add('is-on');
+      applyFilters();
+    });
     window.addEventListener('resize', refreshBars);
   </script>
 </body>
