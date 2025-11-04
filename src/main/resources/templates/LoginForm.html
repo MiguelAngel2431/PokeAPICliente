@@ -1,9 +1,5 @@
 <!DOCTYPE html>
-<!--
-Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
--->
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
     <head>
         <title>TODO supply a title</title>
         <meta charset="UTF-8">
@@ -88,16 +84,16 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                     <b class="text">Ingresa tus credenciales para acceder a la PokeAPI</b>
                     <br>
                     <div class="form border p-4 rounded w-75">
-                        <form>
+                        <form id="loginForm" method="post" th:action="@{/login}">
                             <div class="form-group">
                                 <label for="exampleInputEmail1">Usuario</label>
-                                <input type="text" class="form-control" id="usuario" aria-describedby="emailHelp" placeholder="Ingresa tu username">
+                                <input type="text" class="form-control" id="username" name="username" aria-describedby="emailHelp" placeholder="Ingresa tu username">
                                 <!--<small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>-->
                             </div>
                             <br>
                             <div class="form-group">
                                 <label for="exampleInputPassword1">Contraseña</label>
-                                <input type="password" class="form-control" id="password" placeholder="Ingresa contraseña">
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Ingresa contraseña">
                             </div>
                             <br>
                             <button type="submit" class="btn btn-danger w-100">Iniciar sesión</button>
