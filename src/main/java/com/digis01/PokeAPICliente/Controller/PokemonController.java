@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -93,8 +94,10 @@ public String index(
         return m;
     }).toList();
     
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    String username = auth.getName();
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String username = (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) 
+                          ? authentication.getName() 
+                          : null;
 
     // Tipos del catálogo completo (no solo de la página)
     List<String> typesAll = svc.allTypes().stream().sorted().toList();

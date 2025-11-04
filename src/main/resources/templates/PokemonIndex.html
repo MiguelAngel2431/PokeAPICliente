@@ -155,8 +155,13 @@
   <nav class="nav" aria-label="Principal">
     <div class="nav-in">
       <div class="brand"><div class="ball" aria-hidden="true"></div><span>PokéAPI Cliente</span></div>
+      
+      <div th:if="${username != null}">
+          <a class="login">Bienvenido, <span th:text="${username}"></span>!</a>
+      </div>
+      <div th:if="${username == null}">
       <a class="login" th:href="@{/login}">Login</a>
-      <h1>Bienvenido, <span th:text="${username}"></span>!</h1>
+      </div>
     </div>
   </nav>
 
