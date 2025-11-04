@@ -11,15 +11,14 @@
     :root{
       --red:#ef4444; --red-700:#b91c1c; --ink:#0f172a; --muted:#64748b;
       --chip:#fee2e2; --shadow:0 12px 28px rgba(15,23,42,.12);
-      --radius:18px; --bg:#ffffff;
-      --ring:#ffd1d1; --soft:#fff0f0;
+      --radius:18px; --bg:#ffffff; --ring:#ffd1d1; --soft:#fff7f7;
     }
     *{box-sizing:border-box}
     html,body{margin:0;background:var(--bg)}
     body{font-family:Poppins,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink)}
 
     /* NAV creativa */
-    .nav{position:sticky;top:0;z-index:50;
+    .nav{position:sticky;top:0;z-index:2000;
       background:linear-gradient(180deg,#fff 0,#fff 60%, #000 60%, #000 63%, #ef4444 63%, #ef4444 100%);
       box-shadow:0 10px 20px rgba(239,68,68,.25);}
     .nav-in{max-width:1160px;margin:0 auto;padding:18px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
@@ -35,48 +34,72 @@
     .wrap{max-width:1160px;margin:18px auto;padding:0 16px}
     .title{font-size:28px;font-weight:800;margin:0 0 12px}
 
-    /* TOOLBAR superior */
+    /* TOOLBAR */
     .toolbar{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}
     @media (max-width:780px){ .toolbar{grid-template-columns:1fr} }
     .search{position:relative}
     .search input{
-      width:100%;padding:12px 44px 12px 14px;border-radius:999px;border:1px solid #e5e7eb;outline:0;
+      width:100%;padding:12px 96px 12px 14px;border-radius:999px;border:1px solid #e5e7eb;outline:0;
       box-shadow:var(--shadow);
     }
-    .search svg{position:absolute;right:12px;top:50%;transform:translateY(-50%);opacity:.6}
+    .search .btn-find{
+      position:absolute;right:8px;top:50%;transform:translateY(-50%);
+      padding:8px 12px;border-radius:999px;border:1px solid #fecaca;background:#fff;color:var(--red);font-weight:800;cursor:pointer;
+    }
+    .search .hint{font-size:12px;color:var(--muted);margin-top:6px}
     .meta-line{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
     .pill{background:var(--chip);color:var(--red-700);padding:8px 12px;border-radius:999px;font-weight:800;border:1px solid #fecaca}
 
-    /* PANEL de filtros */
+    /* SELECTED TYPE CHIPS */
+    .sel-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .sel-chip{
+      display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;
+      background:#fff0f0;border:1px solid var(--ring);color:var(--red-700);font-weight:800;text-transform:capitalize
+    }
+    .sel-chip button{
+      border:none;background:transparent;font-weight:900;cursor:pointer;color:var(--red-700)
+    }
+
+    /* FILTROS container (crea stacking para z-index) */
     .filters{
+      position:relative; z-index:100; /* asegura superponer grid */
       margin-top:12px; background:#fff; border:1px solid #f1f5f9; border-radius:16px; box-shadow:var(--shadow);
       padding:10px; display:grid; gap:8px; align-items:center;
-      grid-template-columns: 1fr auto auto auto auto;
+      grid-template-columns: auto 1fr auto;
     }
-    @media (max-width:1100px){ .filters{grid-template-columns:1fr 1fr 1fr} }
-    @media (max-width:740px){ .filters{grid-template-columns:1fr 1fr} }
+    @media (max-width:980px){ .filters{grid-template-columns:1fr 1fr} }
     @media (max-width:560px){ .filters{grid-template-columns:1fr} }
 
-    .types-wrap{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-    .type-chips{display:flex;gap:6px;flex-wrap:wrap;max-height:72px;overflow:auto;padding-right:4px}
-    .chip{
-      padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800;text-transform:capitalize;
-      background:#fff;border:1px solid var(--ring);color:var(--red);cursor:pointer;user-select:none;white-space:nowrap;
-    }
-    .chip.is-on{background:var(--red);color:#fff;border-color:var(--red)}
-    .tools{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-    .ctrl{
-      display:flex;align-items:center;gap:8px;background:var(--soft);border:1px solid var(--ring);
-      padding:8px 10px;border-radius:12px;
-    }
-    .ctrl select, .ctrl input[type=range]{
-      border:1px solid #e5e7eb; border-radius:8px; padding:6px 8px; outline:0; background:#fff;
-    }
     .btn{padding:10px 12px;border-radius:12px;border:1px solid #fecaca;background:#fff;color:var(--red);font-weight:800;cursor:pointer}
     .btn:hover{background:#ffe8e8}
 
+    /* Dropdown de tipos */
+    .dropdown{position:relative;display:inline-block}
+    .dd-btn{display:flex;align-items:center;gap:8px}
+    .dd-panel{
+      position:absolute;top:calc(100% + 8px);left:0;min-width:280px;max-width:min(92vw,360px);
+      background:#fff;border:1px solid #f1f5f9;border-radius:14px;box-shadow:var(--shadow);padding:10px;display:none;
+      z-index:1100; /* sobre las cartas */
+    }
+    .dropdown.open .dd-panel{display:block}
+    .dd-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+    .dd-scroll{max-height:240px;overflow:auto;border:1px dashed var(--ring);border-radius:10px;padding:8px;background:var(--soft)}
+    .type-row{display:flex;align-items:center;gap:8px;padding:6px 4px;border-radius:8px}
+    .type-row:hover{background:#fff}
+    .type-row input{accent-color:var(--red)}
+    .dd-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
+
+    /* Controles a la derecha */
+    .ctrl{
+      display:flex;align-items:center;gap:8px;background:var(--soft);border:1px solid var(--ring);
+      padding:8px 10px;border-radius:12px;flex-wrap:wrap;justify-content:flex-end
+    }
+    .ctrl select{
+      border:1px solid #e5e7eb; border-radius:8px; padding:6px 8px; outline:0; background:#fff;
+    }
+
     /* GRID responsivo */
-    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:18px;margin-top:16px}
+    .grid{position:relative; z-index:1; display:grid;grid-template-columns:repeat(12,1fr);gap:18px;margin-top:16px}
     @media (max-width:1160px){ .grid{grid-template-columns:repeat(8,1fr)} }
     @media (max-width:780px){ .grid{grid-template-columns:repeat(6,1fr)} }
     @media (max-width:560px){ .grid{grid-template-columns:repeat(2,1fr)} }
@@ -128,45 +151,76 @@
 </head>
 <body>
 
-  <!-- NAV con Login -->
+  <!-- NAV -->
   <nav class="nav" aria-label="Principal">
     <div class="nav-in">
       <div class="brand"><div class="ball" aria-hidden="true"></div><span>PokéAPI Cliente</span></div>
       <a class="login" th:href="@{/login}">Login</a>
+      <h1>Bienvenido, <span th:text="${username}"></span>!</h1>
     </div>
   </nav>
 
   <main class="wrap">
     <h1 class="title">Pokemons</h1>
 
-    <!-- BÚSQUEDA + META -->
+    <!-- BÚSQUEDA (Enter o botón; no navega al tipear) + META -->
     <div class="toolbar">
-      <div class="search" role="search">
-        <input id="q" type="search" placeholder="Buscar por nombre…" aria-label="Buscar pokémon"
-               th:value="${q}"/>
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M21 21l-4.35-4.35M10 18a 8 8 0 1 1 0-16 8 8 0 0 1 0 16Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-      </div>
+      <form class="search" role="search" method="get" th:action="@{/pokemon}">
+        <input id="q" name="q" type="search" placeholder="Buscar por nombre… (ej. mewtwo, pikachu)"
+               aria-label="Buscar pokémon" th:value="${q}"/>
+        <button class="btn btn-find" type="submit">Buscar</button>
+        <div class="hint">Presiona Enter o “Buscar” para consultar en todo el Pokédex</div>
+
+        <!-- Preserva filtros actuales -->
+        <input type="hidden" name="types" th:value="${typesQuery}"/>
+        <input type="hidden" name="size" th:value="${size}"/>
+        <input type="hidden" name="page" value="1"/>
+      </form>
+
       <div class="meta-line">
         <span class="pill" th:text="'Total: ' + ${count}">Total: 0</span>
         <span class="pill" th:text="'Página ' + ${page} + ' / ' + ${totalPages}">Página 1 / 1</span>
       </div>
     </div>
 
-    <!-- FILTROS mejorados -->
-    <section class="filters" aria-label="Filtros">
-      <!-- Tipos -->
-      <div class="types-wrap">
-        <strong>Tipos:</strong>
-        <div class="type-chips" id="typeChips">
-          <span class="chip is-on" data-type="__all">Todos</span>
-          <span class="chip" th:each="t : ${typesAll}" th:text="${t}" th:attr="data-type=${t}">fire</span>
+    <!-- Chips de tipos seleccionados (removibles) -->
+    <div class="sel-chips" id="selChips" th:if="${selectedTypes != null and !selectedTypes.isEmpty()}">
+      <span class="sel-chip" th:each="t : ${selectedTypes}" th:attr="data-type=${t}">
+        <span th:text="${t}">fire</span>
+        <button type="button" class="chip-x" aria-label="Quitar">×</button>
+      </span>
+    </div>
+
+    <!-- FILTROS -->
+    <section class="filters" aria-label="Filtros y orden">
+      <!-- Dropdown de tipos -->
+      <div class="dropdown" id="ddTypes">
+        <button class="btn dd-btn" type="button" aria-haspopup="true" aria-expanded="false">
+          🔎 Filtrar por tipos
+        </button>
+        <div class="dd-panel" role="menu" aria-label="Selecciona tipos">
+          <div class="dd-head">
+            <strong>Tipos disponibles</strong>
+            <button class="btn" type="button" id="btnClearTypes">Limpiar</button>
+          </div>
+          <div class="dd-scroll" id="typeList">
+            <label class="type-row">
+              <input type="checkbox" value="__all" id="t_all" />
+              <span>Todos</span>
+            </label>
+            <label class="type-row" th:each="t : ${typesAll}">
+              <input type="checkbox" th:value="${t}" th:checked="${selectedTypes != null and selectedTypes.contains(t)}"/>
+              <span th:text="${t}">fire</span>
+            </label>
+          </div>
+          <div class="dd-actions">
+            <button class="btn" type="button" id="btnApplyTypes">Aplicar</button>
+          </div>
         </div>
       </div>
 
-      <!-- Stat -->
-      <div class="tools ctrl">
+      <!-- Stat (elige qué stat usar para ordenar) -->
+      <div class="ctrl">
         <label for="statKey"><strong>Stat</strong></label>
         <select id="statKey">
           <option value="hp">HP</option>
@@ -176,14 +230,8 @@
         </select>
       </div>
 
-      <!-- Min stat -->
-      <div class="tools ctrl">
-        <label for="minStat"><strong>Mín.</strong> <span id="minStatVal">0</span></label>
-        <input id="minStat" type="range" min="0" max="200" step="1" value="0"/>
-      </div>
-
-      <!-- Orden -->
-      <div class="tools ctrl">
+      <!-- Orden (Stat usa el elegido arriba) -->
+      <div class="ctrl">
         <label for="sortBy"><strong>Ordenar</strong></label>
         <select id="sortBy">
           <option value="name-asc">Nombre A–Z</option>
@@ -191,11 +239,6 @@
           <option value="stat-desc">Stat ↓</option>
           <option value="stat-asc">Stat ↑</option>
         </select>
-      </div>
-
-      <!-- Limpiar -->
-      <div class="tools">
-        <button class="btn" id="clearFilters" type="button">Limpiar filtros</button>
       </div>
     </section>
 
@@ -276,9 +319,9 @@
 
     <!-- PAGINACIÓN + tamaño de página -->
     <div class="pagi">
-      <a class="p-btn" th:href="@{'/pokemon'(page=${page-1}, size=${size}, q=${q})}" th:attr="disabled=${page<=1}? 'disabled' : null">← Anterior</a>
+      <a class="p-btn" th:href="@{'/pokemon'(page=${page-1}, size=${size}, q=${q}, types=${typesQuery})}" th:attr="disabled=${page<=1}? 'disabled' : null">← Anterior</a>
       <div class="pill" th:text="'Página ' + ${page} + ' de ' + ${totalPages}">Página 1 de 1</div>
-      <a class="p-btn" th:href="@{'/pokemon'(page=${page+1}, size=${size}, q=${q})}" th:attr="disabled=${page>=totalPages}? 'disabled' : null">Siguiente →</a>
+      <a class="p-btn" th:href="@{'/pokemon'(page=${page+1}, size=${size}, q=${q}, types=${typesQuery})}" th:attr="disabled=${page>=totalPages}? 'disabled' : null">Siguiente →</a>
 
       <div class="page-size">
         <label for="pageSize"><strong>Tamaño:</strong></label>
@@ -296,156 +339,104 @@
     /* FLIP */
     function flip(card){ card.classList.toggle('flipped'); }
 
-    /* Estado de filtros (cliente) */
-    const state = { term:'', types:new Set(['__all']), statKey:'hp', minStat:0 };
+    /* ---- Dropdown Tipos ---- */
+    const dd = document.getElementById('ddTypes');
+    const btn = dd.querySelector('.dd-btn');
+    const typeList = document.getElementById('typeList');
+    const btnApply = document.getElementById('btnApplyTypes');
+    const btnClear = document.getElementById('btnClearTypes');
 
-    const grid = document.getElementById('grid');
-    const inputQ = document.getElementById('q');
-    const minStat = document.getElementById('minStat');
-    const minStatVal = document.getElementById('minStatVal');
-    const statKeySel = document.getElementById('statKey');
-    const sortSel = document.getElementById('sortBy');
-    const typeChips = document.getElementById('typeChips');
-    const clearBtn = document.getElementById('clearFilters');
-    const pageSizeSel = document.getElementById('pageSize');
-
-    /* --- BÚSQUEDA GLOBAL (debounce -> navega con ?q=) --- */
-    let qTimer = null;
-    inputQ.addEventListener('input', () => {
-      const term = inputQ.value.trim();
-      clearTimeout(qTimer);
-      qTimer = setTimeout(() => {
-        const base = new URL(window.location.href);
-        base.searchParams.set('page', '1');
-        if (term) base.searchParams.set('q', term);
-        else base.searchParams.delete('q');
-        window.location.href = base.toString();
-      }, 350);
+    btn.addEventListener('click', ()=>{
+      dd.classList.toggle('open');
+      btn.setAttribute('aria-expanded', dd.classList.contains('open'));
+    });
+    document.addEventListener('click', (e)=>{
+      if(!dd.contains(e.target)) { dd.classList.remove('open'); btn.setAttribute('aria-expanded','false'); }
     });
 
-    /* Page size -> recarga manteniendo q */
-    pageSizeSel.addEventListener('change', () => {
+    btnClear.addEventListener('click', ()=>{
+      typeList.querySelectorAll('input[type=checkbox]').forEach(c=>c.checked=false);
+      const all = document.getElementById('t_all'); if(all) all.checked=true;
+    });
+
+    btnApply.addEventListener('click', ()=>{
+      const selected = Array.from(typeList.querySelectorAll('input[type=checkbox]'))
+        .filter(c=>c.checked && c.value !== '__all')
+        .map(c=>c.value);
+
       const base = new URL(window.location.href);
-      base.searchParams.set('page', '1');
-      base.searchParams.set('size', pageSizeSel.value);
-      const term = inputQ.value.trim();
-      if (term) base.searchParams.set('q', term);
-      else base.searchParams.delete('q');
+      base.searchParams.set('page','1');
+
+      // q actual del input
+      const inputQ = document.getElementById('q');
+      const term = (inputQ?.value || '').trim();
+      if (term) base.searchParams.set('q', term); else base.searchParams.delete('q');
+
+      if (selected.length>0) base.searchParams.set('types', selected.join(','));
+      else base.searchParams.delete('types');
+
       window.location.href = base.toString();
     });
 
-    /* Filtros cliente (no navegan) */
-    statKeySel.addEventListener('change', ()=>{ state.statKey = statKeySel.value; applyFilters(); });
-    sortSel.addEventListener('change', ()=>{ sortGrid(); });
-    minStat.addEventListener('input', ()=>{ state.minStat = +minStat.value; minStatVal.textContent = state.minStat; applyFilters(); });
-
-    typeChips.addEventListener('click',(e)=>{
-      const el = e.target.closest('.chip'); if(!el) return;
-      const t = el.dataset.type;
-      if(t==='__all'){
-        state.types = new Set(['__all']);
-        for(const c of typeChips.querySelectorAll('.chip')) c.classList.remove('is-on');
-        typeChips.querySelector('[data-type="__all"]').classList.add('is-on');
-      }else{
-        state.types.delete('__all');
-        const on = el.classList.toggle('is-on');
-        if(on) state.types.add(t); else state.types.delete(t);
-        if(state.types.size===0){
-          state.types = new Set(['__all']);
-          for(const c of typeChips.querySelectorAll('.chip')) c.classList.remove('is-on');
-          typeChips.querySelector('[data-type="__all"]').classList.add('is-on');
-        }else{
-          typeChips.querySelector('[data-type="__all"]').classList.remove('is-on');
-        }
-      }
-      applyFilters();
-    });
-
-    clearBtn.addEventListener('click', ()=>{
-      // tipos -> Todos
-      state.types = new Set(['__all']);
-      for(const c of typeChips.querySelectorAll('.chip')) c.classList.remove('is-on');
-      typeChips.querySelector('[data-type="__all"]').classList.add('is-on');
-      // stat / min
-      statKeySel.value = 'hp'; state.statKey = 'hp';
-      minStat.value = 0; state.minStat = 0; minStatVal.textContent = '0';
-      // orden
-      sortSel.value = 'name-asc';
-      // filtros visuales
-      applyFilters();
-      // (NO cambiamos la búsqueda q del servidor)
-    });
-
-    function applyFilters(){
-      const cards = Array.from(grid.children);
-      for(const card of cards){
-        const name = (card.getAttribute('data-name') || '').toLowerCase();
-        const types = (card.getAttribute('data-types') || '').toLowerCase().split(',').filter(Boolean);
-        const stats = {
-          hp:+card.getAttribute('data-hp')||0,
-          attack:+card.getAttribute('data-attack')||0,
-          defense:+card.getAttribute('data-defense')||0,
-          speed:+card.getAttribute('data-speed')||0
-        };
-        let visible = true;
-        // NOTA: la búsqueda global se hace en servidor; aquí no filtramos por term (se podría si quieres doble filtro)
-        if(!state.types.has('__all')){
-          const wanted = Array.from(state.types);
-          visible = types.some(t=>wanted.includes(t));
-        }
-        if(visible && (stats[state.statKey] < state.minStat)) visible=false;
-        card.style.display = visible ? '' : 'none';
-      }
-      refreshBars();
-      sortGrid();
+    /* ---- Chips seleccionados (quitar) ---- */
+    const chips = document.getElementById('selChips');
+    if (chips){
+      chips.addEventListener('click', (e)=>{
+        const btn = e.target.closest('.chip-x'); if(!btn) return;
+        const chip = btn.closest('.sel-chip'); if(!chip) return;
+        const t = chip.getAttribute('data-type');
+        const base = new URL(window.location.href);
+        const types = (base.searchParams.get('types') || '').split(',').filter(Boolean);
+        const next = types.filter(x => x !== t);
+        if (next.length>0) base.searchParams.set('types', next.join(','));
+        else base.searchParams.delete('types');
+        base.searchParams.set('page','1');
+        window.location.href = base.toString();
+      });
     }
 
-    /* Recalcular barras normalizadas por máximos visibles */
-    function refreshBars(){
-      const visible = Array.from(grid.children).filter(c=>c.style.display!=='none');
-      const max = {hp:1,attack:1,defense:1,speed:1};
-      for(const c of visible){
-        max.hp = Math.max(max.hp, +c.getAttribute('data-hp')||0);
-        max.attack = Math.max(max.attack, +c.getAttribute('data-attack')||0);
-        max.defense = Math.max(max.defense, +c.getAttribute('data-defense')||0);
-        max.speed = Math.max(max.speed, +c.getAttribute('data-speed')||0);
-      }
-      for(const c of visible){
-        const setW = (cls,val,m)=>{ const bar=c.querySelector('.'+cls); if(!bar) return; bar.style.width=Math.max(6,Math.round((val/m)*100))+'%';};
-        setW('bar-hp', +c.getAttribute('data-hp')||0, max.hp);
-        setW('bar-attack', +c.getAttribute('data-attack')||0, max.attack);
-        setW('bar-defense', +c.getAttribute('data-defense')||0, max.defense);
-        setW('bar-speed', +c.getAttribute('data-speed')||0, max.speed);
-      }
-    }
+    /* ---- Ordenamiento (usa stat elegido) ---- */
+    const grid = document.getElementById('grid');
+    const sortSel = document.getElementById('sortBy');
+    const statKeySel = document.getElementById('statKey');
 
-    /* Ordenamiento (Nombre/Stat) sobre los visibles */
     function sortGrid(){
       const mode = sortSel.value;
+      const key  = statKeySel.value;
       const collator = new Intl.Collator('es',{sensitivity:'base'});
-      const visible = Array.from(grid.children).filter(c=>c.style.display!=='none');
-      const getStat = c => {
-        const key = statKeySel.value;
-        return +c.getAttribute('data-'+key)||0;
-      };
-      visible.sort((a,b)=>{
+      const cards = Array.from(grid.children);
+      const getStat = c => +c.getAttribute('data-'+key)||0;
+      cards.sort((a,b)=>{
         if(mode==='name-asc')  return collator.compare(a.dataset.name, b.dataset.name);
         if(mode==='name-desc') return collator.compare(b.dataset.name, a.dataset.name);
         if(mode==='stat-asc')  return getStat(a) - getStat(b);
         if(mode==='stat-desc') return getStat(b) - getStat(a);
         return 0;
       });
-      for(const c of visible) grid.appendChild(c);
+      for(const c of cards) grid.appendChild(c);
     }
+    sortSel.addEventListener('change', sortGrid);
+    statKeySel.addEventListener('change', ()=>{
+      if (sortSel.value.startsWith('stat')) sortGrid();
+    });
+
+    // Page size → recarga preservando q & types
+    const pageSizeSel = document.getElementById('pageSize');
+    pageSizeSel.addEventListener('change', () => {
+      const base = new URL(window.location.href);
+      base.searchParams.set('page', '1');
+      base.searchParams.set('size', pageSizeSel.value);
+      const inputQ = document.getElementById('q');
+      const term = (inputQ?.value || '').trim();
+      if (term) base.searchParams.set('q', term); else base.searchParams.delete('q');
+      // mantener types si existen
+      const ddTypes = new URL(window.location.href).searchParams.get('types');
+      if (ddTypes) base.searchParams.set('types', ddTypes);
+      window.location.href = base.toString();
+    });
 
     // Init
-    window.addEventListener('load', ()=>{
-      // Marcar "Todos"
-      const all = typeChips.querySelector('[data-type="__all"]');
-      if(all) all.classList.add('is-on');
-      applyFilters();
-    });
-    window.addEventListener('resize', refreshBars);
+    window.addEventListener('load', ()=>{ sortGrid(); });
   </script>
 </body>
 </html>

@@ -102,6 +102,21 @@ public class PokedexCacheService {
                 .sorted()
                 .collect(Collectors.toList());
     }
+    
+    
+    // Devuelve TODAS las cards en memoria (para búsqueda/filtrado global)
+public List<PokemonCardDTO> allCards() {
+    return new ArrayList<>(cards); // cards es tu CopyOnWriteArrayList<>
+}
+
+// Devuelve TODOS los tipos presentes en cache (para el dropdown)
+public Set<String> allTypes() {
+    Set<String> out = new TreeSet<>();
+    for (PokemonCardDTO c : cards) {
+        if (c.types != null) out.addAll(c.types);
+    }
+    return out;
+}
 
     public Result<PokemonFullDTO> getById(int id) {
         PokemonFullDTO p = byId.get(id);
