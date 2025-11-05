@@ -1,30 +1,46 @@
 
 package com.digis01.PokeAPICliente.Controller;
 
-import com.digis01.PokeAPICliente.ML.Usuario;
+import com.digis01.PokeAPICliente.DAO.IRepositoryUsuario;
+import com.digis01.PokeAPICliente.JPA.Usuario;
+import com.digis01.PokeAPICliente.Service.ServiceEmail;
+import com.digis01.PokeAPICliente.Service.TokenService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("login")
 public class LoginController {
+    
+    @Autowired
+    private IRepositoryUsuario iRepositoryUsuario;
+    
+    @Autowired
+    private TokenService tokenService;
+    
+    @Autowired
+    private ServiceEmail serviceEmail;
+    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     
     private final AuthenticationManager authenticationManager;
 
     public LoginController(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
     }
-    
-    
-   
+
     @GetMapping
     public String Login(Model model) {
         return "LoginForm";
@@ -50,5 +66,67 @@ public class LoginController {
 //            return "LoginForm";
 //        }
 //    }
+    
+    @GetMapping("/recuperarPassword")
+    public String RecuperarPassword(Model model) {
+        return "ResetPassword";
+    }
+    
+    @PostMapping("/recuperarPassword")
+    public String procesarResetPassword(Model model,
+            @RequestParam("email") String email) {
+        
+        Usuario usuario = iRepositoryUsuario.findByEmail(email);
+        
+        if (usuario != null) {
+            String token = tokenService.generateVerificationToken(email);
+            serviceEmail.sendPasswordResetEmail(email, token);
+            model.addAttribute("mensaje", "Se ha enviado una liga a tu correo.");
+            
+        } else {
+            model.addAttribute("error", "El correo no esta registrado");
+        }
+        
+        return "ResetPassword";
+        
+    }
+    
+    @GetMapping("/restablecerContrasenia")
+    public String resetPassword(@RequestParam("token") String token, Model model) {
+
+        model.addAttribute("token", token);
+
+        return "SolicitarPasswords";
+
+    }
+    
+    @PostMapping("/restablecerContrasenia")
+    public String procesarResetPassword(@RequestParam("token") String token,
+            @RequestParam("newPassword") String password, 
+            Model model) {
+        
+        String email = tokenService.validateToken(token);
+        
+        if (email != null) {
+            
+            Usuario usuario = iRepositoryUsuario.findByEmail(email);
+            String passwordEncriptada = passwordEncoder.encode(password);
+            
+            usuario.setPassword(passwordEncriptada);
+            
+            iRepositoryUsuario.save(usuario);
+            
+            serviceEmail.sendPasswordChangedNotification(email, usuario.getUsername());
+            
+            model.addAttribute("mensaje", "Tu contraseña se ha cambiado con exito.");
+            
+            return "LoginForm";
+            
+        } else {
+            model.addAttribute("error", "El enlace no es válido o ha expirado.");
+            return "ResetPassword";
+        }
+        
+    }
     
 }

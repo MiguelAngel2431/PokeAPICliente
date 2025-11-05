@@ -85,6 +85,12 @@
                         <strong>Error:</strong> Nombre de usuario o contraseña inválidos. 
                     </div>
                     
+                    <div th:if="${mensaje}">
+                        <div class="alert alert-success" role="alert" th:text="${mensaje}">
+                            This is a success alert—check it out!
+                        </div>
+                    </div>
+                    
                     <h1 class="title-iniciarsesion">Iniciar Sesión</h1>
                     <b class="text">Ingresa tus credenciales para acceder a la PokeAPI</b>
                     <br>
@@ -104,7 +110,7 @@
                             <button type="submit" class="btn btn-danger w-100">Iniciar sesión</button>
                             <br>
                             <br>
-                            <a href="#">¿Olvidaste tu contraseña?</a>
+                            <a th:href="@{/login/recuperarPassword}">¿Olvidaste tu contraseña?</a>
                         </form>
                     </div>
                     <br>

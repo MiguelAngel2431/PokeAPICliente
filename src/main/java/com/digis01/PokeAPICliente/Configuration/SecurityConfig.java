@@ -15,18 +15,18 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
     
-    private final UsuarioService usuarioService;
-
-    public SecurityConfig(UsuarioService usuarioService) {
-        this.usuarioService = usuarioService;
-    }
+//    private final UsuarioService usuarioService;
+//
+//    public SecurityConfig(UsuarioService usuarioService) {
+//        this.usuarioService = usuarioService;
+//    }
     
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf ->csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/pokemon/**", "/api/auth/**", "/usuario/**", "/usuario").permitAll()
+                        .requestMatchers("/pokemon/**", "/api/auth/**", "/usuario/**", "/usuario", "/login/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -48,12 +48,12 @@ public class SecurityConfig {
     }
     
     @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http)
+    public AuthenticationManager authenticationManager(HttpSecurity http, UsuarioService usuarioService, PasswordEncoder passwordEncoder)
             throws Exception  {
         
         return http.getSharedObject(AuthenticationManagerBuilder.class)
                 .userDetailsService(usuarioService)
-                .passwordEncoder(passwordEncoder())
+                .passwordEncoder(passwordEncoder)
                 .and()
                 .build();
         

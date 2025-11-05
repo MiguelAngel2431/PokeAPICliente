@@ -3,7 +3,7 @@
 Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
 Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
 -->
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
     <head>
         <title>Registrate</title>
         <meta charset="UTF-8">
@@ -14,6 +14,9 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
+        <!-- JQuery -->
+        <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 
         <!-- Google fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -49,39 +52,76 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
             }
 
+
+
+            /*Inputs*/
+            .correct {
+                border-color: green;
+            }
+
+            .error {
+                border-color: red;
+            }
+
+            .msg-error {
+                color: red;
+            }
+
+            .error-msg {
+                color: red;
+            }
+
+            .error-msg-lenght {
+                color: red;
+            }
+
         </style>
 
     </head>
     <body>
         <div class="container">
-            <form class="form">
+            <form class="form" method="post" th:object="${Usuario}" th:action="@{/usuario/add}">
 
                 <h1 class="title">Regístrate</h1>
 
                 <div class="row">
                     <div class="form-group">
                         <label for="inputNombre">Nombre</label>
-                        <input type="text" class="form-control" id="inputNombre" placeholder="Ingresa tu nombre" onkeydown="SoloLetras(event, this)">
+                        <input type="text" class="form-control" id="inputNombre" placeholder="Ingresa tu nombre" th:field="*{Nombre}" onkeydown="SoloLetras(event, this)">
+                        <span class="error-msg"></span>
+                        <span class="correct-msg"></span>
                     </div> 
                     <div class="form-group col-md-6">
                         <label for="inputApellidoP">Apellido paterno</label>
-                        <input type="text" class="form-control" id="inputApellidoPaterno" placeholder="Ingresa tu apellido paterno">
+                        <input type="text" class="form-control" id="inputApellidoPaterno" placeholder="Ingresa tu apellido paterno" th:field="*{ApellidoPaterno}" onkeydown="SoloLetras(event, this)">
+                        <span class="error-msg"></span>
+                        <span class="correct-msg"></span>
                     </div>
                     <br>
                     <div class="form-group col-md-6">
                         <label for="inputApellidoM">Apellido materno</label>
-                        <input type="text" class="form-control" id="inputApellidoMaterno" placeholder="Ingresa tu apellido materno">
+                        <input type="text" class="form-control" id="inputApellidoMaterno" placeholder="Ingresa tu apellido materno" th:field="*{ApellidoMaterno}" onkeydown="SoloLetras(event, this)">
+                        <span class="error-msg"></span>
+                        <span class="correct-msg"></span>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="form-group">
+                        <label for="inputUsername">Username</label>
+                        <input type="text" class="form-control" id="inputUsername" placeholder="alguien@example.com" th:field="*{username}" onkeyup="validarUserName(event, this)">
+                        <span class="error-msg"></span>
+                        <span class="correct-msg"></span>
+                    </div>
+                    <div class="form-group">
                         <label for="inputEmail">Correo electrónico</label>
-                        <input type="email" class="form-control" id="inputEmail" placeholder="alguien@example.com">
+                        <input type="email" class="form-control" id="inputEmail" placeholder="alguien@example.com" th:field="*{Email}" onkeyup="ValidarEmail(event, this)">
+                        <span class="error-msg"></span>
+                        <span class="correct-msg"></span>
                     </div>
                     <div class="form-group col-md-6">
                         <label for="inputPassword">Contraseña</label>
-                        <input type="password" class="form-control" id="inputPassword" placeholder="********">
+                        <input type="password" class="form-control" id="inputPassword" placeholder="********" th:field="*{Password}">
                     </div>
                     <div class="form-group col-md-6">
                         <label for="inputConfirmPassword">Confirma tu contraseña</label>
@@ -101,7 +141,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             </form>
         </div>
 
-<!--        <script>
+        <script>
             function SoloLetras(event, input) {
                 let key = event.key;
                 let ascii = event.keyCode;
@@ -109,12 +149,50 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 let regex = new RegExp(/^[a-zA-ZáéíóúüñÁÉÍÓÚÜÑ\s]*$/);
 
                 if (regex.test(key)) {
-                    
+                    if (ascii >= 65 && ascii <= 90) { //Solo letras
+                        $(input).removeClass("error").addClass("correct");
+                        $(input).siblings(".error-msg").text("");
+                    }
+                } else {
+                    $(input).removeClass("correct").addClass("error");
+                    $(input).siblings(".error-msg").text("Solo se permiten letras");
+                    event.preventDefault(); //No permitir numeros
+                }
+            }
 
+            function validarUserName(event, input) {
+                let key = event.key;
+                let regex = new RegExp(/^[^_|0-9|\s]+[a-zA-Z0-9]+$/);
+
+                if (regex.test($("#inputUsername").val())) {
+                    $(input).removeClass("error").addClass("correct");
+                    $(input).siblings(".error-msg").text("");
+                    return true;
+                } else {
+                    $(input).removeClass("correct").addClass("error");
+                    $(input).siblings(".error-msg").text("No puedes empezar por un numero, ni por un guion bajo");
+                    return false
+                    event.preventDefault();
+
+
+                }
+            }
+
+            function ValidarEmail(event, input) {
+                let key = event.key;
+                let regex = new RegExp(/^[a-zA-Z-0-9]+[^-|\s]+@[a-zA-Z]+\.[a-z]+/);
+
+                if (regex.test($("#inputEmail").val())) {
+                    $(input).removeClass("error").addClass("correct");
+                    $(input).siblings(".error-msg").text("");
+                } else {
+                    $(input).removeClass("correct").addClass("error");
+                    $(input).siblings(".error-msg").text("Ingresa un correo valido");
+                    event.preventDefault();
                 }
 
             }
-        </script>-->
+        </script>
 
 
     </body>

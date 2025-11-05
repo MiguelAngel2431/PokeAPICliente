@@ -31,7 +31,7 @@ public class Usuario {
     private String username;
     
     @Column(name = "email")
-    private String Email;
+    private String email;
     
     @Column(name = "password")
     private String Password;
@@ -49,7 +49,7 @@ public class Usuario {
         this.ApellidoPaterno = usuarioML.getApellidoPaterno();
         this.ApellidoMaterno = usuarioML.getApellidoMaterno();
         this.username = usuarioML.getUsername();
-        this.Email = usuarioML.getEmail();
+        this.email = usuarioML.getEmail();
         this.Password = usuarioML.getPassword();
         
         this.Rol = new Rol();
@@ -97,11 +97,11 @@ public class Usuario {
     }
 
     public String getEmail() {
-        return Email;
+        return email;
     }
 
     public void setEmail(String Email) {
-        this.Email = Email;
+        this.email = Email;
     }
 
     public String getPassword() {
