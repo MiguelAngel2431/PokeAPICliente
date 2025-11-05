@@ -5,51 +5,93 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Cargando Pokédex…</title>
   <style>
-    :root{ --red:#ef4444; --ink:#0f172a; --muted:#64748b; }
-    *{box-sizing:border-box} html,body{margin:0}
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink);display:grid;min-height:100vh;place-items:center;background:#fff}
-    .card{width:min(640px,92vw);border:1px solid #f1f5f9;border-radius:16px;padding:22px;box-shadow:0 12px 28px rgba(15,23,42,.08)}
-    h1{margin:0 0 10px;font-weight:800}
+    :root{ --ink:#0f172a; --muted:#64748b; --red:#ef4444; --bg:#fff; --chip:#fee2e2; }
+    *{box-sizing:border-box} html,body{margin:0;background:var(--bg); color:var(--ink); font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;}
+    .wrap{max-width:760px;margin:60px auto;padding:0 16px;text-align:center}
+    .ball{width:80px;height:80px;border-radius:50%;margin:0 auto 16px;position:relative;overflow:hidden;border:6px solid #000}
+    .ball::before{content:"";position:absolute;inset:0;background:
+      radial-gradient(circle at 50% 48%, #fff 0 28px, transparent 29px),
+      linear-gradient(#fff 50%, #000 0 52%, #ef4444 0);}
+    .title{font-weight:800;font-size:28px;margin:10px 0 8px}
     .muted{color:var(--muted)}
-    .bar{height:12px;border-radius:999px;background:#fee2e2;overflow:hidden;margin-top:8px}
-    .bar>i{display:block;height:100%;background:var(--red);width:0%}
-    .row{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
-    .btn{margin-top:16px;display:inline-block;padding:10px 12px;border-radius:12px;border:1px solid #fecaca;background:#fff;color:var(--red);font-weight:800;text-decoration:none}
+    .bar{height:14px;border-radius:999px;background:#fde2e2; overflow:hidden; border:1px solid #fecaca; margin:18px 0}
+    .bar i{display:block;height:100%;width:0%;background:var(--red);transition:width .35s ease}
+    .chips{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+    .chip{background:#fff;border:1px solid #fecaca;color:#b91c1c;border-radius:999px;padding:6px 10px;font-weight:800}
+    .hint{font-size:12px;color:var(--muted);margin-top:8px}
   </style>
 </head>
 <body>
-  <section class="card">
-    <h1>Cargando recursos de Pokédex…</h1>
-    <p class="muted">Estamos precargando datos para que tus consultas sean instantáneas.</p>
-    <div class="bar"><i id="pbar"></i></div>
-    <div class="row">
-      <div class="muted">Progreso</div>
-      <strong id="pct">0%</strong>
+  <main class="wrap">
+    <div class="ball" aria-hidden="true"></div>
+    <h1 class="title">Preparando la Pokédex…</h1>
+    <p class="muted">Estamos descargando y cacheando todos los Pokémon para que la búsqueda y filtros sean instantáneos.</p>
+
+    <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-live="polite">
+      <i id="pb" style="width:0%"></i>
     </div>
-    <a class="btn" th:href="${redirectTo}">Ir ahora (puede tardar)</a>
-  </section>
 
-  <script>
-    const pct = document.getElementById('pct');
-    const pbar = document.getElementById('pbar');
-    const redirectTo = /*[[${redirectTo}]]*/ '/pokemon';
+    <div class="chips">
+      <span class="chip"><strong>Progreso:</strong> <span id="progress" th:text="${progress}">0</span>%</span>
+      <span class="chip"><strong>En caché:</strong> <span id="count" th:text="${count}">0</span></span>
+    </div>
+    <p class="hint" id="last"></p>
 
-    async function tick(){
-      try{
-        const r = await fetch('/pokemon/status', {cache:'no-store'});
-        const s = await r.json();
-        const p = Math.max(0, Math.min(100, +s.progress || 0));
-        pct.textContent = p + '%';
-        pbar.style.width = p + '%';
-        if(!s.warming || p >= 100){
-          // ya calentado: nos vamos a la vista solicitada
-          window.location.replace(redirectTo);
-          return;
-        }
-      }catch(_){}
-      setTimeout(tick, 1200);
-    }
-    tick();
-  </script>
+    <!-- La ruta a la que redirigir cuando termine -->
+    <input type="hidden" id="redirectTo" th:value="${redirectTo} ?: '/pokemon'"/>
+
+    <script>
+      const pb  = document.getElementById('pb');
+      const pEl = document.getElementById('progress');
+      const cEl = document.getElementById('count');
+      const last= document.getElementById('last');
+      const to  = document.getElementById('redirectTo').value || '/pokemon';
+
+      function tick(){
+        fetch('/pokemon/status',{cache:'no-store'})
+          .then(r => r.json())
+          .then(st => {
+            const prog = Number(st.progress||0);
+            const cnt  = Number(st.count||0);
+            const warm = !!st.warming;
+
+            pEl.textContent = prog;
+            cEl.textContent = cnt;
+            pb.style.width = Math.max(2, Math.min(100, prog)) + '%';
+            last.textContent = st.lastUpdated ? ('Última actualización: ' + st.lastUpdated) : '';
+
+            if(!warm){
+              // pequeño delay visual y redirige
+              setTimeout(()=>{ window.location.href = to; }, 500);
+            }else{
+              setTimeout(tick, 1200);
+            }
+          })
+          .catch(() => setTimeout(tick, 1500));
+      }
+      // arranca con los valores del modelo y sigue en polling
+      setTimeout(tick, 800);
+      
+      
+       const REDIRECT = /*[[${redirectTo}]]*/ '/pokemon'; // thymeleaf o usa un data-attr
+  async function poll(){
+    try{
+      const r = await fetch('/pokemon/status');
+      const st = await r.json();
+      document.getElementById('progress').textContent = (st.progress ?? 0) + '%';
+      if (!st.warming) {
+        window.location.href = REDIRECT;
+        return;
+      }
+    }catch(_){}
+    setTimeout(poll, 1200);
+  }
+  poll();
+    </script>
+    <div class="loading">
+  <h2>Cargando catálogo…</h2>
+  <p>Progreso: <span id="progress">0%</span></p>
+</div>
+  </main>
 </body>
 </html>

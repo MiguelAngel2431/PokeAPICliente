@@ -23,4 +23,19 @@ public class PokemonFullDTO {
     public String genus;
     public String flavor;
     public String cry;
+    
+    public boolean isDefault;
+    public Integer order;
+    public String locationAreaEncounters;
+    public NamedAPIResource species;           
+    public List<NamedAPIResource> forms;       
+    public List<GameIndexDTO> gameIndices;     
+    public List<HeldItemDTO> heldItems;        
+    public List<MoveDTO> moves;                
+    public List<StatEntryDTO> rawStats;       
+    public List<TypeSlotDTO> rawTypes;         
+    public String cryLatest;                   
+    public String cryLegacy; 
+    
+  
 }
