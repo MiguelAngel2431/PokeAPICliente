@@ -80,6 +80,11 @@
                     <h3>Accede al mundo pokemóm</h3>    
                 </div>
                 <div class="col-md-6 banner-white d-flex flex-column align-items-center justify-content-center animate__animated animate__fadeInRight animate__delay-1s">
+                    
+                    <div th:if="${param.error}" class="alert alert-danger">
+                        <strong>Error:</strong> Nombre de usuario o contraseña inválidos. 
+                    </div>
+                    
                     <h1 class="title-iniciarsesion">Iniciar Sesión</h1>
                     <b class="text">Ingresa tus credenciales para acceder a la PokeAPI</b>
                     <br>

@@ -33,12 +33,14 @@ public class SecurityConfig {
                     .loginPage("/login")
                     .loginProcessingUrl("/login")
                     .defaultSuccessUrl("/pokemon", true)
-                    .failureForwardUrl("/login?error=true")
+                    .failureUrl("/login?error=true")
                     .permitAll()
                 )
                 .logout(logout -> logout
                     .logoutUrl("/logout")
-                    .logoutSuccessUrl("/login?logout=true")
+                    .logoutSuccessUrl("/pokemon?logout=true")
+                    .invalidateHttpSession(true)
+                    .clearAuthentication(true)
                 );
         
         return http.build();

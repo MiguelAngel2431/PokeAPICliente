@@ -157,7 +157,14 @@
       <div class="brand"><div class="ball" aria-hidden="true"></div><span>PokéAPI Cliente</span></div>
       
       <div th:if="${username != null}">
-          <a class="login">Bienvenido, <span th:text="${username}"></span>!</a>
+<!--          <a class="login">Bienvenido, <span th:text="${username}"></span>!</a><br>
+          <a class="login">Cerrar sesión</a>-->
+            <select id="opciones" name="opciones" class="login" onchange="handleSelectChange(this)">
+                 <option value="" disabled selected><span th:text="${username}"></span></option> <!-- Título no seleccionable -->
+                <option value="opcion1">Mi cuenta</option>
+                <option value="logout">Cerrar sesión</option>
+                
+            </select>
       </div>
       <div th:if="${username == null}">
       <a class="login" th:href="@{/login}">Login</a>
@@ -442,6 +449,16 @@
 
     // Init
     window.addEventListener('load', ()=>{ sortGrid(); });
+  </script>
+  
+  <script>
+      function handleSelectChange(selectElement) {
+          var selectedValue = selectElement.value;
+          
+          if(selectedValue == "logout") {
+              window.location.href = "/logout";
+          }
+      }
   </script>
 </body>
 </html>
