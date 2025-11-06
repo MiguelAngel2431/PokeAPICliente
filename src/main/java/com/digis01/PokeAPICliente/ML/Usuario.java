@@ -1,6 +1,9 @@
 
 package com.digis01.PokeAPICliente.ML;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Usuario {
     
     private int IdUsuario;
@@ -13,7 +16,36 @@ public class Usuario {
     
     public Rol Rol;
     
+    public List<Favoritos> Favoritos;
+    
     public Usuario() {}
+    
+    public Usuario (com.digis01.PokeAPICliente.JPA.Usuario usuarioJPA) {
+        this.IdUsuario = usuarioJPA.getIdUsuario();
+        this.Nombre = usuarioJPA.getNombre();
+        this.ApellidoPaterno = usuarioJPA.getApellidoPaterno();
+        this.ApellidoMaterno = usuarioJPA.getApellidoMaterno();
+        this.Username = usuarioJPA.getUsername();
+        this.Email = usuarioJPA.getEmail();
+        this.Password = usuarioJPA.getPassword();
+        
+        this.Rol = new Rol();
+        this.Rol.setIdRol(usuarioJPA.Rol.getIdRol());
+        this.Rol.setNombre(usuarioJPA.Rol.getNombre());
+        
+        if (usuarioJPA.Favoritos != null || usuarioJPA.Favoritos.size() > 0)  {
+            this.Favoritos = new ArrayList<>();
+            
+            for (com.digis01.PokeAPICliente.JPA.Favoritos Favorito : usuarioJPA.Favoritos) {
+                Favoritos favorito = new Favoritos();
+                favorito.setIdFavorito(Favorito.getIdFavorito());
+                favorito.setIdPokemon(Favorito.getIdPokemon());
+                
+                this.Favoritos.add(favorito);
+            }
+        }
+        
+    }
     
     public Usuario(int idUsuario, String nombre, String apellidoPaterno, String apellidoMaterno, String username, String email, String password) {
         this.IdUsuario = idUsuario;

@@ -2,6 +2,7 @@
 package com.digis01.PokeAPICliente.JPA;
 
 import io.micrometer.common.lang.Nullable;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,6 +10,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Usuario {
@@ -41,6 +45,9 @@ public class Usuario {
     @Nullable
     public Rol Rol;
     
+    @OneToMany(mappedBy = "Usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    public List<Favoritos> Favoritos = new ArrayList<>();
+    
     public Usuario () {}
     
     public Usuario (com.digis01.PokeAPICliente.ML.Usuario usuarioML) {
@@ -54,6 +61,16 @@ public class Usuario {
         
         this.Rol = new Rol();
         this.Rol.setIdRol(usuarioML.Rol.getIdRol());
+        
+        for(com.digis01.PokeAPICliente.ML.Favoritos Favorito : usuarioML.Favoritos) {
+            Favoritos favorito = new Favoritos();
+            favorito.setIdFavorito(Favorito.getIdFavorito());
+            favorito.setIdPokemon(Favorito.getIdPokemon());
+            
+            favorito.Usuario = this;
+            
+            Favoritos.add(favorito);
+        }
     }
 
     public int getIdUsuario() {
