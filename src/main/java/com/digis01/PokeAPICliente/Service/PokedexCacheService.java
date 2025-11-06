@@ -48,6 +48,7 @@ public class PokedexCacheService {
 
     /* ========================= ESTADO ========================= */
     private final AtomicBoolean warming = new AtomicBoolean(false);
+    private final AtomicBoolean ready   = new AtomicBoolean(false); // <-- NUEVO
     private final AtomicInteger progress = new AtomicInteger(0);
     private final AtomicInteger goal = new AtomicInteger(0);
     private final AtomicReference<String> lastError = new AtomicReference<>();
@@ -67,6 +68,7 @@ public class PokedexCacheService {
             Files.createDirectories(CACHE_FILE.getParent());
             Files.createDirectories(FULL_DIR);
             loadDiskCacheIfExists();
+                        ready.set(!cards.isEmpty()); 
             if (cards.isEmpty()) warmupAsync(false);
         } catch (Exception e) {
             lastError.set("Cache boot error: " + e.getMessage());
@@ -80,10 +82,10 @@ public class PokedexCacheService {
         if (warming.get() && !force) return Result.loading(currentProgress());
         if (!force && isCacheFresh()) return Result.ok(null);
         if (warming.compareAndSet(false, true)) {
-            lastError.set(null); progress.set(0); goal.set(1);
+            lastError.set(null); progress.set(0); goal.set(1); ready.set(false);
             pool.submit(() -> {
                 try {
-                    fullHarvest();                  // cache/full/*.ndjson
+                    fullHarvestTwoPhases();                  
                     rebuildLightPokedexFromFullDump(); // pokedex.json + memoria
                     lastUpdated = Instant.now();
                 } catch (Exception e) {
@@ -141,6 +143,7 @@ public class PokedexCacheService {
     public Map<String, Object> status() {
         Map<String,Object> m = new LinkedHashMap<>();
         m.put("warming", warming.get());
+        m.put("ready",   ready.get()); 
         m.put("progress", currentProgress());
         m.put("goal", goal.get());
         m.put("count", cards.size());
@@ -174,23 +177,28 @@ public class PokedexCacheService {
             "encounter-condition-value"
     );
 
-    /** Descarga todo el catálogo a NDJSON, con reintentos y segunda pasada. */
-    private void fullHarvest() {
-        resourcesStatus.clear();
-        FilesX.ensureDir(FULL_DIR);
-
-        // 1) Recolecta detail-urls para /pokemon (union /pokemon + /pokemon-form→pokemon.url)
+    
+        private void fullHarvestTwoPhases(){
+            resourcesStatus.clear();
+            FilesX.ensureDir(FULL_DIR);
+            
+            // ====== FASE 1: /pokemon ======
         List<String> pokemonDetailUrls = collectAllPokemonDetailUrls();
         updateResourceGoal("pokemon", pokemonDetailUrls.size());
-        goal.set(Math.max(pokemonDetailUrls.size(), 1));
+        goal.set(Math.max(pokemonDetailUrls.size(), 1));  // el % refleja la fase 1
 
-        // 2) Descarga detalle de POKEMON (debe llegar a ~1328)
         Path pokemonOut = FULL_DIR.resolve("pokemon.ndjson");
         writeNdjson(pokemonOut, pokemonDetailUrls, url -> getJsonWithRetry(url, MAX_RETRIES), "pokemon");
 
-        // 3) Resto de recursos: pagina listado y baja cada detalle
-        for (String resource : RESOURCE_ORDER) {
-            if (resource.equals("pokemon") || resource.equals("pokemon-form")) continue; // pokemon ya hecho; forms solo se usan para deducir urls
+        // reconstruye snapshot ligero y marca listo
+        rebuildLightPokedexFromFullDump();
+        lastUpdated = Instant.now();
+        ready.set(true);   
+            
+          // ====== FASE 2: resto de recursos (no afectan el acceso al index) ======      
+        
+             for (String resource : RESOURCE_ORDER) {
+            if (resource.equals("pokemon") || resource.equals("pokemon-form")) continue;
             String base = "https://pokeapi.co/api/v2/" + resource;
             List<Map<String,Object>> results = fetchAllPaged(base, 500, MAX_RETRIES);
             List<String> detailUrls = results.stream()
@@ -198,15 +206,49 @@ public class PokedexCacheService {
                     .filter(u -> u != null && !u.isBlank())
                     .toList();
 
+            // IMPORTANTE: no alteramos 'goal' para no “reiniciar” el porcentaje.
             updateResourceGoal(resource, detailUrls.size());
-            goal.addAndGet(detailUrls.size());
             Path out = FULL_DIR.resolve(resource.replace('-', '_') + ".ndjson");
             writeNdjson(out, detailUrls, url -> getJsonWithRetry(url, MAX_RETRIES), resource);
         }
 
-        // 4) Índice de conteos por archivo
         writeCatalogIndex();
-    }
+        
+        }
+    
+    /** Descarga todo el catálogo a NDJSON, con reintentos y segunda pasada. */
+//    private void fullHarvest() {
+//        resourcesStatus.clear();
+//        FilesX.ensureDir(FULL_DIR);
+//
+//        // 1) Recolecta detail-urls para /pokemon (union /pokemon + /pokemon-form→pokemon.url)
+//        List<String> pokemonDetailUrls = collectAllPokemonDetailUrls();
+//        updateResourceGoal("pokemon", pokemonDetailUrls.size());
+//        goal.set(Math.max(pokemonDetailUrls.size(), 1));
+//
+//        // 2) Descarga detalle de POKEMON (debe llegar a ~1328)
+//        Path pokemonOut = FULL_DIR.resolve("pokemon.ndjson");
+//        writeNdjson(pokemonOut, pokemonDetailUrls, url -> getJsonWithRetry(url, MAX_RETRIES), "pokemon");
+//
+//        // 3) Resto de recursos: pagina listado y baja cada detalle
+//        for (String resource : RESOURCE_ORDER) {
+//            if (resource.equals("pokemon") || resource.equals("pokemon-form")) continue; // pokemon ya hecho; forms solo se usan para deducir urls
+//            String base = "https://pokeapi.co/api/v2/" + resource;
+//            List<Map<String,Object>> results = fetchAllPaged(base, 500, MAX_RETRIES);
+//            List<String> detailUrls = results.stream()
+//                    .map(m -> String.valueOf(m.get("url")))
+//                    .filter(u -> u != null && !u.isBlank())
+//                    .toList();
+//
+//            updateResourceGoal(resource, detailUrls.size());
+//            goal.addAndGet(detailUrls.size());
+//            Path out = FULL_DIR.resolve(resource.replace('-', '_') + ".ndjson");
+//            writeNdjson(out, detailUrls, url -> getJsonWithRetry(url, MAX_RETRIES), resource);
+//        }
+//
+//        // 4) Índice de conteos por archivo
+//        writeCatalogIndex();
+//    }
 
     /** Escribe NDJSON con concurrencia; hace segunda pasada a fallidas. */
     private void writeNdjson(Path file, List<String> detailUrls,

@@ -31,7 +31,6 @@ public class PokemonController {
 
     /* ================== INDEX ================== */
     
-   // PokemonController.java  (solo reemplaza el método index y agrega el helper pushLoading si no lo tienes)
 
   @GetMapping
     public String index(
@@ -47,6 +46,7 @@ public class PokemonController {
         // Si está calentando y aún no hay nada en memoria -> mostrar Loading
         Map<String, Object> st = svc.status(); // { warming, progress, count, lastUpdated, error }
 boolean warming = Boolean.TRUE.equals(st.get("warming"));
+boolean ready = Boolean.TRUE.equals(st.get("ready"));
 int cached = ((Number) st.getOrDefault("count", 0)).intValue();
 boolean emptySnapshot = svc.allCards().isEmpty();
 
