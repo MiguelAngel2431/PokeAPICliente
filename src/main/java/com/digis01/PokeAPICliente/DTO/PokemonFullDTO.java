@@ -36,6 +36,10 @@ public class PokemonFullDTO {
     public List<TypeSlotDTO> rawTypes;         
     public String cryLatest;                   
     public String cryLegacy; 
+    public String habitat;    
+    public String generation;
+    
+    
     
   
 }

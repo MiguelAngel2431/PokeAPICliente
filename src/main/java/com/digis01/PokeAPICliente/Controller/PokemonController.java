@@ -33,112 +33,130 @@ public class PokemonController {
     
 
   @GetMapping
-    public String index(
-            Model model,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "12") int size,
-            @RequestParam(value = "q", required = false) String q,
-            @RequestParam(value = "types", required = false) String typesCsv
-    ) {
-        // Dispara el warmup si hace falta
-        svc.warmupAsync(false);
+public String index(
+        Model model,
+        @RequestParam(defaultValue = "1") int page,
+        @RequestParam(defaultValue = "12") int size,
+        @RequestParam(value = "q", required = false) String q,
+        @RequestParam(value = "types", required = false) String typesCsv,
+        @RequestParam(value = "loc", required = false) String loc,     // <— NUEVO
+        @RequestParam(value = "hab", required = false) String hab      // <— NUEVO
+) {
+    // Dispara el warmup si hace falta
+    svc.warmupAsync(false);
 
-        // Si está calentando y aún no hay nada en memoria -> mostrar Loading
-        Map<String, Object> st = svc.status(); // { warming, progress, count, lastUpdated, error }
-boolean warming = Boolean.TRUE.equals(st.get("warming"));
-boolean ready = Boolean.TRUE.equals(st.get("ready"));
-int cached = ((Number) st.getOrDefault("count", 0)).intValue();
-boolean emptySnapshot = svc.allCards().isEmpty();
+    Map<String, Object> st = svc.status();
+    boolean warming = Boolean.TRUE.equals(st.get("warming"));
+    int cached = ((Number) st.getOrDefault("count", 0)).intValue();
+    boolean emptySnapshot = svc.allCards().isEmpty();
 
-if (warming || cached == 0 || emptySnapshot) {
-    pushLoading(model);
-    model.addAttribute("redirectTo", "/pokemon"); // volver al index cuando termine
-    return "PokemonLoading";
+    if (warming || cached == 0 || emptySnapshot) {
+        pushLoading(model);
+        model.addAttribute("redirectTo", "/pokemon");
+        return "PokemonLoading";
+    }
+
+    // Trae todo de memoria
+    List<PokemonCardDTO> all = svc.allCards();
+
+    // --- BÚSQUEDA GLOBAL ---
+    String term = (q == null) ? "" : q.trim().toLowerCase();
+    if (!term.isEmpty()) {
+        all = all.stream()
+                .filter(p -> p.name != null && p.name.toLowerCase().contains(term))
+                .toList();
+    }
+
+    // --- FILTRO POR TIPOS (multi) ---
+    List<String> selectedTypes = new ArrayList<>();
+    if (typesCsv != null && !typesCsv.isBlank()) {
+        for (String t : typesCsv.split(",")) {
+            String v = t.trim().toLowerCase();
+            if (!v.isBlank()) selectedTypes.add(v);
+        }
+    }
+    if (!selectedTypes.isEmpty()) {
+        Set<String> wanted = new HashSet<>(selectedTypes);
+        all = all.stream()
+                .filter(p -> p.types != null && p.types.stream().anyMatch(t -> wanted.contains(t.toLowerCase())))
+                .toList();
+    }
+
+    // --- NUEVO: FILTRO POR LOC (región derivada de generation) ---
+    if (loc != null && !loc.isBlank()) {
+        String wantedLoc = loc.trim().toLowerCase();
+        all = all.stream()
+                .filter(p -> p.generation != null && p.generation.equalsIgnoreCase(wantedLoc))
+                .toList();
+    }
+
+    // --- NUEVO: FILTRO POR HABITAT ---
+    if (hab != null && !hab.isBlank()) {
+        String wantedHab = hab.trim().toLowerCase();
+        all = all.stream()
+                .filter(p -> p.habitat != null && p.habitat.equalsIgnoreCase(wantedHab))
+                .toList();
+    }
+
+    // --- PAGINACIÓN ---
+    int currentPage = Math.max(1, page);
+    int pageSize = Math.max(1, size);
+    int total = all.size();
+    int totalPages = Math.max(1, (int)Math.ceil(total / (double) pageSize));
+    int from = Math.min((currentPage - 1) * pageSize, total);
+    int to = Math.min(from + pageSize, total);
+    List<PokemonCardDTO> pageItems = (from < to) ? all.subList(from, to) : List.of();
+
+    // Adaptación a tu plantilla (Map)
+    List<Map<String, Object>> cards = pageItems.stream().map(c -> {
+        Map<String, Object> m = new LinkedHashMap<>();
+        m.put("id", c.id);
+        m.put("name", c.name);
+        m.put("image", c.image);
+        m.put("types", c.types != null ? c.types : List.of());
+        Map<String, Integer> stats = new LinkedHashMap<>();
+        if (c.stats != null) {
+            stats.put("hp", c.stats.getOrDefault("hp", 0));
+            stats.put("attack", c.stats.getOrDefault("attack", 0));
+            stats.put("defense", c.stats.getOrDefault("defense", 0));
+            stats.put("speed", c.stats.getOrDefault("speed", 0));
+        } else {
+            stats.put("hp",0); stats.put("attack",0); stats.put("defense",0); stats.put("speed",0);
+        }
+        m.put("stats", stats);
+        m.put("heightM", c.heightM);
+        m.put("weightKg", c.weightKg);
+        m.put("baseExp", c.baseExp);
+        m.put("habitat", c.habitat);         // <— para data-attrs o UI
+        m.put("generation", c.generation);   // <— para data-attrs o UI
+        return m;
+    }).toList();
+
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String username = (authentication != null && !(authentication instanceof AnonymousAuthenticationToken))
+            ? authentication.getName() : null;
+
+    List<String> typesAll = svc.allTypes().stream().sorted().toList();
+
+    // Modelo
+    model.addAttribute("username", username);
+    model.addAttribute("pokemones", cards);
+    model.addAttribute("page", currentPage);
+    model.addAttribute("size", pageSize);
+    model.addAttribute("totalPages", totalPages);
+    model.addAttribute("count", total);
+    model.addAttribute("typesAll", typesAll);
+
+    // estado de filtros para la UI
+    model.addAttribute("q", term);
+    model.addAttribute("selectedTypes", selectedTypes);
+    model.addAttribute("typesQuery", String.join(",", selectedTypes));
+    model.addAttribute("loc", (loc==null? "":loc));
+    model.addAttribute("hab", (hab==null? "":hab));
+
+    return "PokemonIndex";
 }
 
-        // Traer TODO para filtrar globalmente (memoria)
-        List<PokemonCardDTO> all = svc.allCards();
-
-        // --- BÚSQUEDA GLOBAL ---
-        String term = (q == null) ? "" : q.trim().toLowerCase();
-        if (!term.isEmpty()) {
-            all = all.stream()
-                    .filter(p -> p.name != null && p.name.toLowerCase().contains(term))
-                    .toList();
-        }
-
-        // --- FILTRO POR TIPOS (multi) ---
-        List<String> selectedTypes = new ArrayList<>();
-        if (typesCsv != null && !typesCsv.isBlank()) {
-            for (String t : typesCsv.split(",")) {
-                String v = t.trim().toLowerCase();
-                if (!v.isBlank()) selectedTypes.add(v);
-            }
-        }
-        if (!selectedTypes.isEmpty()) {
-            Set<String> wanted = new HashSet<>(selectedTypes);
-            all = all.stream()
-                    .filter(p -> p.types != null && p.types.stream().anyMatch(t -> wanted.contains(t.toLowerCase())))
-                    .toList();
-        }
-
-        // --- PAGINACIÓN ---
-        int currentPage = Math.max(1, page);
-        int pageSize = Math.max(1, size);
-        int total = all.size();
-        int totalPages = Math.max(1, (int)Math.ceil(total / (double) pageSize));
-        int from = Math.min((currentPage - 1) * pageSize, total);
-        int to = Math.min(from + pageSize, total);
-        List<PokemonCardDTO> pageItems = (from < to) ? all.subList(from, to) : List.of();
-
-        // Adaptación a tu plantilla (Map)
-        List<Map<String, Object>> cards = pageItems.stream().map(c -> {
-            Map<String, Object> m = new LinkedHashMap<>();
-            m.put("id", c.id);
-            m.put("name", c.name);
-            m.put("image", c.image);
-            m.put("types", c.types != null ? c.types : List.of());
-            Map<String, Integer> stats = new LinkedHashMap<>();
-            if (c.stats != null) {
-                stats.put("hp", c.stats.getOrDefault("hp", 0));
-                stats.put("attack", c.stats.getOrDefault("attack", 0));
-                stats.put("defense", c.stats.getOrDefault("defense", 0));
-                stats.put("speed", c.stats.getOrDefault("speed", 0));
-            } else {
-                stats.put("hp",0); stats.put("attack",0); stats.put("defense",0); stats.put("speed",0);
-            }
-            m.put("stats", stats);
-            m.put("heightM", c.heightM);
-            m.put("weightKg", c.weightKg);
-            m.put("baseExp", c.baseExp);
-            return m;
-        }).toList();
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = (authentication != null && !(authentication instanceof AnonymousAuthenticationToken))
-                ? authentication.getName() : null;
-
-        // Tipos del catálogo completo (no solo de la página)
-        List<String> typesAll = svc.allTypes().stream().sorted().toList();
-
-        // Username
-        model.addAttribute("username", username);
-
-        // Modelo
-        model.addAttribute("pokemones", cards);
-        model.addAttribute("page", currentPage);
-        model.addAttribute("size", pageSize);
-        model.addAttribute("totalPages", totalPages);
-        model.addAttribute("count", total);
-        model.addAttribute("typesAll", typesAll);
-
-        // estado de filtros para la UI
-        model.addAttribute("q", term);
-        model.addAttribute("selectedTypes", selectedTypes);
-        model.addAttribute("typesQuery", String.join(",", selectedTypes));
-
-        return "PokemonIndex";
-    }
 
 
     

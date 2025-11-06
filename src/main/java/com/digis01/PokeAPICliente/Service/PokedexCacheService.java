@@ -648,7 +648,33 @@ public class PokedexCacheService {
                     p.genus  = pickLocalized(sp, "genera", "genus");
                     p.flavor = pickLocalized(sp, "flavor_text_entries", "flavor_text");
                 }
+                
+                        // --- Habitat (species.habitat.name) ---
+        Map<String,Object> habitat = castMap(sp.get("habitat"));
+        if (habitat != null && habitat.get("name") != null) {
+            p.habitat = String.valueOf(habitat.get("name")); // ej "forest", "cave"
+        }
+
+        // --- Generation -> región amigable (species.generation.name) ---
+        Map<String,Object> gen = castMap(sp.get("generation")); // ej "generation-i"
+        if (gen != null && gen.get("name") != null) {
+            String g = String.valueOf(gen.get("name")); // generation-i … generation-ix
+            p.generation = switch (g) {
+                case "generation-i"   -> "kanto";
+                case "generation-ii"  -> "johto";
+                case "generation-iii" -> "hoenn";
+                case "generation-iv"  -> "sinnoh";
+                case "generation-v"   -> "unova";
+                case "generation-vi"  -> "kalos";
+                case "generation-vii" -> "alola";
+                case "generation-viii"-> "galar";
+                case "generation-ix"  -> "paldea";
+                default -> g; // fallback
+            };
+        }
+
             }
+                       
         } catch (Exception ignored) {}
 
         return p;

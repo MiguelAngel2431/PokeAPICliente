@@ -35,18 +35,57 @@
     .title{font-size:28px;font-weight:800;margin:0 0 12px}
 
     /* TOOLBAR */
-    .toolbar{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}
+    .toolbar{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:12px;
+      align-items:center;
+    }
     @media (max-width:780px){ .toolbar{grid-template-columns:1fr} }
-    .search{position:relative}
+
+    /* SEARCH como grid: input + botón alineados */
+    .search{
+      display:grid;
+      grid-template-columns: 1fr auto;
+      gap:10px;
+      align-items:center;
+    }
     .search input{
-      width:100%;padding:12px 96px 12px 14px;border-radius:999px;border:1px solid #e5e7eb;outline:0;
+      width:100%;
+      height:44px;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid #e5e7eb;
+      outline:0;
       box-shadow:var(--shadow);
+      font-size:14px;
+      line-height:22px;
     }
     .search .btn-find{
-      position:absolute;right:8px;top:50%;transform:translateY(-50%);
-      padding:8px 12px;border-radius:999px;border:1px solid #fecaca;background:#fff;color:var(--red);font-weight:800;cursor:pointer;
+      height:40px;
+      padding:0 16px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:999px;
+      border:1px solid #fecaca;
+      background:#fff;
+      color:var(--red-700);
+      font-weight:800;
+      cursor:pointer;
+      white-space:nowrap;
     }
-    .search .hint{font-size:12px;color:var(--muted);margin-top:6px}
+    .search .hint{
+      grid-column:1 / -1;
+      font-size:12px;
+      color:var(--muted);
+      margin-top:4px;
+    }
+    @media (max-width:480px){
+      .search{ grid-template-columns:1fr; }
+      .search .btn-find{ width:100%; }
+    }
+
     .meta-line{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
     .pill{background:var(--chip);color:var(--red-700);padding:8px 12px;border-radius:999px;font-weight:800;border:1px solid #fecaca}
 
@@ -60,12 +99,12 @@
       border:none;background:transparent;font-weight:900;cursor:pointer;color:var(--red-700)
     }
 
-    /* FILTROS container (crea stacking para z-index) */
+    /* FILTROS container (stacking) */
     .filters{
-      position:relative; z-index:100; /* asegura superponer grid */
+      position:relative; z-index:100;
       margin-top:12px; background:#fff; border:1px solid #f1f5f9; border-radius:16px; box-shadow:var(--shadow);
       padding:10px; display:grid; gap:8px; align-items:center;
-      grid-template-columns: auto 1fr auto;
+      grid-template-columns: auto 1fr auto auto;
     }
     @media (max-width:980px){ .filters{grid-template-columns:1fr 1fr} }
     @media (max-width:560px){ .filters{grid-template-columns:1fr} }
@@ -79,7 +118,7 @@
     .dd-panel{
       position:absolute;top:calc(100% + 8px);left:0;min-width:280px;max-width:min(92vw,360px);
       background:#fff;border:1px solid #f1f5f9;border-radius:14px;box-shadow:var(--shadow);padding:10px;display:none;
-      z-index:1100; /* sobre las cartas */
+      z-index:1100;
     }
     .dropdown.open .dd-panel{display:block}
     .dd-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
@@ -155,19 +194,15 @@
   <nav class="nav" aria-label="Principal">
     <div class="nav-in">
       <div class="brand"><div class="ball" aria-hidden="true"></div><span>PokéAPI Cliente</span></div>
-      
       <div th:if="${username != null}">
-<!--          <a class="login">Bienvenido, <span th:text="${username}"></span>!</a><br>
-          <a class="login">Cerrar sesión</a>-->
-            <select id="opciones" name="opciones" class="login" onchange="handleSelectChange(this)">
-                 <option value="" disabled selected><span th:text="${username}"></span></option> <!-- Título no seleccionable -->
-                <option value="opcion1">Mi cuenta</option>
-                <option value="logout">Cerrar sesión</option>
-                
-            </select>
+        <select id="opciones" name="opciones" class="login" onchange="handleSelectChange(this)">
+          <option value="" disabled selected><span th:text="${username}"></span></option>
+          <option value="opcion1">Mi cuenta</option>
+          <option value="logout">Cerrar sesión</option>
+        </select>
       </div>
       <div th:if="${username == null}">
-      <a class="login" th:href="@{/login}">Login</a>
+        <a class="login" th:href="@{/login}">Login</a>
       </div>
     </div>
   </nav>
@@ -175,24 +210,26 @@
   <main class="wrap">
     <h1 class="title">Pokemons</h1>
 
-    <!-- BÚSQUEDA (Enter o botón; no navega al tipear) + META -->
+    <!-- BÚSQUEDA alineada -->
     <div class="toolbar">
       <form class="search" role="search" method="get" th:action="@{/pokemon}">
         <input id="q" name="q" type="search" placeholder="Buscar por nombre… (ej. mewtwo, pikachu)"
                aria-label="Buscar pokémon" th:value="${q}"/>
-        <button class="btn btn-find" type="submit">Buscar</button>
+        <button class="btn-find" type="submit">Buscar</button>
         <div class="hint">Presiona Enter o “Buscar” para consultar en todo el Pokédex</div>
 
         <!-- Preserva filtros actuales -->
         <input type="hidden" name="types" th:value="${typesQuery}"/>
         <input type="hidden" name="size" th:value="${size}"/>
+        <input type="hidden" name="loc"  th:value="${loc}"/>
+        <input type="hidden" name="hab"  th:value="${hab}"/>
         <input type="hidden" name="page" value="1"/>
       </form>
+    </div>
 
-      <div class="meta-line">
-        <span class="pill" th:text="'Total: ' + ${count}">Total: 0</span>
-        <span class="pill" th:text="'Página ' + ${page} + ' / ' + ${totalPages}">Página 1 / 1</span>
-      </div>
+    <div class="meta-line">
+      <span class="pill" th:text="'Total: ' + ${count}">Total: 0</span>
+      <span class="pill" th:text="'Página ' + ${page} + ' / ' + ${totalPages}">Página 1 / 1</span>
     </div>
 
     <!-- Chips de tipos seleccionados (removibles) -->
@@ -231,25 +268,46 @@
         </div>
       </div>
 
-      <!-- Stat (elige qué stat usar para ordenar) -->
+      <!-- Locations (región derivada de generation) -->
       <div class="ctrl">
-        <label for="statKey"><strong>Stat</strong></label>
-        <select id="statKey">
-          <option value="hp">HP</option>
-          <option value="attack">Attack</option>
-          <option value="defense">Defense</option>
-          <option value="speed">Speed</option>
+        <label for="location"><strong>Locations</strong></label>
+        <select id="location" th:value="${loc}">
+          <option value="">Todas</option>
+          <option value="kanto">Kanto</option>
+          <option value="johto">Johto</option>
+          <option value="hoenn">Hoenn</option>
+          <option value="sinnoh">Sinnoh</option>
+          <option value="unova">Unova</option>
+          <option value="kalos">Kalos</option>
+          <option value="alola">Alola</option>
+          <option value="galar">Galar</option>
+          <option value="paldea">Paldea</option>
         </select>
       </div>
 
-      <!-- Orden (Stat usa el elegido arriba) -->
+      <!-- Habitats -->
+      <div class="ctrl">
+        <label for="habitat"><strong>Habitats</strong></label>
+        <select id="habitat" th:value="${hab}">
+          <option value="">Todos</option>
+          <option value="forest">Forest</option>
+          <option value="grassland">Grassland</option>
+          <option value="cave">Cave</option>
+          <option value="mountain">Mountain</option>
+          <option value="sea">Sea</option>
+          <option value="rough-terrain">Rough-terrain</option>
+          <option value="rare">Rare</option>
+          <option value="urban">Urban</option>
+          <option value="waters-edge">Waters-edge</option>
+        </select>
+      </div>
+
+      <!-- Orden (por nombre) -->
       <div class="ctrl">
         <label for="sortBy"><strong>Ordenar</strong></label>
         <select id="sortBy">
           <option value="name-asc">Nombre A–Z</option>
           <option value="name-desc">Nombre Z–A</option>
-          <option value="stat-desc">Stat ↓</option>
-          <option value="stat-asc">Stat ↑</option>
         </select>
       </div>
     </section>
@@ -263,7 +321,9 @@
                     data-hp=${p.stats.hp},
                     data-attack=${p.stats.attack},
                     data-defense=${p.stats.defense},
-                    data-speed=${p.stats.speed}">
+                    data-speed=${p.stats.speed},
+                    data-generation=${p.generation},
+                    data-habitat=${p.habitat}">
         <div class="card-inner" onclick="flip(this.parentElement)" tabindex="0" onkeypress="if(event.key==='Enter'){flip(this.parentElement);}">
           <!-- FRONT -->
           <article class="face front" aria-label="Frente">
@@ -331,9 +391,9 @@
 
     <!-- PAGINACIÓN + tamaño de página -->
     <div class="pagi">
-      <a class="p-btn" th:href="@{'/pokemon'(page=${page-1}, size=${size}, q=${q}, types=${typesQuery})}" th:attr="disabled=${page<=1}? 'disabled' : null">← Anterior</a>
+      <a class="p-btn" th:href="@{'/pokemon'(page=${page-1}, size=${size}, q=${q}, types=${typesQuery}, loc=${loc}, hab=${hab})}" th:attr="disabled=${page<=1}? 'disabled' : null">← Anterior</a>
       <div class="pill" th:text="'Página ' + ${page} + ' de ' + ${totalPages}">Página 1 de 1</div>
-      <a class="p-btn" th:href="@{'/pokemon'(page=${page+1}, size=${size}, q=${q}, types=${typesQuery})}" th:attr="disabled=${page>=totalPages}? 'disabled' : null">Siguiente →</a>
+      <a class="p-btn" th:href="@{'/pokemon'(page=${page+1}, size=${size}, q=${q}, types=${typesQuery}, loc=${loc}, hab=${hab})}" th:attr="disabled=${page>=totalPages}? 'disabled' : null">Siguiente →</a>
 
       <div class="page-size">
         <label for="pageSize"><strong>Tamaño:</strong></label>
@@ -387,6 +447,12 @@
       if (selected.length>0) base.searchParams.set('types', selected.join(','));
       else base.searchParams.delete('types');
 
+      // preserva loc/hab si ya están
+      const loc = new URL(window.location.href).searchParams.get('loc');
+      if (loc) base.searchParams.set('loc', loc);
+      const hab = new URL(window.location.href).searchParams.get('hab');
+      if (hab) base.searchParams.set('hab', hab);
+
       window.location.href = base.toString();
     });
 
@@ -407,58 +473,88 @@
       });
     }
 
-    /* ---- Ordenamiento (usa stat elegido) ---- */
+    /* ---- Ordenamiento por nombre ---- */
     const grid = document.getElementById('grid');
     const sortSel = document.getElementById('sortBy');
-    const statKeySel = document.getElementById('statKey');
 
     function sortGrid(){
       const mode = sortSel.value;
-      const key  = statKeySel.value;
       const collator = new Intl.Collator('es',{sensitivity:'base'});
       const cards = Array.from(grid.children);
-      const getStat = c => +c.getAttribute('data-'+key)||0;
       cards.sort((a,b)=>{
         if(mode==='name-asc')  return collator.compare(a.dataset.name, b.dataset.name);
         if(mode==='name-desc') return collator.compare(b.dataset.name, a.dataset.name);
-        if(mode==='stat-asc')  return getStat(a) - getStat(b);
-        if(mode==='stat-desc') return getStat(b) - getStat(a);
         return 0;
       });
       for(const c of cards) grid.appendChild(c);
     }
-    sortSel.addEventListener('change', sortGrid);
-    statKeySel.addEventListener('change', ()=>{
-      if (sortSel.value.startsWith('stat')) sortGrid();
-    });
+    if (sortSel) sortSel.addEventListener('change', sortGrid);
 
-    // Page size → recarga preservando q & types
-    const pageSizeSel = document.getElementById('pageSize');
-    pageSizeSel.addEventListener('change', () => {
+    // Locations/Habitats → recarga con params y preserva los demás
+    const locationSel = document.getElementById('location');
+    const habitatSel  = document.getElementById('habitat');
+
+    function applySelectParam(selEl, param){
       const base = new URL(window.location.href);
-      base.searchParams.set('page', '1');
-      base.searchParams.set('size', pageSizeSel.value);
+      base.searchParams.set('page','1');
+
+      // preserva q
       const inputQ = document.getElementById('q');
       const term = (inputQ?.value || '').trim();
       if (term) base.searchParams.set('q', term); else base.searchParams.delete('q');
-      // mantener types si existen
-      const ddTypes = new URL(window.location.href).searchParams.get('types');
-      if (ddTypes) base.searchParams.set('types', ddTypes);
+
+      // preserva types
+      const types = new URL(window.location.href).searchParams.get('types');
+      if (types) base.searchParams.set('types', types); else base.searchParams.delete('types');
+
+      // agrega o elimina param actual
+      const v = selEl.value;
+      if (v) base.searchParams.set(param, v); else base.searchParams.delete(param);
+
+      // preserva el otro select si existe
+      if (param === 'loc' && habitatSel && habitatSel.value) base.searchParams.set('hab', habitatSel.value);
+      if (param === 'hab' && locationSel && locationSel.value) base.searchParams.set('loc', locationSel.value);
+
       window.location.href = base.toString();
-    });
+    }
+    if (locationSel) locationSel.addEventListener('change', ()=>applySelectParam(locationSel,'loc'));
+    if (habitatSel)  habitatSel.addEventListener('change', ()=>applySelectParam(habitatSel,'hab'));
+
+    // Page size → recarga preservando q/types/loc/hab
+    const pageSizeSel = document.getElementById('pageSize');
+    if (pageSizeSel){
+      pageSizeSel.addEventListener('change', () => {
+        const base = new URL(window.location.href);
+        base.searchParams.set('page', '1');
+        base.searchParams.set('size', pageSizeSel.value);
+
+        const inputQ = document.getElementById('q');
+        const term = (inputQ?.value || '').trim();
+        if (term) base.searchParams.set('q', term); else base.searchParams.delete('q');
+
+        const types = new URL(window.location.href).searchParams.get('types');
+        if (types) base.searchParams.set('types', types);
+
+        const loc = new URL(window.location.href).searchParams.get('loc');
+        if (loc) base.searchParams.set('loc', loc);
+
+        const hab = new URL(window.location.href).searchParams.get('hab');
+        if (hab) base.searchParams.set('hab', hab);
+
+        window.location.href = base.toString();
+      });
+    }
 
     // Init
-    window.addEventListener('load', ()=>{ sortGrid(); });
-  </script>
-  
-  <script>
-      function handleSelectChange(selectElement) {
-          var selectedValue = selectElement.value;
-          
-          if(selectedValue == "logout") {
-              window.location.href = "/logout";
-          }
+    window.addEventListener('load', ()=>{ if (sortSel) sortGrid(); });
+
+    // Select de usuario
+    function handleSelectChange(selectElement) {
+      var selectedValue = selectElement.value;
+      if(selectedValue == "logout") {
+        window.location.href = "/logout";
       }
+    }
   </script>
 </body>
 </html>
