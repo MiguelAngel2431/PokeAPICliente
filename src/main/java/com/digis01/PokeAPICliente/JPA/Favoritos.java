@@ -1,6 +1,7 @@
 
 package com.digis01.PokeAPICliente.JPA;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.micrometer.common.lang.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,9 +23,10 @@ public class Favoritos {
     @Column(name = "idpokemon")
     private int IdPokemon;
     
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "idusuario", nullable = false)
-    public Usuario Usuario;
+    @JsonProperty("usuario")
+    private Usuario Usuario;
     
     public Favoritos () {}
     

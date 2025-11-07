@@ -1,560 +1,1121 @@
 <!doctype html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PokéAPI · Pokemons</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --red:#ef4444; --red-700:#b91c1c; --ink:#0f172a; --muted:#64748b;
-      --chip:#fee2e2; --shadow:0 12px 28px rgba(15,23,42,.12);
-      --radius:18px; --bg:#ffffff; --ring:#ffd1d1; --soft:#fff7f7;
-    }
-    *{box-sizing:border-box}
-    html,body{margin:0;background:var(--bg)}
-    body{font-family:Poppins,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink)}
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>PokéAPI · Pokemons</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
 
-    /* NAV creativa */
-    .nav{position:sticky;top:0;z-index:2000;
-      background:linear-gradient(180deg,#fff 0,#fff 60%, #000 60%, #000 63%, #ef4444 63%, #ef4444 100%);
-      box-shadow:0 10px 20px rgba(239,68,68,.25);}
-    .nav-in{max-width:1160px;margin:0 auto;padding:18px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-    .brand{display:flex;gap:12px;align-items:center;font-weight:800;letter-spacing:.5px}
-    .ball{width:34px;height:34px;border-radius:50%;background:
-      radial-gradient(circle at 50% 48%, #fff 0 12px, transparent 13px),
-      linear-gradient(#fff 50%, #000 0 52%, #ef4444 0);
-      border:3px solid #000; box-shadow: inset 0 0 0 2px #fff;}
-    .brand span{font-size:18px}
-    .login{background:#fff;color:var(--red);font-weight:800;padding:10px 14px;border-radius:12px;border:1px solid #fecaca}
-    .login:hover{background:#ffe8e8}
+        <!-- JQuery -->
+        <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 
-    .wrap{max-width:1160px;margin:18px auto;padding:0 16px}
-    .title{font-size:28px;font-weight:800;margin:0 0 12px}
+        <style>
+            :root{
+                --red:#ef4444;
+                --red-700:#b91c1c;
+                --ink:#0f172a;
+                --muted:#64748b;
+                --chip:#fee2e2;
+                --shadow:0 12px 28px rgba(15,23,42,.12);
+                --radius:18px;
+                --bg:#ffffff;
+                --ring:#ffd1d1;
+                --soft:#fff7f7;
+            }
+            *{
+                box-sizing:border-box
+            }
+            html,body{
+                margin:0;
+                background:var(--bg)
+            }
+            body{
+                font-family:Poppins,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+                color:var(--ink)
+            }
 
-    /* TOOLBAR */
-    .toolbar{
-      display:grid;
-      grid-template-columns:1fr auto;
-      gap:12px;
-      align-items:center;
-    }
-    @media (max-width:780px){ .toolbar{grid-template-columns:1fr} }
+            /* NAV creativa */
+            .nav{
+                position:sticky;
+                top:0;
+                z-index:2000;
+                background:linear-gradient(180deg,#fff 0,#fff 60%, #000 60%, #000 63%, #ef4444 63%, #ef4444 100%);
+                box-shadow:0 10px 20px rgba(239,68,68,.25);
+            }
+            .nav-in{
+                max-width:1160px;
+                margin:0 auto;
+                padding:18px 16px;
+                display:flex;
+                align-items:center;
+                justify-content:space-between;
+                gap:12px
+            }
+            .brand{
+                display:flex;
+                gap:12px;
+                align-items:center;
+                font-weight:800;
+                letter-spacing:.5px
+            }
+            .ball{
+                width:34px;
+                height:34px;
+                border-radius:50%;
+                background:
+                    radial-gradient(circle at 50% 48%, #fff 0 12px, transparent 13px),
+                    linear-gradient(#fff 50%, #000 0 52%, #ef4444 0);
+                border:3px solid #000;
+                box-shadow: inset 0 0 0 2px #fff;
+            }
+            .brand span{
+                font-size:18px
+            }
+            .login{
+                background:#fff;
+                color:var(--red);
+                font-weight:800;
+                padding:10px 14px;
+                border-radius:12px;
+                border:1px solid #fecaca
+            }
+            .login:hover{
+                background:#ffe8e8
+            }
 
-    /* SEARCH como grid: input + botón alineados */
-    .search{
-      display:grid;
-      grid-template-columns: 1fr auto;
-      gap:10px;
-      align-items:center;
-    }
-    .search input{
-      width:100%;
-      height:44px;
-      padding:10px 14px;
-      border-radius:999px;
-      border:1px solid #e5e7eb;
-      outline:0;
-      box-shadow:var(--shadow);
-      font-size:14px;
-      line-height:22px;
-    }
-    .search .btn-find{
-      height:40px;
-      padding:0 16px;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      border-radius:999px;
-      border:1px solid #fecaca;
-      background:#fff;
-      color:var(--red-700);
-      font-weight:800;
-      cursor:pointer;
-      white-space:nowrap;
-    }
-    .search .hint{
-      grid-column:1 / -1;
-      font-size:12px;
-      color:var(--muted);
-      margin-top:4px;
-    }
-    @media (max-width:480px){
-      .search{ grid-template-columns:1fr; }
-      .search .btn-find{ width:100%; }
-    }
+            .wrap{
+                max-width:1160px;
+                margin:18px auto;
+                padding:0 16px
+            }
+            .title{
+                font-size:28px;
+                font-weight:800;
+                margin:0 0 12px
+            }
 
-    .meta-line{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
-    .pill{background:var(--chip);color:var(--red-700);padding:8px 12px;border-radius:999px;font-weight:800;border:1px solid #fecaca}
+            /* TOOLBAR */
+            .toolbar{
+                display:grid;
+                grid-template-columns:1fr auto;
+                gap:12px;
+                align-items:center;
+            }
+            @media (max-width:780px){
+                .toolbar{
+                    grid-template-columns:1fr
+                }
+            }
 
-    /* SELECTED TYPE CHIPS */
-    .sel-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-    .sel-chip{
-      display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;
-      background:#fff0f0;border:1px solid var(--ring);color:var(--red-700);font-weight:800;text-transform:capitalize
-    }
-    .sel-chip button{
-      border:none;background:transparent;font-weight:900;cursor:pointer;color:var(--red-700)
-    }
+            /* SEARCH como grid: input + botón alineados */
+            .search{
+                display:grid;
+                grid-template-columns: 1fr auto;
+                gap:10px;
+                align-items:center;
+            }
+            .search input{
+                width:100%;
+                height:44px;
+                padding:10px 14px;
+                border-radius:999px;
+                border:1px solid #e5e7eb;
+                outline:0;
+                box-shadow:var(--shadow);
+                font-size:14px;
+                line-height:22px;
+            }
+            .search .btn-find{
+                height:40px;
+                padding:0 16px;
+                display:inline-flex;
+                align-items:center;
+                justify-content:center;
+                border-radius:999px;
+                border:1px solid #fecaca;
+                background:#fff;
+                color:var(--red-700);
+                font-weight:800;
+                cursor:pointer;
+                white-space:nowrap;
+            }
+            .search .hint{
+                grid-column:1 / -1;
+                font-size:12px;
+                color:var(--muted);
+                margin-top:4px;
+            }
+            @media (max-width:480px){
+                .search{
+                    grid-template-columns:1fr;
+                }
+                .search .btn-find{
+                    width:100%;
+                }
+            }
 
-    /* FILTROS container (stacking) */
-    .filters{
-      position:relative; z-index:100;
-      margin-top:12px; background:#fff; border:1px solid #f1f5f9; border-radius:16px; box-shadow:var(--shadow);
-      padding:10px; display:grid; gap:8px; align-items:center;
-      grid-template-columns: auto 1fr auto auto;
-    }
-    @media (max-width:980px){ .filters{grid-template-columns:1fr 1fr} }
-    @media (max-width:560px){ .filters{grid-template-columns:1fr} }
+            .meta-line{
+                display:flex;
+                gap:10px;
+                align-items:center;
+                flex-wrap:wrap;
+                justify-content:flex-end
+            }
+            .pill{
+                background:var(--chip);
+                color:var(--red-700);
+                padding:8px 12px;
+                border-radius:999px;
+                font-weight:800;
+                border:1px solid #fecaca
+            }
 
-    .btn{padding:10px 12px;border-radius:12px;border:1px solid #fecaca;background:#fff;color:var(--red);font-weight:800;cursor:pointer}
-    .btn:hover{background:#ffe8e8}
+            /* SELECTED TYPE CHIPS */
+            .sel-chips{
+                display:flex;
+                gap:8px;
+                flex-wrap:wrap;
+                margin-top:10px
+            }
+            .sel-chip{
+                display:inline-flex;
+                align-items:center;
+                gap:6px;
+                padding:6px 10px;
+                border-radius:999px;
+                background:#fff0f0;
+                border:1px solid var(--ring);
+                color:var(--red-700);
+                font-weight:800;
+                text-transform:capitalize
+            }
+            .sel-chip button{
+                border:none;
+                background:transparent;
+                font-weight:900;
+                cursor:pointer;
+                color:var(--red-700)
+            }
 
-    /* Dropdown de tipos */
-    .dropdown{position:relative;display:inline-block}
-    .dd-btn{display:flex;align-items:center;gap:8px}
-    .dd-panel{
-      position:absolute;top:calc(100% + 8px);left:0;min-width:280px;max-width:min(92vw,360px);
-      background:#fff;border:1px solid #f1f5f9;border-radius:14px;box-shadow:var(--shadow);padding:10px;display:none;
-      z-index:1100;
-    }
-    .dropdown.open .dd-panel{display:block}
-    .dd-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-    .dd-scroll{max-height:240px;overflow:auto;border:1px dashed var(--ring);border-radius:10px;padding:8px;background:var(--soft)}
-    .type-row{display:flex;align-items:center;gap:8px;padding:6px 4px;border-radius:8px}
-    .type-row:hover{background:#fff}
-    .type-row input{accent-color:var(--red)}
-    .dd-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
+            /* FILTROS container (stacking) */
+            .filters{
+                position:relative;
+                z-index:100;
+                margin-top:12px;
+                background:#fff;
+                border:1px solid #f1f5f9;
+                border-radius:16px;
+                box-shadow:var(--shadow);
+                padding:10px;
+                display:grid;
+                gap:8px;
+                align-items:center;
+                grid-template-columns: auto 1fr auto auto;
+            }
+            @media (max-width:980px){
+                .filters{
+                    grid-template-columns:1fr 1fr
+                }
+            }
+            @media (max-width:560px){
+                .filters{
+                    grid-template-columns:1fr
+                }
+            }
 
-    /* Controles a la derecha */
-    .ctrl{
-      display:flex;align-items:center;gap:8px;background:var(--soft);border:1px solid var(--ring);
-      padding:8px 10px;border-radius:12px;flex-wrap:wrap;justify-content:flex-end
-    }
-    .ctrl select{
-      border:1px solid #e5e7eb; border-radius:8px; padding:6px 8px; outline:0; background:#fff;
-    }
+            .btn{
+                padding:10px 12px;
+                border-radius:12px;
+                border:1px solid #fecaca;
+                background:#fff;
+                color:var(--red);
+                font-weight:800;
+                cursor:pointer
+            }
+            .btn:hover{
+                background:#ffe8e8
+            }
 
-    /* GRID responsivo */
-    .grid{position:relative; z-index:1; display:grid;grid-template-columns:repeat(12,1fr);gap:18px;margin-top:16px}
-    @media (max-width:1160px){ .grid{grid-template-columns:repeat(8,1fr)} }
-    @media (max-width:780px){ .grid{grid-template-columns:repeat(6,1fr)} }
-    @media (max-width:560px){ .grid{grid-template-columns:repeat(2,1fr)} }
+            /* Dropdown de tipos */
+            .dropdown{
+                position:relative;
+                display:inline-block
+            }
+            .dd-btn{
+                display:flex;
+                align-items:center;
+                gap:8px
+            }
+            .dd-panel{
+                position:absolute;
+                top:calc(100% + 8px);
+                left:0;
+                min-width:280px;
+                max-width:min(92vw,360px);
+                background:#fff;
+                border:1px solid #f1f5f9;
+                border-radius:14px;
+                box-shadow:var(--shadow);
+                padding:10px;
+                display:none;
+                z-index:1100;
+            }
+            .dropdown.open .dd-panel{
+                display:block
+            }
+            .dd-head{
+                display:flex;
+                align-items:center;
+                justify-content:space-between;
+                margin-bottom:8px
+            }
+            .dd-scroll{
+                max-height:240px;
+                overflow:auto;
+                border:1px dashed var(--ring);
+                border-radius:10px;
+                padding:8px;
+                background:var(--soft)
+            }
+            .type-row{
+                display:flex;
+                align-items:center;
+                gap:8px;
+                padding:6px 4px;
+                border-radius:8px
+            }
+            .type-row:hover{
+                background:#fff
+            }
+            .type-row input{
+                accent-color:var(--red)
+            }
+            .dd-actions{
+                display:flex;
+                gap:8px;
+                justify-content:flex-end;
+                margin-top:10px
+            }
 
-    /* CARD + flip */
-    .card{grid-column:span 3; perspective:1000px; min-height:330px}
-    @media (max-width:1160px){ .card{grid-column:span 4} }
-    @media (max-width:780px){ .card{grid-column:span 3} }
-    @media (max-width:560px){ .card{grid-column:span 2; min-height:300px} }
-    .card-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.2,.8,.2,1)}
-    .card.flipped .card-inner{transform:rotateY(180deg)}
-    .face{position:absolute;inset:0;border-radius:var(--radius);overflow:hidden;backface-visibility:hidden;background:#fff;box-shadow:var(--shadow);border:1px solid #f1f5f9}
-    .front .top{height:160px;position:relative;display:flex;align-items:center;justify-content:center;
-      background: radial-gradient(120px 80px at 70% -20%, rgba(239,68,68,.18), transparent 60%),
-                  radial-gradient(140px 90px at 0% 0%, rgba(239,68,68,.12), transparent 70%),
-                  linear-gradient(180deg,#fff 0,#ffecec 100%);}
-    .halo{position:absolute;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.9);filter:blur(10px)}
-    .front img{max-width:88%;max-height:140px;object-fit:contain;z-index:1;filter:drop-shadow(0 10px 18px rgba(0,0,0,.12))}
-    .front .body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:10px}
-    .name{font-weight:800;font-size:16px;text-transform:capitalize}
-    .chips{display:flex;gap:6px;flex-wrap:wrap}
-    .chip-type{background:var(--chip);color:var(--red-700);padding:4px 8px;border-radius:999px;font-size:12px;font-weight:800;text-transform:capitalize}
-    .hint{font-size:12px;color:var(--muted)}
-    .tap{position:absolute;right:10px;top:10px;background:rgba(239,68,68,.08);border:1px dashed #fecaca;border-radius:999px;padding:4px 8px;font-size:10px;color:var(--red-700);font-weight:800}
+            /* Controles a la derecha */
+            .ctrl{
+                display:flex;
+                align-items:center;
+                gap:8px;
+                background:var(--soft);
+                border:1px solid var(--ring);
+                padding:8px 10px;
+                border-radius:12px;
+                flex-wrap:wrap;
+                justify-content:flex-end
+            }
+            .ctrl select{
+                border:1px solid #e5e7eb;
+                border-radius:8px;
+                padding:6px 8px;
+                outline:0;
+                background:#fff;
+            }
 
-    .back{transform:rotateY(180deg)}
-    .back-head{padding:12px 14px;background:linear-gradient(0deg,#fff 0,#ffe8e8 100%);border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between}
-    .back-title{font-weight:800;text-transform:capitalize}
-    .flip-note{font-size:12px;color:var(--muted)}
-    .stats{padding:14px;display:flex;flex-direction:column;gap:12px}
-    .stat-row{display:grid;grid-template-columns:86px 1fr 40px;gap:10px;align-items:center}
-    @media (max-width:560px){ .stat-row{grid-template-columns:70px 1fr 36px} }
-    .stat-label{font-size:12px;color:#475569;text-transform:uppercase;font-weight:800;letter-spacing:.5px}
-    .bar{height:10px;border-radius:999px;background:#fee2e2;overflow:hidden}
-    .bar i{display:block;height:100%;background:var(--red);transform-origin:left center;transition:width .35s ease}
-    .meta{display:flex;gap:10px;flex-wrap:wrap}
-    .meta .pill{background:#fff0f0;border:1px solid #ffd1d1}
+            /* GRID responsivo */
+            .grid{
+                position:relative;
+                z-index:1;
+                display:grid;
+                grid-template-columns:repeat(12,1fr);
+                gap:18px;
+                margin-top:16px
+            }
+            @media (max-width:1160px){
+                .grid{
+                    grid-template-columns:repeat(8,1fr)
+                }
+            }
+            @media (max-width:780px){
+                .grid{
+                    grid-template-columns:repeat(6,1fr)
+                }
+            }
+            @media (max-width:560px){
+                .grid{
+                    grid-template-columns:repeat(2,1fr)
+                }
+            }
 
-    /* PAGINACIÓN + page size */
-    .pagi{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px;flex-wrap:wrap}
-    .p-btn{padding:10px 12px;border-radius:10px;border:1px solid #fecaca;background:#fff;color:var(--red);font-weight:800}
-    .p-btn[disabled]{opacity:.5;cursor:not-allowed}
-    .page-size{display:flex;align-items:center;gap:8px}
-    .page-size select{border:1px solid #e5e7eb;border-radius:8px;padding:6px 8px;background:#fff}
+            /* CARD + flip */
+            .card{
+                grid-column:span 3;
+                perspective:1000px;
+                min-height:330px
+            }
+            @media (max-width:1160px){
+                .card{
+                    grid-column:span 4
+                }
+            }
+            @media (max-width:780px){
+                .card{
+                    grid-column:span 3
+                }
+            }
+            @media (max-width:560px){
+                .card{
+                    grid-column:span 2;
+                    min-height:300px
+                }
+            }
+            .card-inner{
+                position:relative;
+                width:100%;
+                height:100%;
+                transform-style:preserve-3d;
+                transition:transform .7s cubic-bezier(.2,.8,.2,1)
+            }
+            .card.flipped .card-inner{
+                transform:rotateY(180deg)
+            }
+            .face{
+                position:absolute;
+                inset:0;
+                border-radius:var(--radius);
+                overflow:hidden;
+                backface-visibility:hidden;
+                background:#fff;
+                box-shadow:var(--shadow);
+                border:1px solid #f1f5f9
+            }
+            .front .top{
+                height:160px;
+                position:relative;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                background: radial-gradient(120px 80px at 70% -20%, rgba(239,68,68,.18), transparent 60%),
+                    radial-gradient(140px 90px at 0% 0%, rgba(239,68,68,.12), transparent 70%),
+                    linear-gradient(180deg,#fff 0,#ffecec 100%);
+            }
+            .halo{
+                position:absolute;
+                width:140px;
+                height:140px;
+                border-radius:50%;
+                background:rgba(255,255,255,.9);
+                filter:blur(10px)
+            }
+            .front img{
+                max-width:88%;
+                max-height:140px;
+                object-fit:contain;
+                z-index:1;
+                filter:drop-shadow(0 10px 18px rgba(0,0,0,.12))
+            }
+            .front .body{
+                padding:12px 14px 14px;
+                display:flex;
+                flex-direction:column;
+                gap:10px
+            }
+            .name{
+                font-weight:800;
+                font-size:16px;
+                text-transform:capitalize
+            }
+            .chips{
+                display:flex;
+                gap:6px;
+                flex-wrap:wrap
+            }
+            .chip-type{
+                background:var(--chip);
+                color:var(--red-700);
+                padding:4px 8px;
+                border-radius:999px;
+                font-size:12px;
+                font-weight:800;
+                text-transform:capitalize
+            }
+            .hint{
+                font-size:12px;
+                color:var(--muted)
+            }
+            .tap{
+                position:absolute;
+                right:10px;
+                top:10px;
+                background:rgba(239,68,68,.08);
+                border:1px dashed #fecaca;
+                border-radius:999px;
+                padding:4px 8px;
+                font-size:10px;
+                color:var(--red-700);
+                font-weight:800
+            }
 
-    .name a.name-link, .back-title a.name-link{ color:inherit; text-decoration:none; }
-    .name a.name-link:hover, .back-title a.name-link:hover{ text-decoration:underline; }
-  </style>
-</head>
-<body>
+            .back{
+                transform:rotateY(180deg)
+            }
+            .back-head{
+                padding:12px 14px;
+                background:linear-gradient(0deg,#fff 0,#ffe8e8 100%);
+                border-bottom:1px solid #f1f5f9;
+                display:flex;
+                align-items:center;
+                justify-content:space-between
+            }
+            .back-title{
+                font-weight:800;
+                text-transform:capitalize
+            }
+            .flip-note{
+                font-size:12px;
+                color:var(--muted)
+            }
+            .stats{
+                padding:14px;
+                display:flex;
+                flex-direction:column;
+                gap:12px
+            }
+            .stat-row{
+                display:grid;
+                grid-template-columns:86px 1fr 40px;
+                gap:10px;
+                align-items:center
+            }
+            @media (max-width:560px){
+                .stat-row{
+                    grid-template-columns:70px 1fr 36px
+                }
+            }
+            .stat-label{
+                font-size:12px;
+                color:#475569;
+                text-transform:uppercase;
+                font-weight:800;
+                letter-spacing:.5px
+            }
+            .bar{
+                height:10px;
+                border-radius:999px;
+                background:#fee2e2;
+                overflow:hidden
+            }
+            .bar i{
+                display:block;
+                height:100%;
+                background:var(--red);
+                transform-origin:left center;
+                transition:width .35s ease
+            }
+            .meta{
+                display:flex;
+                gap:10px;
+                flex-wrap:wrap
+            }
+            .meta .pill{
+                background:#fff0f0;
+                border:1px solid #ffd1d1
+            }
 
-  <!-- NAV -->
-  <nav class="nav" aria-label="Principal">
-    <div class="nav-in">
-      <div class="brand"><div class="ball" aria-hidden="true"></div><span>PokéAPI Cliente</span></div>
-      <div th:if="${username != null}">
-        <select id="opciones" name="opciones" class="login" onchange="handleSelectChange(this)">
-          <option value="" disabled selected><span th:text="${username}"></span></option>
-          <option value="opcion1">Mi cuenta</option>
-          <option value="logout">Cerrar sesión</option>
-        </select>
-      </div>
-      <div th:if="${username == null}">
-        <a class="login" th:href="@{/login}">Login</a>
-      </div>
-    </div>
-  </nav>
+            /* PAGINACIÓN + page size */
+            .pagi{
+                display:flex;
+                align-items:center;
+                justify-content:space-between;
+                gap:10px;
+                margin-top:16px;
+                flex-wrap:wrap
+            }
+            .p-btn{
+                padding:10px 12px;
+                border-radius:10px;
+                border:1px solid #fecaca;
+                background:#fff;
+                color:var(--red);
+                font-weight:800
+            }
+            .p-btn[disabled]{
+                opacity:.5;
+                cursor:not-allowed
+            }
+            .page-size{
+                display:flex;
+                align-items:center;
+                gap:8px
+            }
+            .page-size select{
+                border:1px solid #e5e7eb;
+                border-radius:8px;
+                padding:6px 8px;
+                background:#fff
+            }
 
-  <main class="wrap">
-    <h1 class="title">Pokemons</h1>
+            .name a.name-link, .back-title a.name-link{
+                color:inherit;
+                text-decoration:none;
+            }
+            .name a.name-link:hover, .back-title a.name-link:hover{
+                text-decoration:underline;
+            }
+            
+            
+            
+            /* Contenedor para el checkbox */
+            .heart-checkbox-container {
+                display: flex;
+                align-items: center;
+                gap: 10px; /* Espaciado entre el corazón y el texto */
+            }
 
-    <!-- BÚSQUEDA alineada -->
-    <div class="toolbar">
-      <form class="search" role="search" method="get" th:action="@{/pokemon}">
-        <input id="q" name="q" type="search" placeholder="Buscar por nombre… (ej. mewtwo, pikachu)"
-               aria-label="Buscar pokémon" th:value="${q}"/>
-        <button class="btn-find" type="submit">Buscar</button>
-        <div class="hint">Presiona Enter o “Buscar” para consultar en todo el Pokédex</div>
+            /* Estilo del checkbox (lo ocultamos) */
+            .heart-checkbox input[type="checkbox"] {
+                display: none; /* Oculta el checkbox original */
+            }
 
-        <!-- Preserva filtros actuales -->
-        <input type="hidden" name="types" th:value="${typesQuery}"/>
-        <input type="hidden" name="size" th:value="${size}"/>
-        <input type="hidden" name="loc"  th:value="${loc}"/>
-        <input type="hidden" name="hab"  th:value="${hab}"/>
-        <input type="hidden" name="page" value="1"/>
-      </form>
-    </div>
+            /* El icono del corazón */
+            .heart-checkbox .heart-icon {
+                width: 40px;
+                height: 40px;
+                background-color: transparent;
+                border: 2px solid #ccc;
+                border-radius: 50%;
+                position: relative;
+                transition: all 0.3s ease;
+                cursor: pointer;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
 
-    <div class="meta-line">
-      <span class="pill" th:text="'Total: ' + ${count}">Total: 0</span>
-      <span class="pill" th:text="'Página ' + ${page} + ' / ' + ${totalPages}">Página 1 / 1</span>
-    </div>
+            /* Forma del corazón usando pseudo-elemento */
+            .heart-checkbox .heart-icon::before {
+                content: '\2764'; /* Unicode del corazón */
+                font-size: 24px;
+                color: #ccc;
+                transition: all 0.3s ease;
+            }
 
-    <!-- Chips de tipos seleccionados (removibles) -->
-    <div class="sel-chips" id="selChips" th:if="${selectedTypes != null and !selectedTypes.isEmpty()}">
-      <span class="sel-chip" th:each="t : ${selectedTypes}" th:attr="data-type=${t}">
-        <span th:text="${t}">fire</span>
-        <button type="button" class="chip-x" aria-label="Quitar">×</button>
-      </span>
-    </div>
+            /* Cuando el checkbox está marcado (corazón lleno y rojo) */
+            .heart-checkbox input[type="checkbox"]:checked + .heart-icon::before {
+                color: #e74c3c; /* Rojo cuando está marcado */
+            }
 
-    <!-- FILTROS -->
-    <section class="filters" aria-label="Filtros y orden">
-      <!-- Dropdown de tipos -->
-      <div class="dropdown" id="ddTypes">
-        <button class="btn dd-btn" type="button" aria-haspopup="true" aria-expanded="false">
-          🔎 Filtrar por tipos
-        </button>
-        <div class="dd-panel" role="menu" aria-label="Selecciona tipos">
-          <div class="dd-head">
-            <strong>Tipos disponibles</strong>
-            <button class="btn" type="button" id="btnClearTypes">Limpiar</button>
-          </div>
-          <div class="dd-scroll" id="typeList">
-            <label class="type-row">
-              <input type="checkbox" value="__all" id="t_all" />
-              <span>Todos</span>
-            </label>
-            <label class="type-row" th:each="t : ${typesAll}">
-              <input type="checkbox" th:value="${t}" th:checked="${selectedTypes != null and selectedTypes.contains(t)}"/>
-              <span th:text="${t}">fire</span>
-            </label>
-          </div>
-          <div class="dd-actions">
-            <button class="btn" type="button" id="btnApplyTypes">Aplicar</button>
-          </div>
-        </div>
-      </div>
+            /* Animación al marcar el corazón */
+            .heart-checkbox input[type="checkbox"]:checked + .heart-icon {
+                border-color: #e74c3c; /* Cambio de borde al rojo cuando marcado */
+                transform: scale(1.2); /* Aumenta el tamaño cuando está marcado */
+            }
 
-      <!-- Locations (región derivada de generation) -->
-      <div class="ctrl">
-        <label for="location"><strong>Locations</strong></label>
-        <select id="location" th:value="${loc}">
-          <option value="">Todas</option>
-          <option value="kanto">Kanto</option>
-          <option value="johto">Johto</option>
-          <option value="hoenn">Hoenn</option>
-          <option value="sinnoh">Sinnoh</option>
-          <option value="unova">Unova</option>
-          <option value="kalos">Kalos</option>
-          <option value="alola">Alola</option>
-          <option value="galar">Galar</option>
-          <option value="paldea">Paldea</option>
-        </select>
-      </div>
+            /* El texto al lado del corazón */
+            .add-to-favorites-text {
+                font-size: 14px;
+                font-weight: 600;
+            }
+        </style>
+    </head>
+    <body>
 
-      <!-- Habitats -->
-      <div class="ctrl">
-        <label for="habitat"><strong>Habitats</strong></label>
-        <select id="habitat" th:value="${hab}">
-          <option value="">Todos</option>
-          <option value="forest">Forest</option>
-          <option value="grassland">Grassland</option>
-          <option value="cave">Cave</option>
-          <option value="mountain">Mountain</option>
-          <option value="sea">Sea</option>
-          <option value="rough-terrain">Rough-terrain</option>
-          <option value="rare">Rare</option>
-          <option value="urban">Urban</option>
-          <option value="waters-edge">Waters-edge</option>
-        </select>
-      </div>
-
-      <!-- Orden (por nombre) -->
-      <div class="ctrl">
-        <label for="sortBy"><strong>Ordenar</strong></label>
-        <select id="sortBy">
-          <option value="name-asc">Nombre A–Z</option>
-          <option value="name-desc">Nombre Z–A</option>
-        </select>
-      </div>
-    </section>
-
-    <!-- GRID -->
-    <section class="grid" id="grid">
-      <div class="card"
-           th:each="p : ${pokemones}"
-           th:attr="data-name=${p.name},
-                    data-types=${#strings.arrayJoin(p.types, ',')},
-                    data-hp=${p.stats.hp},
-                    data-attack=${p.stats.attack},
-                    data-defense=${p.stats.defense},
-                    data-speed=${p.stats.speed},
-                    data-generation=${p.generation},
-                    data-habitat=${p.habitat}">
-        <div class="card-inner" onclick="flip(this.parentElement)" tabindex="0" onkeypress="if(event.key==='Enter'){flip(this.parentElement);}">
-          <!-- FRONT -->
-          <article class="face front" aria-label="Frente">
-            <div class="top">
-              <div class="halo" aria-hidden="true"></div>
-              <span class="tap">Tap/Click</span>
-              <img th:src="${p.image}" th:alt="${p.name} + ' image'" loading="lazy"/>
+        <!-- NAV -->
+        <nav class="nav" aria-label="Principal">
+            <div class="nav-in">
+                <div class="brand"><div class="ball" aria-hidden="true"></div><span>PokéAPI Cliente</span></div>
+                <div th:if="${username != null}">
+                    <select id="opciones" name="opciones" class="login" onchange="handleSelectChange(this)">
+                        <option value="" disabled selected><span th:text="${username}"></span></option>
+                        <option value="/usuario/myAccount">Mi cuenta</option>
+                        <option value="logout">Cerrar sesión</option>
+                    </select>
+                </div>
+                <div th:if="${username == null}">
+                    <a class="login" th:href="@{/login}">Login</a>
+                </div>
             </div>
-            <div class="body">
-              <div class="name">
-                <a class="name-link"
-                   th:href="@{'/pokemon/' + ${p.id}}"
-                   onclick="event.stopPropagation()"
-                   th:text="${p.name}">pikachu</a>
-              </div>
-              <div class="chips">
-                <span class="chip-type" th:each="t : ${p.types}" th:text="${t}">electric</span>
-              </div>
-              <div class="hint">Toca para ver estadísticas</div>
+        </nav>
+
+        <main class="wrap">
+            <h1 class="title">Pokemons</h1>
+
+            <!-- BÚSQUEDA alineada -->
+            <div class="toolbar">
+                <form class="search" role="search" method="get" th:action="@{/pokemon}">
+                    <input id="q" name="q" type="search" placeholder="Buscar por nombre… (ej. mewtwo, pikachu)"
+                           aria-label="Buscar pokémon" th:value="${q}"/>
+                    <button class="btn-find" type="submit">Buscar</button>
+                    <div class="hint">Presiona Enter o “Buscar” para consultar en todo el Pokédex</div>
+
+                    <!-- Preserva filtros actuales -->
+                    <input type="hidden" name="types" th:value="${typesQuery}"/>
+                    <input type="hidden" name="size" th:value="${size}"/>
+                    <input type="hidden" name="loc"  th:value="${loc}"/>
+                    <input type="hidden" name="hab"  th:value="${hab}"/>
+                    <input type="hidden" name="page" value="1"/>
+                </form>
             </div>
-          </article>
 
-          <!-- BACK -->
-          <article class="face back" aria-label="Reverso">
-            <div class="back-head">
-              <div class="back-title">
-                <a class="name-link"
-                   th:href="@{'/pokemon/' + ${p.id}}"
-                   onclick="event.stopPropagation()"
-                   th:text="${p.name}">pikachu</a>
-              </div>
-              <div class="flip-note">Click para volver</div>
+            <div class="meta-line">
+                <span class="pill" th:text="'Total: ' + ${count}">Total: 0</span>
+                <span class="pill" th:text="'Página ' + ${page} + ' / ' + ${totalPages}">Página 1 / 1</span>
             </div>
-            <div class="stats">
-              <div class="stat-row">
-                <div class="stat-label">HP</div>
-                <div class="bar"><i class="bar-hp" style="width:0%"></i></div>
-                <strong th:text="${p.stats.hp}">0</strong>
-              </div>
-              <div class="stat-row">
-                <div class="stat-label">Attack</div>
-                <div class="bar"><i class="bar-attack" style="width:0%"></i></div>
-                <strong th:text="${p.stats.attack}">0</strong>
-              </div>
-              <div class="stat-row">
-                <div class="stat-label">Defense</div>
-                <div class="bar"><i class="bar-defense" style="width:0%"></i></div>
-                <strong th:text="${p.stats.defense}">0</strong>
-              </div>
-              <div class="stat-row">
-                <div class="stat-label">Speed</div>
-                <div class="bar"><i class="bar-speed" style="width:0%"></i></div>
-                <strong th:text="${p.stats.speed}">0</strong>
-              </div>
-              <div class="meta">
-                <span class="pill" th:text="'Altura: ' + ${#numbers.formatDecimal(p.heightM,1,1)} + ' m'">Altura: 0.0 m</span>
-                <span class="pill" th:text="'Peso: ' + ${#numbers.formatDecimal(p.weightKg,1,1)} + ' kg'">Peso: 0.0 kg</span>
-                <span class="pill" th:text="'EXP: ' + ${p.baseExp}">EXP: 0</span>
-              </div>
+
+            <!-- Chips de tipos seleccionados (removibles) -->
+            <div class="sel-chips" id="selChips" th:if="${selectedTypes != null and !selectedTypes.isEmpty()}">
+                <span class="sel-chip" th:each="t : ${selectedTypes}" th:attr="data-type=${t}">
+                    <span th:text="${t}">fire</span>
+                    <button type="button" class="chip-x" aria-label="Quitar">×</button>
+                </span>
             </div>
-          </article>
-        </div>
-      </div>
-    </section>
 
-    <!-- PAGINACIÓN + tamaño de página -->
-    <div class="pagi">
-      <a class="p-btn" th:href="@{'/pokemon'(page=${page-1}, size=${size}, q=${q}, types=${typesQuery}, loc=${loc}, hab=${hab})}" th:attr="disabled=${page<=1}? 'disabled' : null">← Anterior</a>
-      <div class="pill" th:text="'Página ' + ${page} + ' de ' + ${totalPages}">Página 1 de 1</div>
-      <a class="p-btn" th:href="@{'/pokemon'(page=${page+1}, size=${size}, q=${q}, types=${typesQuery}, loc=${loc}, hab=${hab})}" th:attr="disabled=${page>=totalPages}? 'disabled' : null">Siguiente →</a>
+            <!-- FILTROS -->
+            <section class="filters" aria-label="Filtros y orden">
+                <!-- Dropdown de tipos -->
+                <div class="dropdown" id="ddTypes">
+                    <button class="btn dd-btn" type="button" aria-haspopup="true" aria-expanded="false">
+                        🔎 Filtrar por tipos
+                    </button>
+                    <div class="dd-panel" role="menu" aria-label="Selecciona tipos">
+                        <div class="dd-head">
+                            <strong>Tipos disponibles</strong>
+                            <button class="btn" type="button" id="btnClearTypes">Limpiar</button>
+                        </div>
+                        <div class="dd-scroll" id="typeList">
+                            <label class="type-row">
+                                <input type="checkbox" value="__all" id="t_all" />
+                                <span>Todos</span>
+                            </label>
+                            <label class="type-row" th:each="t : ${typesAll}">
+                                <input type="checkbox" th:value="${t}" th:checked="${selectedTypes != null and selectedTypes.contains(t)}"/>
+                                <span th:text="${t}">fire</span>
+                            </label>
+                        </div>
+                        <div class="dd-actions">
+                            <button class="btn" type="button" id="btnApplyTypes">Aplicar</button>
+                        </div>
+                    </div>
+                </div>
 
-      <div class="page-size">
-        <label for="pageSize"><strong>Tamaño:</strong></label>
-        <select id="pageSize" th:value="${size}">
-          <option th:selected="${size==12}" value="12">12</option>
-          <option th:selected="${size==24}" value="24">24</option>
-          <option th:selected="${size==48}" value="48">48</option>
-          <option th:selected="${size==96}" value="96">96</option>
-        </select>
-      </div>
-    </div>
-  </main>
+                <!-- Locations (región derivada de generation) -->
+                <div class="ctrl">
+                    <label for="location"><strong>Locations</strong></label>
+                    <select id="location" th:value="${loc}">
+                        <option value="">Todas</option>
+                        <option value="kanto">Kanto</option>
+                        <option value="johto">Johto</option>
+                        <option value="hoenn">Hoenn</option>
+                        <option value="sinnoh">Sinnoh</option>
+                        <option value="unova">Unova</option>
+                        <option value="kalos">Kalos</option>
+                        <option value="alola">Alola</option>
+                        <option value="galar">Galar</option>
+                        <option value="paldea">Paldea</option>
+                    </select>
+                </div>
 
-  <script>
-    /* FLIP */
-    function flip(card){ card.classList.toggle('flipped'); }
+                <!-- Habitats -->
+                <div class="ctrl">
+                    <label for="habitat"><strong>Habitats</strong></label>
+                    <select id="habitat" th:value="${hab}">
+                        <option value="">Todos</option>
+                        <option value="forest">Forest</option>
+                        <option value="grassland">Grassland</option>
+                        <option value="cave">Cave</option>
+                        <option value="mountain">Mountain</option>
+                        <option value="sea">Sea</option>
+                        <option value="rough-terrain">Rough-terrain</option>
+                        <option value="rare">Rare</option>
+                        <option value="urban">Urban</option>
+                        <option value="waters-edge">Waters-edge</option>
+                    </select>
+                </div>
 
-    /* ---- Dropdown Tipos ---- */
-    const dd = document.getElementById('ddTypes');
-    const btn = dd.querySelector('.dd-btn');
-    const typeList = document.getElementById('typeList');
-    const btnApply = document.getElementById('btnApplyTypes');
-    const btnClear = document.getElementById('btnClearTypes');
+                <!-- Orden (por nombre) -->
+                <div class="ctrl">
+                    <label for="sortBy"><strong>Ordenar</strong></label>
+                    <select id="sortBy">
+                        <option value="name-asc">Nombre A–Z</option>
+                        <option value="name-desc">Nombre Z–A</option>
+                    </select>
+                </div>
+            </section>
 
-    btn.addEventListener('click', ()=>{
-      dd.classList.toggle('open');
-      btn.setAttribute('aria-expanded', dd.classList.contains('open'));
-    });
-    document.addEventListener('click', (e)=>{
-      if(!dd.contains(e.target)) { dd.classList.remove('open'); btn.setAttribute('aria-expanded','false'); }
-    });
+            <!-- GRID -->
+            <section class="grid" id="grid">
+                <div class="card"
+                     th:each="p : ${pokemones}"
+                     th:attr="data-name=${p.name},
+                     data-types=${#strings.arrayJoin(p.types, ',')},
+                     data-hp=${p.stats.hp},
+                     data-attack=${p.stats.attack},
+                     data-defense=${p.stats.defense},
+                     data-speed=${p.stats.speed},
+                     data-generation=${p.generation},
+                     data-habitat=${p.habitat}">
+                    <div class="card-inner" onclick="flip(this.parentElement)" tabindex="0" onkeypress="if (event.key === 'Enter') {
+                    flip(this.parentElement);
+                }">
+                        <!-- FRONT -->
+                        <article class="face front" aria-label="Frente">
+                            <div class="top">
+                                <div class="halo" aria-hidden="true"></div>
+                                <span class="tap">Tap/Click</span>
+                                <img th:src="${p.image}" th:alt="${p.name} + ' image'" loading="lazy"/>
+                            </div>
+                            <div class="body">
+                                <div class="name">
+                                    <a class="name-link"
+                                       th:href="@{'/pokemon/' + ${p.id}}"
+                                       onclick="event.stopPropagation()"
+                                       th:text="${p.name}">pikachu</a>
+                                </div>
+                                <div class="chips">
+                                    <span class="chip-type" th:each="t : ${p.types}" th:text="${t}">electric</span>
+                                </div>
 
-    btnClear.addEventListener('click', ()=>{
-      typeList.querySelectorAll('input[type=checkbox]').forEach(c=>c.checked=false);
-      const all = document.getElementById('t_all'); if(all) all.checked=true;
-    });
 
-    btnApply.addEventListener('click', ()=>{
-      const selected = Array.from(typeList.querySelectorAll('input[type=checkbox]'))
-        .filter(c=>c.checked && c.value !== '__all')
-        .map(c=>c.value);
+                                <!-- Agregar a favoritos -->
+                                <div class="agregar-favoritos">
+                                    <!-- IdUsuario -->
+                                    <span th:if="${usuario != null}">
+                                        <input type="hidden" class="idUsuario" name="idUsuario" th:value="${usuario.IdUsuario}">
+                                    </span>
 
-      const base = new URL(window.location.href);
-      base.searchParams.set('page','1');
+                                    <span th:if="${usuario == null}">
+                                        <input type="hidden" th:value="0">
+                                    </span>
 
-      // q actual del input
-      const inputQ = document.getElementById('q');
-      const term = (inputQ?.value || '').trim();
-      if (term) base.searchParams.set('q', term); else base.searchParams.delete('q');
+                                    <!-- IdPokemon -->
+                                    <input type="hidden" class="idPokemon" name="idPokemon" th:value="${p.id}">
+                                    <span th:if="${usuario != null}">
+                                        <!--                    Add Favorites
+                                                            <input type="checkbox" class="cboxFav" th:checked="${favoritosIds.contains(p.id)}" value="first_checkbox" />-->
 
-      if (selected.length>0) base.searchParams.set('types', selected.join(','));
-      else base.searchParams.delete('types');
+                                        <!-- Corazón personalizado -->
+                                        <div class="heart-checkbox-container">
+                                            <label class="heart-checkbox">
+                                                <input type="checkbox" class="cboxFav" th:checked="${favoritosIds.contains(p.id)}" value="first_checkbox" />
+                                                <span class="heart-icon"></span>
+                                            </label>
+                                            <span class="add-to-favorites-text">Add to Favorites</span>
+                                        </div>
 
-      // preserva loc/hab si ya están
-      const loc = new URL(window.location.href).searchParams.get('loc');
-      if (loc) base.searchParams.set('loc', loc);
-      const hab = new URL(window.location.href).searchParams.get('hab');
-      if (hab) base.searchParams.set('hab', hab);
+                                    </span>
+                                </div>
 
-      window.location.href = base.toString();
-    });
 
-    /* ---- Chips seleccionados (quitar) ---- */
-    const chips = document.getElementById('selChips');
-    if (chips){
-      chips.addEventListener('click', (e)=>{
-        const btn = e.target.closest('.chip-x'); if(!btn) return;
-        const chip = btn.closest('.sel-chip'); if(!chip) return;
-        const t = chip.getAttribute('data-type');
-        const base = new URL(window.location.href);
-        const types = (base.searchParams.get('types') || '').split(',').filter(Boolean);
-        const next = types.filter(x => x !== t);
-        if (next.length>0) base.searchParams.set('types', next.join(','));
-        else base.searchParams.delete('types');
-        base.searchParams.set('page','1');
-        window.location.href = base.toString();
-      });
-    }
 
-    /* ---- Ordenamiento por nombre ---- */
-    const grid = document.getElementById('grid');
-    const sortSel = document.getElementById('sortBy');
+                                <div class="hint">Toca para ver estadísticas</div>
+                            </div>
+                        </article>
 
-    function sortGrid(){
-      const mode = sortSel.value;
-      const collator = new Intl.Collator('es',{sensitivity:'base'});
-      const cards = Array.from(grid.children);
-      cards.sort((a,b)=>{
-        if(mode==='name-asc')  return collator.compare(a.dataset.name, b.dataset.name);
-        if(mode==='name-desc') return collator.compare(b.dataset.name, a.dataset.name);
-        return 0;
-      });
-      for(const c of cards) grid.appendChild(c);
-    }
-    if (sortSel) sortSel.addEventListener('change', sortGrid);
+                        <!-- BACK -->
+                        <article class="face back" aria-label="Reverso">
+                            <div class="back-head">
+                                <div class="back-title">
+                                    <a class="name-link"
+                                       th:href="@{'/pokemon/' + ${p.id}}"
+                                       onclick="event.stopPropagation()"
+                                       th:text="${p.name}">pikachu</a>
+                                </div>
+                                <div class="flip-note">Click para volver</div>
+                            </div>
+                            <div class="stats">
+                                <div class="stat-row">
+                                    <div class="stat-label">HP</div>
+                                    <div class="bar"><i class="bar-hp" style="width:0%"></i></div>
+                                    <strong th:text="${p.stats.hp}">0</strong>
+                                </div>
+                                <div class="stat-row">
+                                    <div class="stat-label">Attack</div>
+                                    <div class="bar"><i class="bar-attack" style="width:0%"></i></div>
+                                    <strong th:text="${p.stats.attack}">0</strong>
+                                </div>
+                                <div class="stat-row">
+                                    <div class="stat-label">Defense</div>
+                                    <div class="bar"><i class="bar-defense" style="width:0%"></i></div>
+                                    <strong th:text="${p.stats.defense}">0</strong>
+                                </div>
+                                <div class="stat-row">
+                                    <div class="stat-label">Speed</div>
+                                    <div class="bar"><i class="bar-speed" style="width:0%"></i></div>
+                                    <strong th:text="${p.stats.speed}">0</strong>
+                                </div>
+                                <div class="meta">
+                                    <span class="pill" th:text="'Altura: ' + ${#numbers.formatDecimal(p.heightM,1,1)} + ' m'">Altura: 0.0 m</span>
+                                    <span class="pill" th:text="'Peso: ' + ${#numbers.formatDecimal(p.weightKg,1,1)} + ' kg'">Peso: 0.0 kg</span>
+                                    <span class="pill" th:text="'EXP: ' + ${p.baseExp}">EXP: 0</span>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </section>
 
-    // Locations/Habitats → recarga con params y preserva los demás
-    const locationSel = document.getElementById('location');
-    const habitatSel  = document.getElementById('habitat');
+            <!-- PAGINACIÓN + tamaño de página -->
+            <div class="pagi">
+                <a class="p-btn" th:href="@{'/pokemon'(page=${page-1}, size=${size}, q=${q}, types=${typesQuery}, loc=${loc}, hab=${hab})}" th:attr="disabled=${page<=1}? 'disabled' : null">← Anterior</a>
+                <div class="pill" th:text="'Página ' + ${page} + ' de ' + ${totalPages}">Página 1 de 1</div>
+                <a class="p-btn" th:href="@{'/pokemon'(page=${page+1}, size=${size}, q=${q}, types=${typesQuery}, loc=${loc}, hab=${hab})}" th:attr="disabled=${page>=totalPages}? 'disabled' : null">Siguiente →</a>
 
-    function applySelectParam(selEl, param){
-      const base = new URL(window.location.href);
-      base.searchParams.set('page','1');
+                <div class="page-size">
+                    <label for="pageSize"><strong>Tamaño:</strong></label>
+                    <select id="pageSize" th:value="${size}">
+                        <option th:selected="${size==12}" value="12">12</option>
+                        <option th:selected="${size==24}" value="24">24</option>
+                        <option th:selected="${size==48}" value="48">48</option>
+                        <option th:selected="${size==96}" value="96">96</option>
+                    </select>
+                </div>
+            </div>
+        </main>
 
-      // preserva q
-      const inputQ = document.getElementById('q');
-      const term = (inputQ?.value || '').trim();
-      if (term) base.searchParams.set('q', term); else base.searchParams.delete('q');
+        <script>
+            /* FLIP */
+            function flip(card) {
+                card.classList.toggle('flipped');
+            }
 
-      // preserva types
-      const types = new URL(window.location.href).searchParams.get('types');
-      if (types) base.searchParams.set('types', types); else base.searchParams.delete('types');
+            /* ---- Dropdown Tipos ---- */
+            const dd = document.getElementById('ddTypes');
+            const btn = dd.querySelector('.dd-btn');
+            const typeList = document.getElementById('typeList');
+            const btnApply = document.getElementById('btnApplyTypes');
+            const btnClear = document.getElementById('btnClearTypes');
 
-      // agrega o elimina param actual
-      const v = selEl.value;
-      if (v) base.searchParams.set(param, v); else base.searchParams.delete(param);
+            btn.addEventListener('click', () => {
+                dd.classList.toggle('open');
+                btn.setAttribute('aria-expanded', dd.classList.contains('open'));
+            });
+            document.addEventListener('click', (e) => {
+                if (!dd.contains(e.target)) {
+                    dd.classList.remove('open');
+                    btn.setAttribute('aria-expanded', 'false');
+                }
+            });
 
-      // preserva el otro select si existe
-      if (param === 'loc' && habitatSel && habitatSel.value) base.searchParams.set('hab', habitatSel.value);
-      if (param === 'hab' && locationSel && locationSel.value) base.searchParams.set('loc', locationSel.value);
+            btnClear.addEventListener('click', () => {
+                typeList.querySelectorAll('input[type=checkbox]').forEach(c => c.checked = false);
+                const all = document.getElementById('t_all');
+                if (all)
+                    all.checked = true;
+            });
 
-      window.location.href = base.toString();
-    }
-    if (locationSel) locationSel.addEventListener('change', ()=>applySelectParam(locationSel,'loc'));
-    if (habitatSel)  habitatSel.addEventListener('change', ()=>applySelectParam(habitatSel,'hab'));
+            btnApply.addEventListener('click', () => {
+                const selected = Array.from(typeList.querySelectorAll('input[type=checkbox]'))
+                        .filter(c => c.checked && c.value !== '__all')
+                        .map(c => c.value);
 
-    // Page size → recarga preservando q/types/loc/hab
-    const pageSizeSel = document.getElementById('pageSize');
-    if (pageSizeSel){
-      pageSizeSel.addEventListener('change', () => {
-        const base = new URL(window.location.href);
-        base.searchParams.set('page', '1');
-        base.searchParams.set('size', pageSizeSel.value);
+                const base = new URL(window.location.href);
+                base.searchParams.set('page', '1');
 
-        const inputQ = document.getElementById('q');
-        const term = (inputQ?.value || '').trim();
-        if (term) base.searchParams.set('q', term); else base.searchParams.delete('q');
+                // q actual del input
+                const inputQ = document.getElementById('q');
+                const term = (inputQ?.value || '').trim();
+                if (term)
+                    base.searchParams.set('q', term);
+                else
+                    base.searchParams.delete('q');
 
-        const types = new URL(window.location.href).searchParams.get('types');
-        if (types) base.searchParams.set('types', types);
+                if (selected.length > 0)
+                    base.searchParams.set('types', selected.join(','));
+                else
+                    base.searchParams.delete('types');
 
-        const loc = new URL(window.location.href).searchParams.get('loc');
-        if (loc) base.searchParams.set('loc', loc);
+                // preserva loc/hab si ya están
+                const loc = new URL(window.location.href).searchParams.get('loc');
+                if (loc)
+                    base.searchParams.set('loc', loc);
+                const hab = new URL(window.location.href).searchParams.get('hab');
+                if (hab)
+                    base.searchParams.set('hab', hab);
 
-        const hab = new URL(window.location.href).searchParams.get('hab');
-        if (hab) base.searchParams.set('hab', hab);
+                window.location.href = base.toString();
+            });
 
-        window.location.href = base.toString();
-      });
-    }
+            /* ---- Chips seleccionados (quitar) ---- */
+            const chips = document.getElementById('selChips');
+            if (chips) {
+                chips.addEventListener('click', (e) => {
+                    const btn = e.target.closest('.chip-x');
+                    if (!btn)
+                        return;
+                    const chip = btn.closest('.sel-chip');
+                    if (!chip)
+                        return;
+                    const t = chip.getAttribute('data-type');
+                    const base = new URL(window.location.href);
+                    const types = (base.searchParams.get('types') || '').split(',').filter(Boolean);
+                    const next = types.filter(x => x !== t);
+                    if (next.length > 0)
+                        base.searchParams.set('types', next.join(','));
+                    else
+                        base.searchParams.delete('types');
+                    base.searchParams.set('page', '1');
+                    window.location.href = base.toString();
+                });
+            }
 
-    // Init
-    window.addEventListener('load', ()=>{ if (sortSel) sortGrid(); });
+            /* ---- Ordenamiento por nombre ---- */
+            const grid = document.getElementById('grid');
+            const sortSel = document.getElementById('sortBy');
 
-    // Select de usuario
-    function handleSelectChange(selectElement) {
-      var selectedValue = selectElement.value;
-      if(selectedValue == "logout") {
-        window.location.href = "/logout";
-      }
-    }
-  </script>
-</body>
+            function sortGrid() {
+                const mode = sortSel.value;
+                const collator = new Intl.Collator('es', {sensitivity: 'base'});
+                const cards = Array.from(grid.children);
+                cards.sort((a, b) => {
+                    if (mode === 'name-asc')
+                        return collator.compare(a.dataset.name, b.dataset.name);
+                    if (mode === 'name-desc')
+                        return collator.compare(b.dataset.name, a.dataset.name);
+                    return 0;
+                });
+                for (const c of cards)
+                    grid.appendChild(c);
+            }
+            if (sortSel)
+                sortSel.addEventListener('change', sortGrid);
+
+            // Locations/Habitats → recarga con params y preserva los demás
+            const locationSel = document.getElementById('location');
+            const habitatSel = document.getElementById('habitat');
+
+            function applySelectParam(selEl, param) {
+                const base = new URL(window.location.href);
+                base.searchParams.set('page', '1');
+
+                // preserva q
+                const inputQ = document.getElementById('q');
+                const term = (inputQ?.value || '').trim();
+                if (term)
+                    base.searchParams.set('q', term);
+                else
+                    base.searchParams.delete('q');
+
+                // preserva types
+                const types = new URL(window.location.href).searchParams.get('types');
+                if (types)
+                    base.searchParams.set('types', types);
+                else
+                    base.searchParams.delete('types');
+
+                // agrega o elimina param actual
+                const v = selEl.value;
+                if (v)
+                    base.searchParams.set(param, v);
+                else
+                    base.searchParams.delete(param);
+
+                // preserva el otro select si existe
+                if (param === 'loc' && habitatSel && habitatSel.value)
+                    base.searchParams.set('hab', habitatSel.value);
+                if (param === 'hab' && locationSel && locationSel.value)
+                    base.searchParams.set('loc', locationSel.value);
+
+                window.location.href = base.toString();
+            }
+            if (locationSel)
+                locationSel.addEventListener('change', () => applySelectParam(locationSel, 'loc'));
+            if (habitatSel)
+                habitatSel.addEventListener('change', () => applySelectParam(habitatSel, 'hab'));
+
+            // Page size → recarga preservando q/types/loc/hab
+            const pageSizeSel = document.getElementById('pageSize');
+            if (pageSizeSel) {
+                pageSizeSel.addEventListener('change', () => {
+                    const base = new URL(window.location.href);
+                    base.searchParams.set('page', '1');
+                    base.searchParams.set('size', pageSizeSel.value);
+
+                    const inputQ = document.getElementById('q');
+                    const term = (inputQ?.value || '').trim();
+                    if (term)
+                        base.searchParams.set('q', term);
+                    else
+                        base.searchParams.delete('q');
+
+                    const types = new URL(window.location.href).searchParams.get('types');
+                    if (types)
+                        base.searchParams.set('types', types);
+
+                    const loc = new URL(window.location.href).searchParams.get('loc');
+                    if (loc)
+                        base.searchParams.set('loc', loc);
+
+                    const hab = new URL(window.location.href).searchParams.get('hab');
+                    if (hab)
+                        base.searchParams.set('hab', hab);
+
+                    window.location.href = base.toString();
+                });
+            }
+
+            // Init
+            window.addEventListener('load', () => {
+                if (sortSel)
+                    sortGrid();
+            });
+
+            // Select de usuario
+            function handleSelectChange(selectElement) {
+                var selectedValue = selectElement.value;
+                if (selectedValue == "logout") {
+                    window.location.href = "/logout";
+                }
+                if (selectedValue == "/usuario/myAccount") {
+                    window.location.href = "/pokemon/myAccount";
+                }
+            }
+        </script>
+
+
+        //Agregar a favoritos
+        <script>
+            $(document).ready(function () {
+                $('.cboxFav').change(function () {
+                    const card = $(this).closest('.agregar-favoritos');
+                    const idUsuario = card.find('.idUsuario').val();
+                    const idPokemon = card.find('.idPokemon').val();
+                    const agregar = $(this).is(':checked');
+
+                    if (idUsuario == 0) {
+                        alert('Debes iniciar sesión para agregar favoritos');
+                        $(this).prop('checked', false);
+                        return;
+                    }
+
+                    const usuarioData = {
+                        usuario: {idUsuario: idUsuario},
+                        idPokemon: idPokemon
+                    };
+
+                    const url = agregar
+                            ? 'http://localhost:8080/api/usuario/addFavorites'
+                            : 'http://localhost:8080/api/usuario/removeFavorites';
+
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(usuarioData),
+                        success: function (data) {
+                            if (data.correct) {
+                                const msg = agregar ? 'Favorito agregado correctamente' : 'Favorito eliminado correctamente';
+                                console.log(msg);
+                            } else {
+                                alert('Error al procesar favorito');
+                                $(this).prop('checked', !agregar); // revertir checkbox
+                            }
+                        }.bind(this),
+                        error: function (xhr, status, error) {
+                            console.error(error);
+                            alert('Error en la petición');
+                            $(this).prop('checked', !agregar); // revertir checkbox
+                        }.bind(this)
+                    });
+                });
+            });
+        </script>
+
+    </body>
 </html>

@@ -1,8 +1,11 @@
 package com.digis01.PokeAPICliente.Controller;
 
+import com.digis01.PokeAPICliente.DAO.IRepositoryUsuario;
 import com.digis01.PokeAPICliente.DTO.PageDTO;
 import com.digis01.PokeAPICliente.DTO.PokemonCardDTO;
 import com.digis01.PokeAPICliente.DTO.PokemonFullDTO;
+import com.digis01.PokeAPICliente.JPA.Favoritos;
+import com.digis01.PokeAPICliente.JPA.Usuario;
 import com.digis01.PokeAPICliente.ML.Result;
 import com.digis01.PokeAPICliente.Service.PokedexCacheService;
 import org.springframework.stereotype.Controller;
@@ -18,10 +21,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 // ⬇️ nuevo import para obtener la URL actual (redirectTo)
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @RequestMapping("pokemon")
 @Controller
 public class PokemonController {
+    
+    @Autowired
+    private IRepositoryUsuario iRepositoryUsuario;
 
     private final PokedexCacheService svc;
 
@@ -137,6 +144,20 @@ public String index(
             ? authentication.getName() : null;
 
     List<String> typesAll = svc.allTypes().stream().sorted().toList();
+    
+    Usuario usuario = iRepositoryUsuario.findByUsername(username);
+    
+    model.addAttribute("usuario", usuario);
+    
+    // Crear lista de IDs de Pokémon favoritos para la UI
+    List<Integer> favoritosIds = (usuario != null)
+            ? usuario.getFavoritos().stream()
+                     .map(Favoritos::getIdPokemon)
+                     .toList()
+            : List.of();
+    model.addAttribute("favoritosIds", favoritosIds);
+    
+    
 
     // Modelo
     model.addAttribute("username", username);
@@ -435,5 +456,96 @@ p.put("learnMethods", new ArrayList<>(lmSet));
 
     private int getOrZero(Map<String, Integer> m, String k) {
         return (m == null) ? 0 : m.getOrDefault(k, 0);
+    }
+    
+    
+    
+    
+    
+    
+    @GetMapping("/myAccount")
+    public String myAccount(Model model,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "12") int size) {
+
+        // Dispara warmup si hace falta
+        svc.warmupAsync(false);
+
+        Map<String, Object> st = svc.status();
+        boolean warming = Boolean.TRUE.equals(st.get("warming"));
+        int cached = ((Number) st.getOrDefault("count", 0)).intValue();
+        boolean emptySnapshot = svc.allCards().isEmpty();
+
+        if (warming || cached == 0 || emptySnapshot) {
+            pushLoading(model);
+            model.addAttribute("redirectTo", "/myAccount");
+            return "PokemonLoading";
+        }
+
+        // Obtener usuario autenticado
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = (authentication != null && !(authentication instanceof AnonymousAuthenticationToken))
+                ? authentication.getName() : null;
+
+        Usuario usuario = iRepositoryUsuario.findByUsername(username);
+        List<Integer> favoritosIds = (usuario != null)
+                ? usuario.getFavoritos().stream()
+                        .map(Favoritos::getIdPokemon)
+                        .toList()
+                : List.of();
+
+        // Traer todas las cartas y filtrar por favoritos
+        List<PokemonCardDTO> all = svc.allCards().stream()
+                .filter(p -> favoritosIds.contains(p.id))
+                .toList();
+
+        // --- PAGINACIÓN ---
+        int currentPage = Math.max(1, page);
+        int pageSize = Math.max(1, size);
+        int total = all.size();
+        int totalPages = Math.max(1, (int) Math.ceil(total / (double) pageSize));
+        int from = Math.min((currentPage - 1) * pageSize, total);
+        int to = Math.min(from + pageSize, total);
+        List<PokemonCardDTO> pageItems = (from < to) ? all.subList(from, to) : List.of();
+
+        // Adaptación a Map para la plantilla
+        List<Map<String, Object>> cards = pageItems.stream().map(c -> {
+            Map<String, Object> m = new LinkedHashMap<>();
+            m.put("id", c.id);
+            m.put("name", c.name);
+            m.put("image", c.image);
+            m.put("types", c.types != null ? c.types : List.of());
+            Map<String, Integer> stats = new LinkedHashMap<>();
+            if (c.stats != null) {
+                stats.put("hp", c.stats.getOrDefault("hp", 0));
+                stats.put("attack", c.stats.getOrDefault("attack", 0));
+                stats.put("defense", c.stats.getOrDefault("defense", 0));
+                stats.put("speed", c.stats.getOrDefault("speed", 0));
+            } else {
+                stats.put("hp", 0);
+                stats.put("attack", 0);
+                stats.put("defense", 0);
+                stats.put("speed", 0);
+            }
+            m.put("stats", stats);
+            m.put("heightM", c.heightM);
+            m.put("weightKg", c.weightKg);
+            m.put("baseExp", c.baseExp);
+            m.put("habitat", c.habitat);
+            m.put("generation", c.generation);
+            return m;
+        }).toList();
+    
+        model.addAttribute("usuario", usuario);
+
+        model.addAttribute("username", username);
+        model.addAttribute("pokemones", cards);
+        model.addAttribute("page", currentPage);
+        model.addAttribute("size", pageSize);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("count", total);
+        model.addAttribute("favoritosIds", favoritosIds);
+
+        return "PokemonesFavs"; // Tu vista solo de favoritos
     }
 }

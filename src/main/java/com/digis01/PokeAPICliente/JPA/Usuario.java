@@ -50,28 +50,28 @@ public class Usuario {
     
     public Usuario () {}
     
-    public Usuario (com.digis01.PokeAPICliente.ML.Usuario usuarioML) {
-        this.IdUsuario = usuarioML.getIdUsuario();
-        this.Nombre = usuarioML.getNombre();
-        this.ApellidoPaterno = usuarioML.getApellidoPaterno();
-        this.ApellidoMaterno = usuarioML.getApellidoMaterno();
-        this.username = usuarioML.getUsername();
-        this.email = usuarioML.getEmail();
-        this.Password = usuarioML.getPassword();
-        
-        this.Rol = new Rol();
-        this.Rol.setIdRol(usuarioML.Rol.getIdRol());
-        
-        for(com.digis01.PokeAPICliente.ML.Favoritos Favorito : usuarioML.Favoritos) {
-            Favoritos favorito = new Favoritos();
-            favorito.setIdFavorito(Favorito.getIdFavorito());
-            favorito.setIdPokemon(Favorito.getIdPokemon());
-            
-            favorito.Usuario = this;
-            
-            Favoritos.add(favorito);
-        }
-    }
+//    public Usuario (com.digis01.PokeAPICliente.ML.Usuario usuarioML) {
+//        this.IdUsuario = usuarioML.getIdUsuario();
+//        this.Nombre = usuarioML.getNombre();
+//        this.ApellidoPaterno = usuarioML.getApellidoPaterno();
+//        this.ApellidoMaterno = usuarioML.getApellidoMaterno();
+//        this.username = usuarioML.getUsername();
+//        this.email = usuarioML.getEmail();
+//        this.Password = usuarioML.getPassword();
+//        
+//        this.Rol = new Rol();
+//        this.Rol.setIdRol(usuarioML.Rol.getIdRol());
+//        
+//        for(com.digis01.PokeAPICliente.ML.Favoritos Favorito : usuarioML.Favoritos) {
+//            Favoritos favorito = new Favoritos();
+//            favorito.setIdFavorito(Favorito.getIdFavorito());
+//            favorito.setIdPokemon(Favorito.getIdPokemon());
+//            
+//            favorito.Usuario = this;
+//            
+//            Favoritos.add(favorito);
+//        }
+//    }
 
     public int getIdUsuario() {
         return IdUsuario;
@@ -136,4 +136,14 @@ public class Usuario {
     public void setRol(Rol Rol) {
         this.Rol = Rol;
     }
+
+    public List<Favoritos> getFavoritos() {
+        return Favoritos;
+    }
+
+    public void setFavoritos(List<Favoritos> Favoritos) {
+        this.Favoritos = Favoritos;
+    }
+    
+    
 }

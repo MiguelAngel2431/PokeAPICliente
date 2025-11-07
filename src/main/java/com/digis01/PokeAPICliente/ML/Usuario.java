@@ -120,4 +120,14 @@ public class Usuario {
     public void setRol(Rol Rol) {
         this.Rol = Rol;
     }
+
+    public List<Favoritos> getFavoritos() {
+        return Favoritos;
+    }
+
+    public void setFavoritos(List<Favoritos> Favoritos) {
+        this.Favoritos = Favoritos;
+    }
+    
+    
 }
