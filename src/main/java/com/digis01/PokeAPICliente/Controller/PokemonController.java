@@ -22,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 // ⬇️ nuevo import para obtener la URL actual (redirectTo)
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 
 @RequestMapping("pokemon")
 @Controller
@@ -142,12 +143,18 @@ public String index(
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String username = (authentication != null && !(authentication instanceof AnonymousAuthenticationToken))
             ? authentication.getName() : null;
+    
+    String role = authentication.getAuthorities().stream()
+                                   .map(GrantedAuthority::getAuthority)
+                                   .findFirst()
+                                   .orElse("ROLE_General"); // Si no hay rol, asignamos ROLE_General
 
     List<String> typesAll = svc.allTypes().stream().sorted().toList();
     
     Usuario usuario = iRepositoryUsuario.findByUsername(username);
     
     model.addAttribute("usuario", usuario);
+    model.addAttribute("role", role);
     
     // Crear lista de IDs de Pokémon favoritos para la UI
     List<Integer> favoritosIds = (usuario != null)
@@ -458,11 +465,7 @@ p.put("learnMethods", new ArrayList<>(lmSet));
         return (m == null) ? 0 : m.getOrDefault(k, 0);
     }
     
-    
-    
-    
-    
-    
+    //Vista de cuenta
     @GetMapping("/myAccount")
     public String myAccount(Model model,
             @RequestParam(defaultValue = "1") int page,
@@ -546,6 +549,12 @@ p.put("learnMethods", new ArrayList<>(lmSet));
         model.addAttribute("count", total);
         model.addAttribute("favoritosIds", favoritosIds);
 
-        return "PokemonesFavs"; // Tu vista solo de favoritos
+        return "PokemonesFavs";
     }
+    
+    @GetMapping("/totalPokemonesFavotitos")
+    public String TotalPokemonesFavoritos(Model model) {
+        return "TotalPokemonesFavoritos";
+    }
+    
 }

@@ -40,11 +40,13 @@ public class UsuarioService implements UserDetailsService {
         if (usuario == null) {
             throw new UsernameNotFoundException("Usuario no encontrado: " + username);
         }
+        
+        String roleName = "ROLE_" + usuario.Rol.getNombre();
 
         return new User(
                 usuario.getUsername(),
                 usuario.getPassword(),
-                List.of(new SimpleGrantedAuthority("ROLE_" + usuario.Rol.getNombre()))
+                List.of(new SimpleGrantedAuthority(roleName))
         );
     }
 
