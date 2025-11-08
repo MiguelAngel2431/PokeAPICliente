@@ -393,6 +393,8 @@ public class PokedexCacheService {
         c.heightM = pf.heightM;
         c.weightKg = pf.weightKg;
         c.baseExp = pf.baseExp;
+        c.habitat = pf.habitat;
+        c.generation = pf.generation;
         return c;
     }
 
