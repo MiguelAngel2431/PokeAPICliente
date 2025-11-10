@@ -623,11 +623,21 @@
             <div class="nav-in">
                 <div class="brand"><div class="ball" aria-hidden="true"></div><span>PokéAPI Cliente</span></div>
                 <div th:if="${username != null}">
-                    <select id="opciones" name="opciones" class="login" onchange="handleSelectChange(this)">
-                        <option value="" disabled selected><span th:text="${username}"></span></option>
-                        <option value="/usuario/myAccount">Mi cuenta</option>
-                        <option value="logout">Cerrar sesión</option>
-                    </select>
+                    <div th:if="${role == 'ROLE_Administrador'}">
+                        <select id="opciones" name="opciones" class="login" onchange="handleSelectChange(this)">
+                            <option value="" disabled selected th:text="${username}">Usuario</option>
+                            <option value="/usuario/myAccount">Mi cuenta</option>
+                            <option value="administrador">Administrador</option>
+                            <option value="logout">Cerrar sesión</option>
+                        </select>
+                    </div>
+                    <div th:if="${role != 'ROLE_Administrador'}">
+                        <select id="opciones" name="opciones" class="login" onchange="handleSelectChange(this)">
+                            <option value="" disabled selected th:text="${username}">Usuario</option>
+                            <option value="/usuario/myAccount">Mi cuenta</option>
+                            <option value="logout">Cerrar sesión</option>
+                        </select>
+                    </div>
                 </div>
                 <div th:if="${username == null}">
                     <a class="login" th:href="@{/login}">Login</a>
@@ -1063,6 +1073,11 @@
                 if (selectedValue == "/usuario/myAccount") {
                     window.location.href = "/usuario/myAccount";
                 }
+                if (selectedValue = "administrador") {
+                    window.location.href = "/pokemon/totalPokemonesFavoritos";
+                }
+    
+
             }
         </script>
 

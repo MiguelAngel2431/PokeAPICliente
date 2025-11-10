@@ -1,7 +1,11 @@
 
 package com.digis01.PokeAPICliente.JPA;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import io.micrometer.common.lang.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,6 +18,10 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
 @Entity
+@JsonIdentityInfo(
+    generator = ObjectIdGenerators.PropertyGenerator.class,
+    property = "idFavorito"
+)
 public class Favoritos {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,6 +34,7 @@ public class Favoritos {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "idusuario", nullable = false)
     @JsonProperty("usuario")
+//    @JsonBackReference
     private Usuario Usuario;
     
     public Favoritos () {}

@@ -6,8 +6,10 @@ import com.digis01.PokeAPICliente.JPA.Favoritos;
 import com.digis01.PokeAPICliente.JPA.Rol;
 import com.digis01.PokeAPICliente.JPA.Usuario;
 import com.digis01.PokeAPICliente.ML.Result;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -40,7 +42,7 @@ public class UsuarioService implements UserDetailsService {
         if (usuario == null) {
             throw new UsernameNotFoundException("Usuario no encontrado: " + username);
         }
-        
+
         String roleName = "ROLE_" + usuario.Rol.getNombre();
 
         return new User(
@@ -121,6 +123,32 @@ public class UsuarioService implements UserDetailsService {
                 result.correct = true;
             } else {
                 result.correct = false;
+            }
+
+        } catch (Exception ex) {
+            result.correct = false;
+        }
+
+        return result;
+
+    }
+
+    public Result GetAllPokemonesFavoritos() {
+
+        Result result = new Result();
+
+        try {
+
+            List<Favoritos> totalPokemonesFavoritos = iRepositoryFavorito.findAll();
+
+            if (!totalPokemonesFavoritos.isEmpty()) {
+
+                List<Favoritos> unicos = new ArrayList<>(totalPokemonesFavoritos.stream()
+                        .collect(Collectors.toMap(Favoritos::getIdPokemon, f -> f, (f1, f2) -> f1))
+                        .values());
+
+                result.object = unicos;
+                result.correct = true;
             }
 
         } catch (Exception ex) {

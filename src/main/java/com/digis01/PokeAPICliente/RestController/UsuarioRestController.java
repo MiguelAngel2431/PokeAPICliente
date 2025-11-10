@@ -5,6 +5,7 @@ import com.digis01.PokeAPICliente.JPA.Favoritos;
 import com.digis01.PokeAPICliente.ML.Result;
 import com.digis01.PokeAPICliente.Service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,11 @@ public class UsuarioRestController {
     @PostMapping("removeFavorites")
     public Result removerFavoritos(@RequestBody Favoritos pokemonFavorito) {
         return usuarioService.RemoveFavorite(pokemonFavorito);
+    }
+    
+    @GetMapping("totalPokemonesFavoritos")
+    public Result totalPokemonesFavoritos() {
+        return usuarioService.GetAllPokemonesFavoritos();
     }
     
     

@@ -1,6 +1,9 @@
 
 package com.digis01.PokeAPICliente.JPA;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import io.micrometer.common.lang.Nullable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -15,6 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@JsonIdentityInfo(
+    generator = ObjectIdGenerators.PropertyGenerator.class,
+    property = "idUsuario"
+)
 public class Usuario {
     
     @Id
@@ -46,6 +53,7 @@ public class Usuario {
     public Rol Rol;
     
     @OneToMany(mappedBy = "Usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JsonManagedReference
     public List<Favoritos> Favoritos = new ArrayList<>();
     
     public Usuario () {}
