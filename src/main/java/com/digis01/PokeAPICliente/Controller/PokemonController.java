@@ -1,5 +1,6 @@
 package com.digis01.PokeAPICliente.Controller;
 
+import com.digis01.PokeAPICliente.DAO.IRepositoryFavorito;
 import com.digis01.PokeAPICliente.DAO.IRepositoryUsuario;
 import com.digis01.PokeAPICliente.DTO.PageDTO;
 import com.digis01.PokeAPICliente.DTO.PokemonCardDTO;
@@ -31,6 +32,9 @@ public class PokemonController {
 
     @Autowired
     private IRepositoryUsuario iRepositoryUsuario;
+    
+    @Autowired
+    private IRepositoryFavorito iRepositoryFavorito;
 
     @Autowired
     private UsuarioService usuarioService;
@@ -594,7 +598,8 @@ public class PokemonController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = (authentication != null && !(authentication instanceof AnonymousAuthenticationToken))
                 ? authentication.getName() : null;
-
+        
+        //Sacar Rol
         String role = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .findFirst()
@@ -614,6 +619,28 @@ public class PokemonController {
         List<PokemonCardDTO> favoritosCards = svc.allCards().stream()
                 .filter(p -> unicos.stream().anyMatch(f -> f.getIdPokemon() == p.id))
                 .toList();
+        
+        // GRAFICA
+         // Obtener todos los favoritos (duplicados incluidos)
+        List<Favoritos> todosFavoritos = iRepositoryFavorito.findAll();
+
+        // Mapear idPokemon -> cantidad de veces que fue favorito
+        Map<Integer, Long> favoritosCount = todosFavoritos.stream()
+                .collect(Collectors.groupingBy(Favoritos::getIdPokemon, Collectors.counting()));
+
+        // Mapear idPokemon -> nombre del Pokémon usando svc.allCards()
+        Map<Integer, String> idToName = svc.allCards().stream()
+                .collect(Collectors.toMap(p -> p.id, p -> p.name));
+
+        // Crear listas de nombres y cantidades para la gráfica
+        List<String> labels = favoritosCount.keySet().stream()
+                .map(id -> idToName.getOrDefault(id, "Desconocido"))
+                .toList();
+
+        List<Long> data = favoritosCount.values().stream().toList();
+
+        model.addAttribute("favoritosLabels", labels); // nombres
+        model.addAttribute("favoritosData", data);     // cantidad de veces que fue favorito
 
         // --- PAGINACIÓN ---
         int currentPage = Math.max(1, page);
