@@ -158,5 +158,87 @@ public class UsuarioService implements UserDetailsService {
         return result;
 
     }
+    
+    public Result GetAll() {
+        
+        Result result = new Result();
+        
+        try {
+            
+            List<Usuario> usuarios = iRepositoryUsuario.findAll();
+            
+            if (!usuarios.isEmpty()) {
+                result.object = usuarios;
+                result.correct = true;
+                
+            }
+            
+        } catch (Exception ex) {
+            result.correct = false;
+        }
+        
+        return result;
+    }
+    
+    public Result GetById(int IdUsuario) {
+        
+        Result result = new Result();
+        
+        try {
+            
+            Optional<Usuario> usuario = iRepositoryUsuario.findById(IdUsuario);
+            
+            if (usuario.isPresent()) {
+                result.object = usuario;
+                result.correct = true;
+            }
+            
+        } catch (Exception ex) {
+            result.correct = false;
+        }
+        
+        return result;
+        
+    }
+    
+    public Result GetByUsername(String Username) {
+        
+        Result result = new Result();
+        
+        try {
+            
+            Usuario usuario = iRepositoryUsuario.findByUsername(Username);
+            
+            if (usuario !=  null) {
+                result.object = usuario;
+                result.correct = true;
+            }
+            
+        } catch (Exception ex) {
+            result.correct = false;
+        }
+        
+        return result;
+    }
+    
+    public Result Delete(int IdUsuario) {
+        
+        Result result = new Result();
+        
+        try {
+            
+            Optional<Usuario> usuario = iRepositoryUsuario.findById(IdUsuario);
+            
+            if (usuario.isPresent()) {
+                iRepositoryUsuario.deleteById(IdUsuario);
+                result.correct = true;
+            }
+            
+        } catch (Exception ex) {
+            result.correct = false;
+        }
+        
+        return result;
+    }
 
 }

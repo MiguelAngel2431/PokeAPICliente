@@ -5,7 +5,9 @@ import com.digis01.PokeAPICliente.JPA.Favoritos;
 import com.digis01.PokeAPICliente.ML.Result;
 import com.digis01.PokeAPICliente.Service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,6 +34,27 @@ public class UsuarioRestController {
     public Result totalPokemonesFavoritos() {
         return usuarioService.GetAllPokemonesFavoritos();
     }
+    
+    @GetMapping()
+    public Result GetAll() {
+        return usuarioService.GetAll();
+    }
+    
+    @GetMapping("/{IdUsuario}")
+    public Result GetById(@PathVariable int IdUsuario) {
+        return usuarioService.GetById(IdUsuario);
+    }
+    
+    @GetMapping("/GetByUsername/{Username}")
+    public Result GetByUsername(@PathVariable String Username) {
+        return usuarioService.GetByUsername(Username);
+    }
+    
+    @DeleteMapping("/{IdUsuario}")
+    public Result Delete(@PathVariable int IdUsuario) {
+        return usuarioService.Delete(IdUsuario);
+    }
+    
     
     
 }
