@@ -151,6 +151,8 @@ figure { margin: 0; }                 /* quita margen por defecto */
 .c-slide img.retro{
   image-rendering: pixelated;
   image-rendering: crisp-edges;        /* fallback */
+  .ball-link { display:inline-flex; }
+.ball { cursor: pointer; }
 }
 
   </style>
@@ -160,7 +162,12 @@ figure { margin: 0; }                 /* quita margen por defecto */
   <!-- NAV -->
   <nav class="nav">
     <div class="nav-in">
-      <div class="brand"><div class="ball"></div><span>PokéAPI Cliente</span></div>
+      <div class="brand">
+  <a th:href="@{/pokemon}" class="ball-link" aria-label="Ir al inicio" title="Inicio">
+    <div class="ball" aria-hidden="true"></div>
+  </a>
+  <span>PokéAPI</span>
+</div>
       <a class="login" href="/login">Login</a>
     </div>
   </nav>

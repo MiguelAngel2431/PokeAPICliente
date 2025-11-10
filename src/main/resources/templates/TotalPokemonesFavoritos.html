@@ -157,6 +157,9 @@
       background:linear-gradient(180deg,#fff, #fff7f7);
       border:1px dashed #ffd1d1; border-radius:12px;
     }
+    
+    .ball-link { display:inline-flex; }
+.ball { cursor: pointer; }
   </style>
 </head>
 <body>
@@ -164,7 +167,12 @@
   <!-- NAV -->
   <nav class="nav" aria-label="Principal">
     <div class="nav-in">
-      <div class="brand"><div class="ball" aria-hidden="true"></div><span>PokéAPI Cliente</span></div>
+      <div class="brand">
+  <a th:href="@{/pokemon}" class="ball-link" aria-label="Ir al inicio" title="Inicio">
+    <div class="ball" aria-hidden="true"></div>
+  </a>
+  <span>PokéAPI</span>
+</div>
       <div th:if="${username != null}">
         <div th:if="${role == 'ROLE_Administrador'}">
           <select id="opciones" name="opciones" class="login" onchange="handleSelectChange(this)">
