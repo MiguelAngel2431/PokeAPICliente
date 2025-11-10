@@ -231,7 +231,6 @@
                       data-generation=${p.generation},
                       data-habitat=${p.habitat}">
           <div class="card-inner" onclick="flip(this.parentElement)" tabindex="0" onkeypress="if (event.key === 'Enter') { flip(this.parentElement); }">
-            <!-- FRONT -->
             <article class="face front" aria-label="Frente">
               <div class="top">
                 <div class="halo" aria-hidden="true"></div>
@@ -340,10 +339,8 @@
   </main>
 
   <script>
-    /* FLIP */
     function flip(card){ card.classList.toggle('flipped'); }
 
-    // Select de usuario
     function handleSelectChange(selectElement) {
       const v = selectElement.value;
       if (v === "logout") window.location.href = "/logout";
@@ -351,7 +348,7 @@
       if (v === "administrador") window.location.href = "/pokemon/totalPokemonesFavoritos";
     }
 
-    // Favoritos (AJAX)
+   
     $(function(){
       $('.cboxFav').change(function(){
         const card = $(this).closest('.agregar-favoritos');
@@ -392,7 +389,7 @@
     const labels = /*[[${favoritosLabels}]]*/ [];
     const data   = /*[[${favoritosData}]]*/ [];
 
-    // KPI de favoritos totales
+    
     (function(){
       const sum = (data || []).reduce((a,b)=>a + (Number(b)||0), 0);
       const kpi = document.getElementById('kpiFavTotal');
@@ -490,7 +487,7 @@
       });
     }
 
-    // Orden inicial por nombre A–Z (cliente)
+   
     (function sortGridDefault(){
       const grid = document.getElementById('grid');
       if (!grid) return;
