@@ -194,123 +194,22 @@ public class PokemonController {
         return "PokemonIndex";
     }
 
-//    @GetMapping
-//    public String index(
-//            Model model,
-//            @RequestParam(defaultValue = "1") int page,
-//            @RequestParam(defaultValue = "12") int size,
-//            @RequestParam(value = "q", required = false) String q,
-//            @RequestParam(value = "types", required = false) String typesCsv,
-//            HttpServletRequest request // ⬅️ para construir redirectTo
-//    ) {
-//        // Dispara warmup si hace falta
-//        svc.warmupAsync(false);
-//
-//        // === Pantalla de carga SI la caché aún no está lista ===
-//        Map<String, Object> st = svc.status();
-//        boolean warming = Boolean.TRUE.equals(st.get("warming"));
-//        int count = ((Number) st.getOrDefault("count", 0)).intValue();
-//
-//        // Mostrar loading cuando:
-//        // 1) Está calentando y aún no hay datos, o
-//        // 2) No hay datos (primer arranque / sin snapshot)
-//        if ((warming && count == 0) || svc.allCards().isEmpty()) {
-//            pushLoading(model);
-//            model.addAttribute("redirectTo", currentUrl(request)); // vuelve exactamente a la misma URL
-//            return "PokemonLoading";
-//        }
-//
-//        // === Ya hay snapshot en memoria: render inline ===
-//        // Traer TODO para filtrar globalmente (en memoria)
-//        List<PokemonCardDTO> all = svc.allCards();
-//
-//        // --- BÚSQUEDA GLOBAL ---
-//        String term = (q == null) ? "" : q.trim().toLowerCase();
-//        if (!term.isEmpty()) {
-//            all = all.stream()
-//                    .filter(pok -> pok.name != null && pok.name.toLowerCase().contains(term))
-//                    .toList();
-//        }
-//
-//        // --- FILTRO POR TIPOS (multi) ---
-//        List<String> selectedTypes = new ArrayList<>();
-//        if (typesCsv != null && !typesCsv.isBlank()) {
-//            for (String t : typesCsv.split(",")) {
-//                String v = t.trim().toLowerCase();
-//                if (!v.isBlank()) selectedTypes.add(v);
-//            }
-//        }
-//        if (!selectedTypes.isEmpty()) {
-//            Set<String> wanted = new HashSet<>(selectedTypes);
-//            all = all.stream()
-//                    .filter(pok -> pok.types != null && pok.types.stream().anyMatch(t -> wanted.contains(t.toLowerCase())))
-//                    .toList();
-//        }
-//
-//        // --- PAGINACIÓN ---
-//        int currentPage = Math.max(1, page);
-//        int pageSize = Math.max(1, size);
-//        int total = all.size();
-//        int totalPages = Math.max(1, (int) Math.ceil(total / (double) pageSize));
-//        int from = Math.min((currentPage - 1) * pageSize, total);
-//        int to = Math.min(from + pageSize, total);
-//        List<PokemonCardDTO> pageItems = (from < to) ? all.subList(from, to) : List.of();
-//
-//        // Adaptación a tu plantilla (Map)
-//        List<Map<String, Object>> cards = pageItems.stream().map(c -> {
-//            Map<String, Object> m = new LinkedHashMap<>();
-//            m.put("id", c.id);
-//            m.put("name", c.name);
-//            m.put("image", c.image);
-//            m.put("types", c.types != null ? c.types : List.of());
-//            Map<String, Integer> stats = new LinkedHashMap<>();
-//            if (c.stats != null) {
-//                stats.put("hp", c.stats.getOrDefault("hp", 0));
-//                stats.put("attack", c.stats.getOrDefault("attack", 0));
-//                stats.put("defense", c.stats.getOrDefault("defense", 0));
-//                stats.put("speed", c.stats.getOrDefault("speed", 0));
-//            } else {
-//                stats.put("hp", 0); stats.put("attack", 0); stats.put("defense", 0); stats.put("speed", 0);
-//            }
-//            m.put("stats", stats);
-//            m.put("heightM", c.heightM);
-//            m.put("weightKg", c.weightKg);
-//            m.put("baseExp", c.baseExp);
-//            return m;
-//        }).toList();
-//
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        String username = (authentication != null && !(authentication instanceof AnonymousAuthenticationToken))
-//                ? authentication.getName()
-//                : null;
-//
-//        // Tipos del catálogo completo (no solo de la página)
-//        List<String> typesAll = svc.allTypes().stream().sorted().toList();
-//
-//        // Username
-//        model.addAttribute("username", username);
-//
-//        // Modelo
-//        model.addAttribute("pokemones", cards);
-//        model.addAttribute("page", currentPage);
-//        model.addAttribute("size", pageSize);
-//        model.addAttribute("totalPages", totalPages);
-//        model.addAttribute("count", total);
-//        model.addAttribute("typesAll", typesAll);
-//
-//        // estado de filtros para la UI
-//        model.addAttribute("q", term);
-//        model.addAttribute("selectedTypes", selectedTypes);
-//        model.addAttribute("typesQuery", String.join(",", selectedTypes));
-//
-//        return "PokemonIndex";
-//    }
-
     /* ================== DETALLE ================== */
     @GetMapping("/{idPokemon}")
     public String getById(Model model, @PathVariable int idPokemon) {
         // dispara warmup si hace falta
         svc.warmupAsync(false);
+        
+        //Autenticacion
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        
+        String username = (authentication != null && !(authentication instanceof AnonymousAuthenticationToken))
+                ? authentication.getName() : null;
+
+        String role = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .findFirst()
+                .orElse("ROLE_General"); // Si no hay rol, asignamos ROLE_General
 
         Result<PokemonFullDTO> r = svc.getById(idPokemon);
 
@@ -324,6 +223,9 @@ public class PokemonController {
 
         Map<String, Object> p = toDetailMap(r.object);
         model.addAttribute("p", p);
+        
+        model.addAttribute("role", role);
+        model.addAttribute("username", username);
         return "PokemonDetail";
     }
 

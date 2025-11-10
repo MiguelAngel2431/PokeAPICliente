@@ -168,7 +168,26 @@ figure { margin: 0; }                 /* quita margen por defecto */
   </a>
   <span>PokéAPI</span>
 </div>
-      <a class="login" href="/login">Login</a>
+      <div th:if="${username != null}">
+                    <div th:if="${role == 'ROLE_Administrador'}">
+                        <select id="opciones" name="opciones" class="login" onchange="handleSelectChange(this)">
+                            <option value="" disabled selected th:text="${username}">Usuario</option>
+                            <option value="/usuario/myAccount">Mi cuenta</option>
+                            <option value="administrador">Administrador</option>
+                            <option value="logout">Cerrar sesión</option>
+                        </select>
+                    </div>
+                    <div th:if="${role != 'ROLE_Administrador'}">
+                        <select id="opciones" name="opciones" class="login" onchange="handleSelectChange(this)">
+                            <option value="" disabled selected th:text="${username}">Usuario</option>
+                            <option value="/usuario/myAccount">Mi cuenta</option>
+                            <option value="logout">Cerrar sesión</option>
+                        </select>
+                    </div>
+                </div>
+                <div th:if="${username == null}">
+                    <a class="login" th:href="@{/login}">Login</a>
+                </div>
     </div>
   </nav>
 
@@ -349,6 +368,23 @@ figure { margin: 0; }                 /* quita margen por defecto */
 
       goTo(0); start();
     })();
+  </script>
+  <script>
+      // Select de usuario
+            function handleSelectChange(selectElement) {
+                var selectedValue = selectElement.value;
+                if (selectedValue == "logout") {
+                    window.location.href = "/logout";
+                }
+                if (selectedValue == "/usuario/myAccount") {
+                    window.location.href = "/usuario/myAccount";
+                }
+                if (selectedValue = "administrador") {
+                    window.location.href = "/pokemon/totalPokemonesFavoritos";
+                }
+    
+
+            }
   </script>
 </body>
 </html>
