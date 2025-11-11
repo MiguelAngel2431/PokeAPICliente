@@ -8,8 +8,10 @@
   <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-  <!-- jQuery (para AJAX de buscar/eliminar si lo prefieres) -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
   <!-- Fuente -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,16 +26,17 @@
     }
     html,body{ background:#fff; font-family:Poppins,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif; color:var(--ink) }
 
-    /* NAV con pokéball clickeable a /pokemon */
-    .nav{
-      position:sticky; top:0; z-index:2000;
+    /* NAV */
+    .nav{ position:sticky; top:0; z-index:2000;
       background:linear-gradient(180deg,#fff 0,#fff 60%, #000 60%, #000 63%, #ef4444 63%, #ef4444 100%);
       box-shadow:0 10px 20px rgba(239,68,68,.25);
     }
     .nav-in{ max-width:1160px; margin:0 auto; padding:18px 16px; display:flex; align-items:center; justify-content:space-between; gap:12px }
     .brand{ display:flex; gap:12px; align-items:center; font-weight:800; letter-spacing:.5px; cursor:pointer }
-    .ball{
-      width:34px; height:34px; border-radius:50%;
+    .ball{ width:34px; height:34px; border-radius:50%;
+      background:
+        radial-gradient(circle at 50% 48%, #fff 0 12px, transparent 13px),
+        linear-gradient(#fff 50%, #black 0 52%, #ef4444 0);
       background:
         radial-gradient(circle at 50% 48%, #fff 0 12px, transparent 13px),
         linear-gradient(#fff 50%, #000 0 52%, #ef4444 0);
@@ -45,28 +48,26 @@
 
     .wrap{ max-width:1160px; margin:18px auto; padding:0 16px }
 
-    /* Tarjetas KPI */
+    /* KPI */
     .kpi-card{ border:1px solid #f1f5f9; box-shadow:var(--shadow); border-radius:16px; }
     .kpi-icon{
       width:44px; height:44px; display:flex; align-items:center; justify-content:center; border-radius:12px;
       background:#fff0f0; border:1px solid var(--ring); color:var(--red-700); font-weight:800;
     }
 
-    /* Buscador */
-    .search-box{
-      border:1px solid #e5e7eb; border-radius:999px; padding:8px 12px; box-shadow:var(--shadow);
-    }
+    .search-box{ border:1px solid #e5e7eb; border-radius:999px; padding:8px 12px; box-shadow:var(--shadow); }
     .btn-red{ border:1px solid #fecaca; background:#fff; color:var(--red-700); font-weight:800; }
     .btn-red:hover{ background:#ffe8e8; }
 
-    /* Tabla */
     .table thead th{ background:#fff7f7; border-bottom:2px solid var(--ring); }
     .badge-role{ background:var(--chip); color:var(--red-700); border:1px solid #fecaca; }
 
-    /* Mensajes */
     .alert-soft{ background:linear-gradient(180deg,#fff,#fff7f7); border:1px dashed var(--ring); color:var(--muted); }
 
-    /* Offcanvas detalle */
+    /* Cards para charts */
+    .chart-card{ border:1px solid #f1f5f9; border-radius:16px; box-shadow:var(--shadow); }
+    .chart-wrap{ position:relative; height:320px; }
+
     .offcanvas-header{ border-bottom:1px solid #f1f5f9; }
     .label-sm{ font-size:.8rem; color:#64748b; font-weight:700; text-transform:uppercase; letter-spacing:.3px; }
   </style>
@@ -153,6 +154,32 @@
     </div>
   </div>
 
+  <!-- CHARTS -->
+  <div class="row g-3 mt-1">
+    <div class="col-12 col-lg-6">
+      <div class="chart-card p-3">
+        <div class="d-flex align-items-center justify-content-between">
+          <h2 class="h6 m-0 fw-bold">Usuarios por Rol</h2>
+          <small class="text-muted">Distribución</small>
+        </div>
+        <div class="chart-wrap mt-2">
+          <canvas id="chartRoles" aria-label="Gráfica de usuarios por rol" role="img"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-lg-6">
+      <div class="chart-card p-3">
+        <div class="d-flex align-items-center justify-content-between">
+          <h2 class="h6 m-0 fw-bold">Dominios de Email</h2>
+          <small class="text-muted">Top 6</small>
+        </div>
+        <div class="chart-wrap mt-2">
+          <canvas id="chartDominios" aria-label="Gráfica de dominios de email" role="img"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Lista -->
   <div class="card mt-3 shadow-sm">
     <div class="card-header bg-white">
@@ -191,6 +218,10 @@
               <a class="btn btn-sm btn-outline-secondary"
                  th:href="@{'/usuario/' + ${u.idUsuario}}">
                 Ver
+              </a>
+              <a class="btn btn-sm btn-outline-primary"
+                 th:href="@{'/usuario/edit/' + ${u.idUsuario}}">
+                Editar
               </a>
 
               <!-- Botón abre modal de eliminar -->
@@ -233,7 +264,7 @@
 
 </main>
 
-<!-- Offcanvas detalle (se rellena con búsqueda por username) -->
+<!-- Offcanvas detalle (búsqueda por username) -->
 <div class="offcanvas offcanvas-end" tabindex="-1" id="offUser" aria-labelledby="offUserLabel">
   <div class="offcanvas-header">
     <h5 class="offcanvas-title" id="offUserLabel">Detalle de usuario</h5>
@@ -244,6 +275,22 @@
   </div>
 </div>
 
+<!-- Datos para charts (generados desde Thymeleaf) -->
+<script th:inline="javascript">
+/*<![CDATA[*/
+  const __USERS__ = [
+    /*[# th:each="u : ${usuarios}"]*/
+    {
+      id: /*[[${u.idUsuario}]]*/,
+      username: /*[['' + ${u.username}]]*/,
+      email: /*[['' + (${u.email} != null ? ${u.email} : '')]]*/,
+      role: /*[['' + (${u.rol} != null ? ${u.rol.nombre} : 'Sin rol')]]*/
+    },
+    /*[/]*/
+  ];
+/*]]>*/
+</script>
+
 <script>
   // Select de usuario (navbar)
   function handleSelectChange(selectElement) {
@@ -253,7 +300,7 @@
     if (v === "administrador") window.location.href = "/pokemon/totalPokemonesFavoritos";
   }
 
-  // Buscar por username -> abre offcanvas con GET /usuario/by-username?u=
+  // Buscar por username -> offcanvas
   const btnBuscar = document.getElementById('btnBuscar');
   const qUser = document.getElementById('qUser');
   const off = new bootstrap.Offcanvas('#offUser');
@@ -269,12 +316,8 @@
       return;
     }
     try {
-      // Cargamos la vista de detalle del controller /usuario/by-username en el offcanvas (como HTML)
       const resp = await fetch(`/usuario/by-username?u=${encodeURIComponent(u)}`, {headers: {'X-Requested-With':'XMLHttpRequest'}});
       const html = await resp.text();
-
-      // Si devuelves directamente una vista "UsuarioDetalle", la inyectamos;
-      // Alternativamente puedes crear un endpoint /api que regrese JSON y formatearlo aquí.
       offTitle.textContent = `Usuario: ${u}`;
       offBody.innerHTML = html;
       off.show();
@@ -288,11 +331,87 @@
   btnBuscar?.addEventListener('click', doBuscar);
   qUser?.addEventListener('keydown', (e)=>{ if (e.key === 'Enter'){ e.preventDefault(); doBuscar(); } });
 
-  // Mejora accesibilidad: focus visible en botones outline
-  document.querySelectorAll('.btn-outline-danger,.btn-outline-secondary').forEach(b=>{
-    b.addEventListener('focus', ()=> b.classList.add('shadow'));
-    b.addEventListener('blur',  ()=> b.classList.remove('shadow'));
-  });
+  // --------- CHARTS (client-side con __USERS__) ----------
+  function groupCount(arr) {
+    const map = new Map();
+    for (const v of arr) map.set(v, (map.get(v) || 0) + 1);
+    return [...map.entries()].sort((a,b)=> b[1]-a[1]);
+  }
+
+  // Roles
+  const roles = groupCount(__USERS__.map(u => (u.role && u.role.trim()) ? u.role : 'Sin rol'));
+  const roleLabels = roles.map(([k])=>k);
+  const roleData   = roles.map(([_,v])=>v);
+
+  // Dominios de email (top 6)
+  const dominios = groupCount(__USERS__
+      .map(u => (u.email||'').split('@')[1] || '—')
+  ).slice(0,6);
+  const domLabels = dominios.map(([k])=>k);
+  const domData   = dominios.map(([_,v])=>v);
+
+  // Paleta basada en rojo + aliados
+  const baseColors = [
+    '#ef4444','#f59e0b','#10b981','#3b82f6','#a855f7','#ec4899','#22c55e','#eab308'
+  ];
+  const colors = (n)=> Array.from({length:n}, (_,i)=> baseColors[i % baseColors.length]);
+
+  // Chart Roles (doughnut)
+  const ctxRoles = document.getElementById('chartRoles')?.getContext('2d');
+  if (ctxRoles && roleLabels.length){
+    new Chart(ctxRoles, {
+      type: 'doughnut',
+      data: {
+        labels: roleLabels,
+        datasets: [{
+          data: roleData,
+          borderWidth: 2,
+          borderColor: '#fff',
+          backgroundColor: colors(roleLabels.length),
+          hoverOffset: 8
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, cutout: '58%',
+        plugins: {
+          legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle' } },
+          tooltip: { callbacks: {
+            label: (ctx)=>{
+              const total = ctx.dataset.data.reduce((a,b)=>a+b,0);
+              const val = ctx.parsed;
+              const pct = total ? ((val/total)*100).toFixed(1):0;
+              return ` ${ctx.label}: ${val} (${pct}%)`;
+            }
+          } }
+        }
+      }
+    });
+  }
+
+  // Chart Dominios (bar)
+  const ctxDom = document.getElementById('chartDominios')?.getContext('2d');
+  if (ctxDom && domLabels.length){
+    new Chart(ctxDom, {
+      type: 'bar',
+      data: {
+        labels: domLabels,
+        datasets: [{
+          label: 'Usuarios',
+          data: domData,
+          backgroundColor: colors(domLabels.length),
+          borderColor: '#ffffff',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        scales: {
+          y: { beginAtZero: true, ticks: { precision:0 } }
+        },
+        plugins: { legend: { display:false } }
+      }
+    });
+  }
 </script>
 
 </body>

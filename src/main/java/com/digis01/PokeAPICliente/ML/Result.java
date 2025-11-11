@@ -3,6 +3,9 @@ package com.digis01.PokeAPICliente.ML;
 public class Result<T> {
     public boolean correct;
     public String message;
+    public String errorMessage;
+   public Exception ex;
+
     public T object;
     public boolean loading;   // para estados de precarga (UI)
 
