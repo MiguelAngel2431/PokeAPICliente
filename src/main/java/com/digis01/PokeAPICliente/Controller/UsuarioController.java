@@ -44,7 +44,6 @@ public class UsuarioController {
 
         Result result = usuarioService.GetAll();
         List<?> usuarios = Collections.emptyList();
-
         if (result != null && result.correct && result.object instanceof List) {
             usuarios = (List<?>) result.object;
         }
