@@ -159,6 +159,8 @@ public class UsuarioService implements UserDetailsService {
 
     }
     
+    //Usuario
+    
     public Result GetAll() {
         
         Result result = new Result();
