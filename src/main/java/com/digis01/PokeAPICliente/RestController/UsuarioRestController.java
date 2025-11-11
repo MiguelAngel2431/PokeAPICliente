@@ -6,6 +6,7 @@ import com.digis01.PokeAPICliente.JPA.Usuario;
 import com.digis01.PokeAPICliente.ML.Result;
 import com.digis01.PokeAPICliente.Service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -37,6 +38,7 @@ public class UsuarioRestController {
         return usuarioService.GetAllPokemonesFavoritos();
     }
     
+    @PreAuthorize("hasRole('Administrador')")
     @GetMapping()
     public Result GetAll() {
         return usuarioService.GetAll();

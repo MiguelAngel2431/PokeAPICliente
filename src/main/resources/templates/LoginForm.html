@@ -10,18 +10,20 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-        
+
         <!-- Animate CSS -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-        
+
         <style>
             html, body {
                 height: 100%; /* necesario para que 100vh funcione bien */
                 margin: 0;
+                scroll-behavior: smooth;
             }
 
             .container-fluid {
                 height: 100vh; /* ocupa toda la altura visible */
+                overflow: hidden;
             }
 
             .banner-red {
@@ -44,25 +46,55 @@
             h1, h3 {
                 color: white;
             }
-            
+
             .pokeapi-img {
                 width: 300px;
             }
-            
+
             .title-iniciarsesion {
                 color: red;
             }
-            
+
             .text {
                 color: black;
             }
-            
+
             .form {
                 border: 1px solid;
             }
-            
+
             .register {
                 color: red;
+            }
+
+            /* --- ESTILO DEL BOTÓN FLOTANTE SOLO EN MÓVIL --- */
+            @media (max-width: 768px) {
+                .row {
+                    flex-direction: column; /* Apila los banners */
+                }
+
+                .banner-red, .banner-white {
+                    border-radius: 0;
+                }
+
+                .scroll-btn {
+                    position: fixed;
+                    bottom: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background-color: white;
+                    color: red;
+                    border: 2px solid red;
+                    padding: 10px 20px;
+                    border-radius: 25px;
+                    font-weight: bold;
+                    z-index: 1000;
+                }
+
+                .scroll-btn:hover {
+                    background-color: red;
+                    color: white;
+                }
             }
         </style>
     </head>
@@ -70,6 +102,7 @@
     <body>
         <div class="container-fluid">
             <div class="row h-100">
+                <!-- BANNER ROJO -->
                 <div class="col-md-6 banner-red d-flex flex-column align-items-center justify-content-center animate__animated animate__fadeInLeft animate__delay-1s">
                     <div class="image">
                         <img src="https://pokestop.io/img/pokemon/psyduck-256x256.png" alt="alt"/>
@@ -79,18 +112,20 @@
                     <img class="pokeapi-img" src="https://res.cloudinary.com/dioxkbk6g/image/upload/v1569205776/Pokeapi/logo-6221638601ef7fa7c835eae08ef67a16_xokydx.png" alt="alt"/>
                     <h3>Accede al mundo pokemón</h3>    
                 </div>
-                <div class="col-md-6 banner-white d-flex flex-column align-items-center justify-content-center animate__animated animate__fadeInRight animate__delay-1s">
-                    
+
+                <!-- BANNER BLANCO -->
+                <div id="bannerBlanco" class="col-md-6 banner-white d-flex flex-column align-items-center justify-content-center animate__animated animate__fadeInRight animate__delay-1s">
+
                     <div th:if="${param.error}" class="alert alert-danger">
                         <strong>Error:</strong> Nombre de usuario o contraseña inválidos. 
                     </div>
-                    
+
                     <div th:if="${mensaje}">
                         <div class="alert alert-success" role="alert" th:text="${mensaje}">
                             This is a success alert—check it out!
                         </div>
                     </div>
-                    
+
                     <h1 class="title-iniciarsesion">Iniciar Sesión</h1>
                     <b class="text">Ingresa tus credenciales para acceder a la PokeAPI</b>
                     <br>
@@ -118,5 +153,54 @@
                 </div>
             </div>
         </div>
+
+        <!-- BOTÓN QUE SOLO APARECE EN MÓVILES -->
+        <button id="scrollBtn" class="scroll-btn d-md-none" onclick="irAlFormulario()">Continuar ➜</button>
+
+        <!-- CARGAMOS LA API DE YOUTUBE -->
+        <script src="https://www.youtube.com/iframe_api"></script>
+
+        <script>
+            let player; // variable global para el reproductor
+
+            // Función que YouTube llama automáticamente cuando la API está lista
+            function onYouTubeIframeAPIReady() {
+                player = new YT.Player('ytPlayer', {
+                    height: '0', // ocultamos el video
+                    width: '0',
+                    videoId: 'vu_zg45ONA0', // <-- aquí pones tu VIDEO_ID de YouTube
+                    playerVars: {
+                        autoplay: 0, // no reproducir todavía
+                        loop: 1,
+                        playlist: 'vu_zg45ONA0' // necesario para el loop
+                    }
+                });
+            }
+
+            function irAlFormulario() {
+                const bannerBlanco = document.getElementById('bannerBlanco');
+                const boton = document.getElementById('scrollBtn');
+
+                // Desplazamiento suave al banner blanco
+                if (bannerBlanco) {
+                    bannerBlanco.scrollIntoView({behavior: 'smooth'});
+                }
+
+                // Desaparecer el botón suavemente
+                if (boton) {
+                    boton.style.transition = "opacity 0.6s";
+                    boton.style.opacity = "0";
+                    setTimeout(() => boton.style.display = "none", 600);
+                }
+
+                // Reproducir el audio de YouTube (ya permitido por el clic del usuario)
+                if (player && typeof player.playVideo === 'function') {
+                    player.playVideo();
+                }
+            }
+        </script>
+
+        <!-- CONTENEDOR OCULTO PARA EL REPRODUCTOR -->
+        <div id="ytPlayer"></div>
     </body>
 </html>

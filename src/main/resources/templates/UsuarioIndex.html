@@ -414,5 +414,21 @@
   }
 </script>
 
+<script>
+    // Select de usuario
+    function handleSelectChange(selectElement) {
+        var selectedValue = selectElement.value;
+        if (selectedValue == "logout") {
+            window.location.href = "/logout";
+        }
+        if (selectedValue == "/usuario/myAccount") {
+            window.location.href = "/pokemon/myAccount";
+        }
+        if (selectedValue == "administrador") {
+            window.location.href = "/pokemon/totalPokemonesFavoritos";
+        }
+    }
+</script>
+
 </body>
 </html>
