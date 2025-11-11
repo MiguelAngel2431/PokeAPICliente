@@ -2,11 +2,13 @@
 package com.digis01.PokeAPICliente.RestController;
 
 import com.digis01.PokeAPICliente.JPA.Favoritos;
+import com.digis01.PokeAPICliente.JPA.Usuario;
 import com.digis01.PokeAPICliente.ML.Result;
 import com.digis01.PokeAPICliente.Service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -55,6 +57,9 @@ public class UsuarioRestController {
         return usuarioService.Delete(IdUsuario);
     }
     
-    
+    @PatchMapping("/{IdUsuario}")
+    public Result Update(@RequestBody Usuario usuario) {
+        return usuarioService.Update(usuario);
+    }
     
 }

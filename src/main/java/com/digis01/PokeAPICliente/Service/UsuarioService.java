@@ -242,5 +242,37 @@ public class UsuarioService implements UserDetailsService {
         
         return result;
     }
+    
+    public Result Update(@RequestBody Usuario usuario) {
+        
+        Result result = new Result();
+        
+        try {
+            
+            Optional<Usuario> usuarioFind = iRepositoryUsuario.findById(usuario.getIdUsuario());
+            
+            if (usuarioFind.isPresent()) {
+                
+                Usuario usuarioExistente = usuarioFind.get();
+                
+                usuarioExistente.setNombre(usuario.getNombre());
+                usuarioExistente.setApellidoPaterno(usuario.getApellidoPaterno());
+                usuarioExistente.setApellidoMaterno(usuario.getApellidoMaterno());
+                usuarioExistente.setUsername(usuario.getUsername());
+                usuarioExistente.setEmail(usuario.getEmail());
+                
+                Usuario updatedUser = iRepositoryUsuario.save(usuarioExistente);
+                
+                result.object = updatedUser;
+                result.correct = true;
+            }
+            
+        } catch (Exception ex) {
+            result.correct = false;
+        }
+        
+        return result;
+        
+    }
 
 }
