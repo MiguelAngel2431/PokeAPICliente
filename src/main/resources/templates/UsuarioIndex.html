@@ -326,9 +326,9 @@
   function handleSelectChange(selectElement) {
     const v = selectElement.value;
     if (v === "logout") window.location.href = "/logout";
-    else if (v === "/usuario/myAccount") window.location.href = "/usuario/myAccount";
+    else if (v === "/usuario/myAccount") window.location.href = "/pokemon/myAccount";
     else if (v === "administrador") window.location.href = "/usuario/list";
-    else if (v === "pokemones") window.location.href = "/pokemon";
+    else if (v === "pokemones") window.location.href = "/pokemon/totalPokemonesFavoritos";
     else if (v) window.location.href = v;
   }
 
