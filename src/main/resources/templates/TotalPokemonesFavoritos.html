@@ -168,16 +168,17 @@
   <nav class="nav" aria-label="Principal">
     <div class="nav-in">
       <div class="brand">
-  <a th:href="@{/pokemon}" class="ball-link" aria-label="Ir al inicio" title="Inicio">
-    <div class="ball" aria-hidden="true"></div>
-  </a>
-  <span>PokéAPI</span>
-</div>
+        <a th:href="@{/usuario/list}" class="ball-link" aria-label="Ir al inicio" title="Inicio">
+          <div class="ball" aria-hidden="true"></div>
+        </a>
+        <span>PokéAPI · Administrador</span>
+      </div>
       <div th:if="${username != null}">
         <div th:if="${role == 'ROLE_Administrador'}">
           <select id="opciones" name="opciones" class="login" onchange="handleSelectChange(this)">
             <option value="" disabled selected th:text="${username}">Usuario</option>
             <option value="/usuario/myAccount">Mi cuenta</option>
+            <option value="pokemones">Pokemons</option>
             <option value="administrador">Administrador</option>
             <option value="logout">Cerrar sesión</option>
           </select>
@@ -354,6 +355,7 @@
       if (v === "logout") window.location.href = "/logout";
       if (v === "/usuario/myAccount") window.location.href = "/pokemon/myAccount";
       if (v === "administrador") window.location.href = "/pokemon/totalPokemonesFavoritos";
+      if (v === "pokemones") window.location.href = "/pokemon";
     }
 
    

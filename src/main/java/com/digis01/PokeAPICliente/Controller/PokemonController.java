@@ -481,6 +481,21 @@ public class PokemonController {
     public String TotalPokemonesFavoritos(Model model,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "12") int size) {
+        
+        // Obtener usuario autenticado
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = (authentication != null && !(authentication instanceof AnonymousAuthenticationToken))
+                ? authentication.getName() : null;
+        
+        //Sacar Rol
+        String role = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .findFirst()
+                .orElse("ROLE_General"); // Si no hay rol, asignamos ROLE_General
+        
+        if (!role.equals("ROLE_Administrador")) {
+            return "Prohibition";
+        }
 
         // Dispara warmup si hace falta
         svc.warmupAsync(false);
@@ -495,17 +510,6 @@ public class PokemonController {
             model.addAttribute("redirectTo", "/myAccount");
             return "PokemonLoading";
         }
-
-        // Obtener usuario autenticado
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = (authentication != null && !(authentication instanceof AnonymousAuthenticationToken))
-                ? authentication.getName() : null;
-        
-        //Sacar Rol
-        String role = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .findFirst()
-                .orElse("ROLE_General"); // Si no hay rol, asignamos ROLE_General
 
         // --- OBTENER FAVORITOS ÚNICOS ---
         Result result = usuarioService.GetAllPokemonesFavoritos();

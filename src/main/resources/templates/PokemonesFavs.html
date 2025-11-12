@@ -623,17 +623,24 @@
         <!-- NAV -->
         <nav class="nav" aria-label="Principal">
             <div class="nav-in">
-                <div class="brand">
-  <a th:href="@{/pokemon}" class="ball-link" aria-label="Ir al inicio" title="Inicio">
-    <div class="ball" aria-hidden="true"></div>
-  </a>
-  <span>PokéAPI </span>
-</div>
+                <div th:if="${role == 'ROLE_Administrador'}">
+                    <div class="brand" onclick="window.location.href='/usuario/list'"><div class="ball" aria-hidden="true"></div><span>PokéAPI · Administrador</span>
+                    </div>
+                </div>    
+                <div th:if="${role == 'ROLE_General'}">
+                    <div class="brand" onclick="window.location.href='/pokemon'"><div class="ball" aria-hidden="true"></div><span>PokéAPI · Usuarios</span>
+                    </div>
+                </div>
+                <div th:if="${role == 'ROLE_ANONYMOUS'}">
+                    <div class="brand" onclick="window.location.href='/pokemon'"><div class="ball" aria-hidden="true"></div><span>PokéAPI</span>
+                    </div>
+                </div>
                 <div th:if="${username != null}">
                     <div th:if="${role == 'ROLE_Administrador'}">
                         <select id="opciones" name="opciones" class="login" onchange="handleSelectChange(this)">
                             <option value="" disabled selected th:text="${username}">Usuario</option>
                             <option value="/usuario/myAccount">Mi cuenta</option>
+                            <option value="pokemones">Pokemons</option>
                             <option value="administrador">Administrador</option>
                             <option value="logout">Cerrar sesión</option>
                         </select>
@@ -1082,6 +1089,9 @@
                 }
                 if (selectedValue = "administrador") {
                     window.location.href = "/pokemon/totalPokemonesFavoritos";
+                }
+                if (selectedValue = "pokemones") {
+                    window.location.href = "/pokemon";
                 }
     
 
