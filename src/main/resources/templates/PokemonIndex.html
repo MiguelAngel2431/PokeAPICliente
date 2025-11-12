@@ -546,11 +546,11 @@
 
             /* Botón circular simple */
             .heart-checkbox .heart-icon{
-                --size: 38px;                 
-                --border: #e5e7eb;            
-                --hover: #d1d5db;             
-                --on:   #ef4444;             
-                --off:  #9ca3af;              
+                --size: 38px;
+                --border: #e5e7eb;
+                --hover: #d1d5db;
+                --on:   #ef4444;
+                --off:  #9ca3af;
 
                 width:var(--size);
                 height:var(--size);
@@ -619,66 +619,83 @@
                     transition:none !important;
                 }
             }
-            
+
             /* --- Partículas al dar like --- */
             .heart-checkbox .heart-icon{
-              position: relative;          /* ancla las partículas al icono */
-              overflow: visible;           /* que se vean fuera del círculo */
+                position: relative;          /* ancla las partículas al icono */
+                overflow: visible;           /* que se vean fuera del círculo */
             }
 
             /* Partícula genérica */
             .pfx {
-              position: absolute;
-              left: 50%; top: 50%;
-              width: 8px; height: 8px;
-              border-radius: 50%;
-              transform: translate(-50%, -50%) scale(.5);
-              pointer-events: none;
-              opacity: 0;
-              animation: pfx-pop 700ms cubic-bezier(.2,.8,.2,1) forwards;
-              will-change: transform, opacity;
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                transform: translate(-50%, -50%) scale(.5);
+                pointer-events: none;
+                opacity: 0;
+                animation: pfx-pop 700ms cubic-bezier(.2,.8,.2,1) forwards;
+                will-change: transform, opacity;
             }
 
             /* Variante corazón (usa texto) */
             .pfx.heart {
-              width: auto; height: auto;
-              font-size: 14px; line-height: 1;
-              background: transparent !important;
-              transform: translate(-50%, -50%) scale(.6);
+                width: auto;
+                height: auto;
+                font-size: 14px;
+                line-height: 1;
+                background: transparent !important;
+                transform: translate(-50%, -50%) scale(.6);
             }
 
             @keyframes pfx-pop {
-              0%   { opacity: 1; transform: translate(-50%, -50%) scale(.75); }
-              80%  { opacity: 1; }
-              100% { 
-                opacity: 0;
-                /* Se mueve según variables calculadas en JS */
-                transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0);
-              }
+                0%   {
+                    opacity: 1;
+                    transform: translate(-50%, -50%) scale(.75);
+                }
+                80%  {
+                    opacity: 1;
+                }
+                100% {
+                    opacity: 0;
+                    /* Se mueve según variables calculadas en JS */
+                    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0);
+                }
             }
 
             /* Anillo sutil al activar */
             .heart-burst {
-              position: absolute;
-              left: 50%; top: 50%;
-              width: 10px; height: 10px;
-              border-radius: 999px;
-              border: 2px solid #ffd1d1;
-              transform: translate(-50%,-50%) scale(.4);
-              opacity: .9;
-              pointer-events: none;
-              animation: burst 420ms ease-out forwards;
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                width: 10px;
+                height: 10px;
+                border-radius: 999px;
+                border: 2px solid #ffd1d1;
+                transform: translate(-50%,-50%) scale(.4);
+                opacity: .9;
+                pointer-events: none;
+                animation: burst 420ms ease-out forwards;
             }
             @keyframes burst {
-              to { transform: translate(-50%,-50%) scale(2.2); opacity: 0; }
+                to {
+                    transform: translate(-50%,-50%) scale(2.2);
+                    opacity: 0;
+                }
             }
 
             /* Respeta reducir movimiento */
             @media (prefers-reduced-motion: reduce){
-              .pfx, .heart-burst { animation: none !important; display: none !important; }
+                .pfx, .heart-burst {
+                    animation: none !important;
+                    display: none !important;
+                }
             }
 
-            
+
         </style>
     </head>
     <body>
@@ -687,15 +704,15 @@
         <nav class="nav" aria-label="Principal">
             <div class="nav-in">
                 <div th:if="${role == 'ROLE_Administrador'}">
-                    <div class="brand" onclick="window.location.href='/usuario/list'"><div class="ball" aria-hidden="true"></div><span>PokéAPI · Administrador</span>
+                    <div class="brand" onclick="window.location.href = '/usuario/list'"><div class="ball" aria-hidden="true"></div><span>PokéAPI · Administrador</span>
                     </div>
                 </div>    
                 <div th:if="${role == 'ROLE_General'}">
-                    <div class="brand" onclick="window.location.href='/pokemon'"><div class="ball" aria-hidden="true"></div><span>PokéAPI · Usuarios</span>
+                    <div class="brand" onclick="window.location.href = '/pokemon'"><div class="ball" aria-hidden="true"></div><span>PokéAPI · Usuarios</span>
                     </div>
                 </div>
                 <div th:if="${role == 'ROLE_ANONYMOUS'}">
-                    <div class="brand" onclick="window.location.href='/pokemon'"><div class="ball" aria-hidden="true"></div><span>PokéAPI</span>
+                    <div class="brand" onclick="window.location.href = '/pokemon'"><div class="ball" aria-hidden="true"></div><span>PokéAPI</span>
                     </div>
                 </div>
                 <div th:if="${username != null}">
@@ -1315,67 +1332,67 @@
                                                                             });
                                                                         });
                                                                     });
-                                                                    
-                                                       // Emite partículas alrededor del elemento "iconEl"
-  function emitParticles(iconEl, options={}){
-    const count   = options.count ?? 12;                 // cantidad de partículas
-    const confettiColors = ['#ef4444','#f59e0b','#10b981','#3b82f6','#a855f7','#ec4899']; // paleta
-    const minDist = 26, maxDist = 46;                    // radio de dispersión (px)
 
-    // Anillo burst
-    const ring = document.createElement('span');
-    ring.className = 'heart-burst';
-    iconEl.appendChild(ring);
-    setTimeout(()=> ring.remove(), 420);
+                                                                    // Emite partículas alrededor del elemento "iconEl"
+                                                                    function emitParticles(iconEl, options = {}){
+                                                                        const count = options.count ?? 12;                 // cantidad de partículas
+                                                                        const confettiColors = ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#a855f7', '#ec4899']; // paleta
+                                                                        const minDist = 26, maxDist = 46;                    // radio de dispersión (px)
 
-    for (let i=0; i<count; i++){
-      const el = document.createElement('span');
+                                                                        // Anillo burst
+                                                                        const ring = document.createElement('span');
+                                                                        ring.className = 'heart-burst';
+                                                                        iconEl.appendChild(ring);
+                                                                        setTimeout(() => ring.remove(), 420);
 
-      // mezcla: confetti sólido + corazones
-      const isHeart = i % 4 === 0; // 1 de cada 4 será corazón
-      el.className = 'pfx' + (isHeart ? ' heart' : '');
-      
-      // Trayectoria aleatoria
-      const angle = (Math.PI*2) * Math.random();
-      const dist  = minDist + Math.random()*(maxDist-minDist);
-      const dx = Math.cos(angle) * dist;
-      const dy = Math.sin(angle) * dist;
+                                                                        for (let i = 0; i < count; i++) {
+                                                                            const el = document.createElement('span');
 
-      el.style.setProperty('--dx', dx.toFixed(1)+'px');
-      el.style.setProperty('--dy', dy.toFixed(1)+'px');
+                                                                            // mezcla: confetti sólido + corazones
+                                                                            const isHeart = i % 4 === 0; // 1 de cada 4 será corazón
+                                                                            el.className = 'pfx' + (isHeart ? ' heart' : '');
 
-      if (isHeart){
-        el.textContent = '♥';
-        el.style.color = confettiColors[i % confettiColors.length];
-      } else {
-        el.style.background = confettiColors[i % confettiColors.length];
-        // confetti más pequeños de vez en cuando
-        if (Math.random() < .3) {
-          el.style.width = '6px';
-          el.style.height = '6px';
-        }
-      }
+                                                                            // Trayectoria aleatoria
+                                                                            const angle = (Math.PI * 2) * Math.random();
+                                                                            const dist = minDist + Math.random() * (maxDist - minDist);
+                                                                            const dx = Math.cos(angle) * dist;
+                                                                            const dy = Math.sin(angle) * dist;
 
-      iconEl.appendChild(el);
-      // Limpieza tras la animación
-      el.addEventListener('animationend', ()=> el.remove());
-    }
-  }
+                                                                            el.style.setProperty('--dx', dx.toFixed(1) + 'px');
+                                                                            el.style.setProperty('--dy', dy.toFixed(1) + 'px');
 
-  // Conecta el efecto a tus checkboxes existentes
-  document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.cboxFav').forEach(cb => {
-      cb.addEventListener('change', function(){
-        if (this.checked) {
-          // el ícono es el siguiente hermano del checkbox en tu markup actual
-          const icon = this.nextElementSibling;
-          if (icon && icon.classList.contains('heart-icon')) {
-            emitParticles(icon);
-          }
-        }
-      });
-    });
-  });             
+                                                                            if (isHeart) {
+                                                                                el.textContent = '♥';
+                                                                                el.style.color = confettiColors[i % confettiColors.length];
+                                                                            } else {
+                                                                                el.style.background = confettiColors[i % confettiColors.length];
+                                                                                // confetti más pequeños de vez en cuando
+                                                                                if (Math.random() < .3) {
+                                                                                    el.style.width = '6px';
+                                                                                    el.style.height = '6px';
+                                                                                }
+                                                                            }
+
+                                                                            iconEl.appendChild(el);
+                                                                            // Limpieza tras la animación
+                                                                            el.addEventListener('animationend', () => el.remove());
+                                                                    }
+                                                                    }
+
+                                                                    // Conecta el efecto a tus checkboxes existentes
+                                                                    document.addEventListener('DOMContentLoaded', () => {
+                                                                        document.querySelectorAll('.cboxFav').forEach(cb => {
+                                                                            cb.addEventListener('change', function () {
+                                                                                if (this.checked) {
+                                                                                    // el ícono es el siguiente hermano del checkbox en tu markup actual
+                                                                                    const icon = this.nextElementSibling;
+                                                                                    if (icon && icon.classList.contains('heart-icon')) {
+                                                                                        emitParticles(icon);
+                                                                                    }
+                                                                                }
+                                                                            });
+                                                                        });
+                                                                    });
         </script>
 
     </body>

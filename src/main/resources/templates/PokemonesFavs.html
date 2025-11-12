@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org"
-                xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -563,59 +563,169 @@
 
 
 
-            /* Contenedor para el checkbox */
-            .heart-checkbox-container {
-                display: flex;
-                align-items: center;
-                gap: 10px; /* Espaciado entre el corazón y el texto */
+            /* Favoritos */
+            .heart-checkbox-container{
+                display:inline-flex;
+                align-items:center;
+                gap:10px;
             }
 
-            /* Estilo del checkbox (lo ocultamos) */
-            .heart-checkbox input[type="checkbox"] {
-                display: none; /* Oculta el checkbox original */
+            /* Oculta el checkbox nativo (la lógica sigue igual) */
+            .heart-checkbox input[type="checkbox"]{
+                display:none;
             }
 
-            /* El icono del corazón */
-            .heart-checkbox .heart-icon {
-                width: 40px;
-                height: 40px;
-                background-color: transparent;
-                border: 2px solid #ccc;
+            /* Botón circular simple */
+            .heart-checkbox .heart-icon{
+                --size: 38px;
+                --border: #e5e7eb;
+                --hover: #d1d5db;
+                --on:   #ef4444;
+                --off:  #9ca3af;
+
+                width:var(--size);
+                height:var(--size);
+                border-radius:50%;
+                display:inline-flex;
+                justify-content:center;
+                align-items:center;
+                background:#fff;
+                border:1.5px solid var(--border);
+                cursor:pointer;
+                user-select:none;
+                transition: transform .16s ease, border-color .16s ease, background-color .16s ease;
+                outline: none;
+            }
+
+            /* Corazón con fuente (sin imágenes) */
+            .heart-checkbox .heart-icon::before{
+                content:"\2764";              /* ♥ */
+                font-size:calc(var(--size)*.58);
+                line-height:1;
+                color:var(--off);
+                transition: color .16s ease, transform .16s ease;
+            }
+
+            /* Hover: sutil */
+            .heart-checkbox .heart-icon:hover{
+                border-color:var(--hover);
+                transform: translateY(-1px);
+            }
+
+            /* Enfocado por teclado */
+            .heart-checkbox .heart-icon:focus-visible{
+                box-shadow: 0 0 0 3px #fff, 0 0 0 5px #ffd1d1;
+            }
+
+            /* Estado activo: relleno sólido, ícono blanco */
+            .heart-checkbox input[type="checkbox"]:checked + .heart-icon{
+                background:var(--on);
+                border-color:transparent;
+                transform: translateY(-1px);
+            }
+            .heart-checkbox input[type="checkbox"]:checked + .heart-icon::before{
+                color:#fff;
+                transform: scale(1.04);
+            }
+
+            /* Texto al lado, sobrio */
+            .add-to-favorites-text{
+                font-size:13px;
+                font-weight:600;
+                color:#374151; /* slate-700 */
+            }
+
+            /* Tamaños opcionales */
+            .heart-checkbox .heart-icon.heart-sm{
+                --size:32px;
+            }
+            .heart-checkbox .heart-icon.heart-lg{
+                --size:46px;
+            }
+
+            /* Respeta “reducir movimiento” */
+            @media (prefers-reduced-motion: reduce){
+                .heart-checkbox .heart-icon,
+                .heart-checkbox .heart-icon::before{
+                    transition:none !important;
+                }
+            }
+
+            /* --- Partículas al dar like --- */
+            .heart-checkbox .heart-icon{
+                position: relative;          /* ancla las partículas al icono */
+                overflow: visible;           /* que se vean fuera del círculo */
+            }
+
+            /* Partícula genérica */
+            .pfx {
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                width: 8px;
+                height: 8px;
                 border-radius: 50%;
-                position: relative;
-                transition: all 0.3s ease;
-                cursor: pointer;
-                display: flex;
-                justify-content: center;
-                align-items: center;
+                transform: translate(-50%, -50%) scale(.5);
+                pointer-events: none;
+                opacity: 0;
+                animation: pfx-pop 700ms cubic-bezier(.2,.8,.2,1) forwards;
+                will-change: transform, opacity;
             }
 
-            /* Forma del corazón usando pseudo-elemento */
-            .heart-checkbox .heart-icon::before {
-                content: '\2764'; /* Unicode del corazón */
-                font-size: 24px;
-                color: #ccc;
-                transition: all 0.3s ease;
-            }
-
-            /* Cuando el checkbox está marcado (corazón lleno y rojo) */
-            .heart-checkbox input[type="checkbox"]:checked + .heart-icon::before {
-                color: #e74c3c; /* Rojo cuando está marcado */
-            }
-
-            /* Animación al marcar el corazón */
-            .heart-checkbox input[type="checkbox"]:checked + .heart-icon {
-                border-color: #e74c3c; /* Cambio de borde al rojo cuando marcado */
-                transform: scale(1.2); /* Aumenta el tamaño cuando está marcado */
-            }
-
-            /* El texto al lado del corazón */
-            .add-to-favorites-text {
+            /* Variante corazón (usa texto) */
+            .pfx.heart {
+                width: auto;
+                height: auto;
                 font-size: 14px;
-                font-weight: 600;
+                line-height: 1;
+                background: transparent !important;
+                transform: translate(-50%, -50%) scale(.6);
             }
-            .ball-link { display:inline-flex; }
-.ball { cursor: pointer; }
+
+            @keyframes pfx-pop {
+                0%   {
+                    opacity: 1;
+                    transform: translate(-50%, -50%) scale(.75);
+                }
+                80%  {
+                    opacity: 1;
+                }
+                100% {
+                    opacity: 0;
+                    /* Se mueve según variables calculadas en JS */
+                    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0);
+                }
+            }
+
+            /* Anillo sutil al activar */
+            .heart-burst {
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                width: 10px;
+                height: 10px;
+                border-radius: 999px;
+                border: 2px solid #ffd1d1;
+                transform: translate(-50%,-50%) scale(.4);
+                opacity: .9;
+                pointer-events: none;
+                animation: burst 420ms ease-out forwards;
+            }
+            @keyframes burst {
+                to {
+                    transform: translate(-50%,-50%) scale(2.2);
+                    opacity: 0;
+                }
+            }
+
+            /* Respeta reducir movimiento */
+            @media (prefers-reduced-motion: reduce){
+                .pfx, .heart-burst {
+                    animation: none !important;
+                    display: none !important;
+                }
+            }
+
         </style>
     </head>
     <body>
@@ -624,15 +734,15 @@
         <nav class="nav" aria-label="Principal">
             <div class="nav-in">
                 <div th:if="${role == 'ROLE_Administrador'}">
-                    <div class="brand" onclick="window.location.href='/usuario/list'"><div class="ball" aria-hidden="true"></div><span>PokéAPI · Administrador</span>
+                    <div class="brand" onclick="window.location.href = '/usuario/list'"><div class="ball" aria-hidden="true"></div><span>PokéAPI · Administrador</span>
                     </div>
                 </div>    
                 <div th:if="${role == 'ROLE_General'}">
-                    <div class="brand" onclick="window.location.href='/pokemon'"><div class="ball" aria-hidden="true"></div><span>PokéAPI · Usuarios</span>
+                    <div class="brand" onclick="window.location.href = '/pokemon'"><div class="ball" aria-hidden="true"></div><span>PokéAPI · Usuarios</span>
                     </div>
                 </div>
                 <div th:if="${role == 'ROLE_ANONYMOUS'}">
-                    <div class="brand" onclick="window.location.href='/pokemon'"><div class="ball" aria-hidden="true"></div><span>PokéAPI</span>
+                    <div class="brand" onclick="window.location.href = '/pokemon'"><div class="ball" aria-hidden="true"></div><span>PokéAPI</span>
                     </div>
                 </div>
                 <div th:if="${username != null}">
@@ -656,29 +766,29 @@
                 <div th:if="${username == null}">
                     <a class="login" th:href="@{/login}">Login</a>
                 </div>
-                
+
             </div>
         </nav>
 
         <main class="wrap">
-            <h1 class="title">Pokemons</h1>
+            <h1 class="title">Pokemons Favoritos</h1>
 
             <!-- BÚSQUEDA alineada -->
-            <div class="toolbar">
+<!--            <div class="toolbar">
                 <form class="search" role="search" method="get" th:action="@{/pokemon}">
                     <input id="q" name="q" type="search" placeholder="Buscar por nombre… (ej. mewtwo, pikachu)"
                            aria-label="Buscar pokémon" th:value="${q}"/>
                     <button class="btn-find" type="submit">Buscar</button>
                     <div class="hint">Presiona Enter o “Buscar” para consultar en todo el Pokédex</div>
 
-                    <!-- Preserva filtros actuales -->
+                     Preserva filtros actuales 
                     <input type="hidden" name="types" th:value="${typesQuery}"/>
                     <input type="hidden" name="size" th:value="${size}"/>
                     <input type="hidden" name="loc"  th:value="${loc}"/>
                     <input type="hidden" name="hab"  th:value="${hab}"/>
                     <input type="hidden" name="page" value="1"/>
                 </form>
-            </div>
+            </div>-->
 
             <div class="meta-line">
                 <span class="pill" th:text="'Total: ' + ${count}">Total: 0</span>
@@ -694,8 +804,8 @@
             </div>
 
             <!-- FILTROS -->
-            <section class="filters" aria-label="Filtros y orden">
-                <!-- Dropdown de tipos -->
+<!--            <section class="filters" aria-label="Filtros y orden">
+                 Dropdown de tipos 
                 <div class="dropdown" id="ddTypes">
                     <button class="btn dd-btn" type="button" aria-haspopup="true" aria-expanded="false">
                         🔎 Filtrar por tipos
@@ -721,7 +831,7 @@
                     </div>
                 </div>
 
-                <!-- Locations (región derivada de generation) -->
+                 Locations (región derivada de generation) 
                 <div class="ctrl">
                     <label for="location"><strong>Locations</strong></label>
                     <select id="location" th:value="${loc}">
@@ -738,7 +848,7 @@
                     </select>
                 </div>
 
-                <!-- Habitats -->
+                 Habitats 
                 <div class="ctrl">
                     <label for="habitat"><strong>Habitats</strong></label>
                     <select id="habitat" th:value="${hab}">
@@ -755,7 +865,7 @@
                     </select>
                 </div>
 
-                <!-- Orden (por nombre) -->
+                 Orden (por nombre) 
                 <div class="ctrl">
                     <label for="sortBy"><strong>Ordenar</strong></label>
                     <select id="sortBy">
@@ -763,7 +873,7 @@
                         <option value="name-desc">Nombre Z–A</option>
                     </select>
                 </div>
-            </section>
+            </section>-->
 
             <!-- GRID -->
             <section class="grid" id="grid">
@@ -820,7 +930,7 @@
                                             <input type="checkbox" class="cboxFav" th:checked="${favoritosIds.contains(p.id)}" value="first_checkbox" />
                                             <span class="heart-icon"></span>
                                         </label>
-                                        <span class="add-to-favorites-text">Add to Favorites</span>
+                                        <span class="add-to-favorites-text"></span>
                                     </div>
                                 </div>
 
@@ -1093,7 +1203,7 @@
                 if (selectedValue = "pokemones") {
                     window.location.href = "/pokemon";
                 }
-    
+
 
             }
         </script>
