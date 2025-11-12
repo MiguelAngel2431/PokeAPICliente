@@ -38,7 +38,7 @@ public class UsuarioRestController {
         return usuarioService.GetAllPokemonesFavoritos();
     }
     
-    @PreAuthorize("hasRole('Administrador')")
+    @PreAuthorize("hasRole('ROLE_Administrador')")
     @GetMapping()
     public Result GetAll() {
         return usuarioService.GetAll();

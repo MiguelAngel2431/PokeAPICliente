@@ -621,62 +621,62 @@
             }
             
             /* --- Partículas al dar like --- */
-.heart-checkbox .heart-icon{
-  position: relative;          /* ancla las partículas al icono */
-  overflow: visible;           /* que se vean fuera del círculo */
-}
+            .heart-checkbox .heart-icon{
+              position: relative;          /* ancla las partículas al icono */
+              overflow: visible;           /* que se vean fuera del círculo */
+            }
 
-/* Partícula genérica */
-.pfx {
-  position: absolute;
-  left: 50%; top: 50%;
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  transform: translate(-50%, -50%) scale(.5);
-  pointer-events: none;
-  opacity: 0;
-  animation: pfx-pop 700ms cubic-bezier(.2,.8,.2,1) forwards;
-  will-change: transform, opacity;
-}
+            /* Partícula genérica */
+            .pfx {
+              position: absolute;
+              left: 50%; top: 50%;
+              width: 8px; height: 8px;
+              border-radius: 50%;
+              transform: translate(-50%, -50%) scale(.5);
+              pointer-events: none;
+              opacity: 0;
+              animation: pfx-pop 700ms cubic-bezier(.2,.8,.2,1) forwards;
+              will-change: transform, opacity;
+            }
 
-/* Variante corazón (usa texto) */
-.pfx.heart {
-  width: auto; height: auto;
-  font-size: 14px; line-height: 1;
-  background: transparent !important;
-  transform: translate(-50%, -50%) scale(.6);
-}
+            /* Variante corazón (usa texto) */
+            .pfx.heart {
+              width: auto; height: auto;
+              font-size: 14px; line-height: 1;
+              background: transparent !important;
+              transform: translate(-50%, -50%) scale(.6);
+            }
 
-@keyframes pfx-pop {
-  0%   { opacity: 1; transform: translate(-50%, -50%) scale(.75); }
-  80%  { opacity: 1; }
-  100% { 
-    opacity: 0;
-    /* Se mueve según variables calculadas en JS */
-    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0);
-  }
-}
+            @keyframes pfx-pop {
+              0%   { opacity: 1; transform: translate(-50%, -50%) scale(.75); }
+              80%  { opacity: 1; }
+              100% { 
+                opacity: 0;
+                /* Se mueve según variables calculadas en JS */
+                transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0);
+              }
+            }
 
-/* Anillo sutil al activar */
-.heart-burst {
-  position: absolute;
-  left: 50%; top: 50%;
-  width: 10px; height: 10px;
-  border-radius: 999px;
-  border: 2px solid #ffd1d1;
-  transform: translate(-50%,-50%) scale(.4);
-  opacity: .9;
-  pointer-events: none;
-  animation: burst 420ms ease-out forwards;
-}
-@keyframes burst {
-  to { transform: translate(-50%,-50%) scale(2.2); opacity: 0; }
-}
+            /* Anillo sutil al activar */
+            .heart-burst {
+              position: absolute;
+              left: 50%; top: 50%;
+              width: 10px; height: 10px;
+              border-radius: 999px;
+              border: 2px solid #ffd1d1;
+              transform: translate(-50%,-50%) scale(.4);
+              opacity: .9;
+              pointer-events: none;
+              animation: burst 420ms ease-out forwards;
+            }
+            @keyframes burst {
+              to { transform: translate(-50%,-50%) scale(2.2); opacity: 0; }
+            }
 
-/* Respeta reducir movimiento */
-@media (prefers-reduced-motion: reduce){
-  .pfx, .heart-burst { animation: none !important; display: none !important; }
-}
+            /* Respeta reducir movimiento */
+            @media (prefers-reduced-motion: reduce){
+              .pfx, .heart-burst { animation: none !important; display: none !important; }
+            }
 
             
         </style>
@@ -686,7 +686,12 @@
         <!-- NAV -->
         <nav class="nav" aria-label="Principal">
             <div class="nav-in">
-                <div class="brand"><div class="ball" aria-hidden="true"></div><span>PokéAPI</span></div>
+                <div th:if="${role == 'ROLE_Administrador'}">
+                <div class="brand" onclick="window.location.href='/pokemon'><div class="ball" aria-hidden="true"></div><span>PokéAPI</span>
+                </div>
+                <div th:if="${role == 'ROLE_Administrador'}">
+                <div class="brand" onclick="window.location.href='/pokemon'><div class="ball" aria-hidden="true"></div><span>PokéAPI</span>
+                </div>
                 <div th:if="${username != null}">
 
                     <div th:if="${role == 'ROLE_Administrador'}">

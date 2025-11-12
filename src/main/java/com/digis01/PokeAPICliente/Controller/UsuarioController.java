@@ -63,6 +63,10 @@ public class UsuarioController {
                 .findFirst()
                 .orElse("ROLE_General"); // Si no hay rol, asignamos ROLE_General
         
+        if (!role.equals("ROLE_Administrador")) {
+            return "Prohibition";
+        }
+        
         model.addAttribute("username", username);
         model.addAttribute("role", role);
         
@@ -79,6 +83,20 @@ public class UsuarioController {
     /* ============ DETALLE POR ID (VER) ============ */
     @GetMapping("/{id}")
     public String getById(@PathVariable("id") Integer id, Model model) {
+        
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = (authentication != null && !(authentication instanceof AnonymousAuthenticationToken))
+                ? authentication.getName() : null;
+
+        String role = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .findFirst()
+                .orElse("ROLE_General"); // Si no hay rol, asignamos ROLE_General
+        
+        if (!role.equals("ROLE_Administrador")) {
+            return "Prohibition";
+        }
+        
         Result result = usuarioService.GetById(id);
 
         com.digis01.PokeAPICliente.JPA.Usuario found = null;
