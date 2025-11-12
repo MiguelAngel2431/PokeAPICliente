@@ -67,6 +67,261 @@
                 color: red;
             }
 
+            /* BOTÓN SOLO EN PANTALLAS GRANDES */
+            .scroll-btn-desktop {
+                background-color: white;
+                color: red;
+                border: 2px solid white;
+                padding: 10px 25px;
+                border-radius: 25px;
+                font-weight: bold;
+                transition: all 0.3s ease-in-out;
+            }
+
+            .scroll-btn-desktop:hover {
+                background-color: red;
+                color: white;
+                border-color: red;
+            }
+
+
+
+            /* Banner rojo con diseño mejorado */
+            .banner-red {
+                background: linear-gradient(135deg, #ff4b5c, #ff3d00); /* Gradiente de rojo a naranja */
+                height: 100%; /* Ocupa toda la altura del contenedor padre */
+                border-radius: 0 20px 20px 0; /* Bordes redondeados */
+                display: flex;
+                flex-direction: column;
+                justify-content: center; /* Centrado vertical */
+                align-items: center; /* Centrado horizontal */
+                padding: 20px;
+                text-align: center; /* Alineación de texto */
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Sombra sutil */
+                transition: all 0.3s ease-in-out; /* Transición suave */
+            }
+
+            /* Efecto de sombra y escala al pasar el ratón */
+            .banner-red:hover {
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada */
+                transform: scale(1.05); /* Efecto de zoom */
+            }
+
+            /* Imágenes con bordes redondeados */
+            .image img {
+                border-radius: 50%; /* Bordes redondeados en la imagen */
+                border: 3px solid #fff; /* Borde blanco alrededor de la imagen */
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+            }
+
+            /* Estilo de las imágenes de PokeAPI */
+            .pokeapi-img {
+                width: 250px;
+                margin-top: 20px;
+                border-radius: 15px;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Sombra suave */
+            }
+
+            /* Títulos con un diseño más atractivo */
+            h3 {
+                color: white; /* Color blanco para los textos */
+                font-size: 2rem; /* Aumentamos el tamaño de la fuente */
+                font-weight: bold;
+                text-transform: uppercase; /* Mayúsculas */
+                letter-spacing: 2px; /* Espaciado entre letras */
+                margin-top: 20px;
+                font-family: 'Roboto', sans-serif; /* Fuente moderna */
+            }
+
+            /* Botón que solo aparece en pantallas grandes */
+            .scroll-btn-desktop {
+                background-color: white;
+                color: red;
+                border: 2px solid white;
+                padding: 12px 25px;
+                border-radius: 25px;
+                font-weight: bold;
+                transition: all 0.3s ease-in-out;
+                margin-top: 20px;
+            }
+
+            /* Efecto hover del botón */
+            .scroll-btn-desktop:hover {
+                background-color: red;
+                color: white;
+                border-color: red;
+            }
+
+            /* Animación para hacer aparecer los elementos con suavidad */
+            .animate__animated {
+                animation-duration: 1s;
+                animation-fill-mode: both;
+            }
+
+            .animate__fadeInLeft {
+                animation-name: fadeInLeft;
+            }
+
+            .animate__fadeInRight {
+                animation-name: fadeInRight;
+            }
+
+            @keyframes fadeInLeft {
+                0% {
+                    opacity: 0;
+                    transform: translateX(-100px);
+                }
+                100% {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            @keyframes fadeInRight {
+                0% {
+                    opacity: 0;
+                    transform: translateX(100px);
+                }
+                100% {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            /* Hacer que el texto dentro del banner sea legible */
+            h1, h3 {
+                color: white;
+            }
+
+            /* Estilo para el botón flotante en móviles */
+            .scroll-btn {
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background-color: white;
+                color: red;
+                border: 2px solid red;
+                padding: 12px 25px;
+                border-radius: 25px;
+                font-weight: bold;
+                z-index: 1000;
+                transition: all 0.3s ease-in-out;
+            }
+
+            /* Efecto hover en el botón flotante */
+            .scroll-btn:hover {
+                background-color: red;
+                color: white;
+                border-color: red;
+            }
+
+            @media (max-width: 768px) {
+                .row {
+                    flex-direction: column; /* Apilamos los banners */
+                }
+
+                .banner-red, .banner-white {
+                    border-radius: 0;
+                }
+            }
+
+
+            /* Banner blanco con diseño mejorado */
+            .banner-white {
+                background-color: white;
+                height: 100vh;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+                padding: 0 20px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                border-radius: 20px; /* Bordes redondeados */
+                background: linear-gradient(135deg, #ffefba, #ffffff);
+                transition: all 0.3s ease-in-out;
+            }
+
+            .banner-white:hover {
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+                transform: scale(1.02);
+            }
+
+            .title-iniciarsesion {
+                color: #e63946;
+                font-family: 'Roboto', sans-serif;
+                font-size: 2.5rem; 
+                font-weight: bold;
+                margin-bottom: 20px;
+            }
+
+            .text {
+                font-size: 1.2rem;
+                color: #555555;
+                margin-bottom: 30px;
+                font-family: 'Open Sans', sans-serif;
+            }
+
+            .form {
+                background-color: #fafafa; /* Fondo claro para el formulario */
+                border-radius: 15px; /* Bordes redondeados */
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
+                padding: 40px;
+                width: 100%;
+                max-width: 400px; /* Limitar el ancho máximo */
+                transition: box-shadow 0.3s ease-in-out;
+            }
+
+            .form:hover {
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Más sombra cuando pasa el ratón */
+            }
+
+            .form-control {
+                border-radius: 25px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombra ligera en los campos */
+                border: 1px solid #ddd; /* Borde suave */
+                padding: 10px 15px;
+                margin-bottom: 15px;
+            }
+
+            .btn-danger {
+                background-color: #e63946; /* Rojo suave */
+                border-color: #e63946;
+                border-radius: 25px;
+                padding: 12px;
+                font-weight: bold;
+                transition: all 0.3s ease-in-out;
+            }
+
+            .btn-danger:hover {
+                background-color: #d32f2f;
+                border-color: #d32f2f;
+            }
+
+            a {
+                color: #e63946;
+                text-decoration: none;
+                transition: color 0.3s ease-in-out;
+            }
+
+            a:hover {
+                color: #d32f2f;
+            }
+
+            p {
+                margin-top: 20px;
+                font-size: 1rem;
+            }
+
+            @media (max-width: 768px) {
+                .form {
+                    padding: 30px 20px;
+                }
+            }
+
+
+
             /* --- ESTILO DEL BOTÓN FLOTANTE SOLO EN MÓVIL --- */
             @media (max-width: 768px) {
                 .row {
@@ -103,18 +358,22 @@
         <div class="container-fluid">
             <div class="row h-100">
                 <!-- BANNER ROJO -->
-                <div class="col-md-6 banner-red d-flex flex-column align-items-center justify-content-center animate__animated animate__fadeInLeft animate__delay-1s">
+                <div class="col-md-12 banner-red d-flex flex-column align-items-center justify-content-center animate__animated animate__fadeInLeft animate__delay-1s">
                     <div class="image">
                         <img src="https://pokestop.io/img/pokemon/psyduck-256x256.png" alt="alt"/>
                     </div>
                     <br>
-                    <!--<h1>PokeAPI</h1>-->
                     <img class="pokeapi-img" src="https://res.cloudinary.com/dioxkbk6g/image/upload/v1569205776/Pokeapi/logo-6221638601ef7fa7c835eae08ef67a16_xokydx.png" alt="alt"/>
                     <h3>Accede al mundo pokemón</h3>    
+
+                    <!-- Botón solo visible en pantallas grandes -->
+                    <button id="scrollBtnDesktop" class="scroll-btn-desktop d-none d-md-block mt-4" onclick="irAlFormulario()">
+                        Continuar ➜
+                    </button>
                 </div>
 
                 <!-- BANNER BLANCO -->
-                <div id="bannerBlanco" class="col-md-6 banner-white d-flex flex-column align-items-center justify-content-center animate__animated animate__fadeInRight animate__delay-1s">
+                <div id="bannerBlanco" class="col-md-12 banner-white d-flex flex-column align-items-center justify-content-center animate__animated animate__fadeInRight animate__delay-1s">
 
                     <div th:if="${param.error}" class="alert alert-danger">
                         <strong>Error:</strong> Nombre de usuario o contraseña inválidos. 
@@ -172,7 +431,7 @@
                     playerVars: {
                         autoplay: 0, // no reproducir todavía
                         loop: 1,
-                        playlist: 'vu_zg45ONA0' // necesario para el loop
+                        //playlist: 'vu_zg45ONA0' // necesario para el loop
                     }
                 });
             }
