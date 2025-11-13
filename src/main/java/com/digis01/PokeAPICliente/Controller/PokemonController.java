@@ -53,10 +53,10 @@ public class PokemonController {
             @RequestParam(defaultValue = "12") int size,
             @RequestParam(value = "q", required = false) String q,
             @RequestParam(value = "types", required = false) String typesCsv,
-            @RequestParam(value = "loc", required = false) String loc, // <— NUEVO
-            @RequestParam(value = "hab", required = false) String hab // <— NUEVO
+            @RequestParam(value = "loc", required = false) String loc, 
+            @RequestParam(value = "hab", required = false) String hab 
     ) {
-        // Dispara el warmup si hace falta
+        
         svc.warmupAsync(false);
 
         Map<String, Object> st = svc.status();

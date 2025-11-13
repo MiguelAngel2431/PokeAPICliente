@@ -32,8 +32,8 @@ public class PokedexCacheService {
     private static final int MAX_RETRIES  = 5;
     private static final int MAX_INFLIGHT = 32; // rate-limit para no saturar la API
 
-    private static final Path CACHE_FILE  = Path.of("cache", "pokedex.json");    // snapshot ligero
-    private static final Path FULL_DIR    = Path.of("cache", "full");            // dump completo NDJSON
+    private static final Path CACHE_FILE  = Path.of("cache", "pokedex.json");   
+    private static final Path FULL_DIR    = Path.of("cache", "full");            
     private static final Path CATALOG_IDX = FULL_DIR.resolve("catalog-index.json");
     private static final long MAX_AGE_SECONDS = 60L * 60L * 3L; // 3 horas fresco
 
@@ -216,7 +216,7 @@ public class PokedexCacheService {
         
         }
     
-    /** Descarga todo el catálogo a NDJSON, con reintentos y segunda pasada. */
+    /** Descarga todo el catálogo con reintentos y segunda pasada. */
 //    private void fullHarvest() {
 //        resourcesStatus.clear();
 //        FilesX.ensureDir(FULL_DIR);
@@ -301,7 +301,7 @@ public class PokedexCacheService {
         }
     }
 
-    /** Une /pokemon y /pokemon-form→pokemon.url, dedupe y devuelve detail-urls finales. */
+    /** Une /pokemon y /pokemon-form→pokemon.url, y devuelve detail-urls. */
     @SuppressWarnings("unchecked")
     private List<String> collectAllPokemonDetailUrls() {
         // /pokemon (intenta mega-limit)
