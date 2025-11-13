@@ -264,7 +264,6 @@ public class PokemonController {
         m.put("weightKg", c.weightKg);
         m.put("baseExp", c.baseExp);
 
-        // Tu index usa p.stats.hp/attack/defense/speed
         Map<String, Integer> stats = new LinkedHashMap<>();
         if (c.stats != null) {
             stats.put("hp", c.stats.getOrDefault("hp", 0));
@@ -294,8 +293,7 @@ public class PokemonController {
         p.put("flavor", d.flavor);
         p.put("cry", d.cry);
 
-        // Tu detail.html suma total así: p.stats.hp + p.stats.attack + p.stats.defense
-        // + p.stats.specialAttack + p.stats.specialDefense + p.stats.speed
+      
         Map<String, Integer> stats = new LinkedHashMap<>();
         int hp = getOrZero(d.stats, "hp");
         int atk = getOrZero(d.stats, "attack");
@@ -312,14 +310,12 @@ public class PokemonController {
         stats.put("specialDefense", sdef);
         p.put("stats", stats);
 
-        // abilities: [{name, hidden}]
         List<Map<String, Object>> abilities = (d.abilities == null ? List.<Map<String, Object>>of()
                 : d.abilities.stream()
                         .map(a -> Map.<String, Object>of("name", a.name, "hidden", a.hidden))
                         .toList());
         p.put("abilities", abilities);
 
-        // sprites: [{label,url}]
         List<Map<String, Object>> sprites = (d.sprites == null ? List.<Map<String, Object>>of()
                 : d.sprites.stream()
                         .map(s -> Map.<String, Object>of("label", s.label, "url", s.url))
@@ -361,7 +357,6 @@ public class PokemonController {
                 }
             }
         }
-// Orden útil: método ASC, nivel ASC, nombre ASC
         movesFlat.sort(Comparator.<Map<String, Object>, String>comparing(m -> String.valueOf(m.get("method")), String.CASE_INSENSITIVE_ORDER)
                 .thenComparing(m -> (Integer) (m.get("level") == null ? 999 : m.get("level")))
                 .thenComparing(m -> String.valueOf(m.get("name")), String.CASE_INSENSITIVE_ORDER));

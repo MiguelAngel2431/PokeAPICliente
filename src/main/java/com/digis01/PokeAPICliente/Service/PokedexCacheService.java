@@ -75,9 +75,9 @@ public class PokedexCacheService {
         }
     }
 
-    /* ========================= API PÚBLICA sssssssss==================== */
+    /* ========================= API PÚBLICA ==================== */
 
-    /** Dispara la descarga completa + reconstrucción del snapshot ligero. */
+    /** Dispara la descarga completa + reconstrucción del progres var. */
     public Result<Void> warmupAsync(boolean force) {
         if (warming.get() && !force) return Result.loading(currentProgress());
         if (!force && isCacheFresh()) return Result.ok(null);
@@ -304,7 +304,7 @@ public class PokedexCacheService {
     /** Une /pokemon y /pokemon-form→pokemon.url, dedupe y devuelve detail-urls finales. */
     @SuppressWarnings("unchecked")
     private List<String> collectAllPokemonDetailUrls() {
-        // /pokemon (intenta mega-limit, si no funciona paginate)
+        // /pokemon (intenta mega-limit)
         Map<String,Object> root = getJsonWithRetry("https://pokeapi.co/api/v2/pokemon?limit=200000&offset=0", MAX_RETRIES);
         List<Map<String,Object>> pokemonResults = (root != null)
                 ? (List<Map<String,Object>>) root.getOrDefault("results", Collections.emptyList())
@@ -353,7 +353,7 @@ public class PokedexCacheService {
 
     /* ================== REBUILD pokedex.json (tus DTOs) ================== */
 
-    /** Reconstruye el snapshot ligero y llena memoria. */
+    /** Reconstruye y llena memoria. */
     private void rebuildLightPokedexFromFullDump() {
         Path pokemonNd = FULL_DIR.resolve("pokemon.ndjson");
         if (!Files.exists(pokemonNd)) return;
@@ -651,13 +651,13 @@ public class PokedexCacheService {
                     p.flavor = pickLocalized(sp, "flavor_text_entries", "flavor_text");
                 }
                 
-                        // --- Habitat (species.habitat.name) ---
+                        // --- Habitat ---
         Map<String,Object> habitat = castMap(sp.get("habitat"));
         if (habitat != null && habitat.get("name") != null) {
             p.habitat = String.valueOf(habitat.get("name")); // ej "forest", "cave"
         }
 
-        // --- Generation -> región amigable (species.generation.name) ---
+        // --- Generation -> región amigable  ---
         Map<String,Object> gen = castMap(sp.get("generation")); // ej "generation-i"
         if (gen != null && gen.get("name") != null) {
             String g = String.valueOf(gen.get("name")); // generation-i … generation-ix
