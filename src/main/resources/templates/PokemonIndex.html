@@ -96,6 +96,39 @@
                 margin:0 0 12px
             }
 
+            .nav-links{
+
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+
+            .nav-username{
+                color: #ffffff;
+                font-weight: 600;
+                font-size: 14px;
+            }
+
+            .nav-btn{
+                background: #fff;
+                color: var(--red);
+                font-weight: 800;
+                padding: 8px 12px;
+                border-radius: 999px;
+                border: 1px solid #fecaca;
+                text-decoration: none;
+                font-size:13px;
+                cursor: pointer;
+
+            }
+
+            .nav-btn:hover{
+
+                background: #ffe8e8;
+
+            }
+
             /* TOOLBAR */
             .toolbar{
                 display:grid;
@@ -695,52 +728,112 @@
                 }
             }
 
+            .card.flipped .front img{
+
+                display:none;
+
+            }
+
+
+
 
         </style>
     </head>
     <body>
 
         <!-- NAV -->
+        <!--        <nav class="nav" aria-label="Principal">
+                    <div class="nav-in">
+                        <div th:if="${role == 'ROLE_Administrador'}">
+                            <div class="brand" onclick="window.location.href = '/usuario/list'"><div class="ball" aria-hidden="true"></div><span>PokéAPI · Administrador</span>
+                            </div>
+                        </div>    
+                        <div th:if="${role == 'ROLE_General'}">
+                            <div class="brand" onclick="window.location.href = '/pokemon'"><div class="ball" aria-hidden="true"></div><span>PokéAPI · Usuarios</span>
+                            </div>
+                        </div>
+                        <div th:if="${role == 'ROLE_ANONYMOUS'}">
+                            <div class="brand" onclick="window.location.href = '/pokemon'"><div class="ball" aria-hidden="true"></div><span>PokéAPI</span>
+                            </div>
+                        </div>
+                        <div th:if="${username != null}">
+        
+                            <div th:if="${role == 'ROLE_Administrador'}">
+                                <select id="opciones" name="opciones" class="login" onchange="handleSelectChange(this)">
+                                    <option value="" disabled selected th:text="${username}">Usuario</option>
+                                    <option value="/usuario/myAccount">Mi cuenta</option>
+                                    <option value="pokemones">Pokemons</option>
+                                    <option value="administrador">Administrador</option>
+                                    <option value="logout">Cerrar sesión</option>
+                                </select>
+                            </div>
+                            <div th:if="${role != 'ROLE_Administrador'}">
+                                <select id="opciones" name="opciones" class="login" onchange="handleSelectChange(this)">
+                                    <option value="" disabled selected th:text="${username}">Usuario</option>
+                                    <option value="/usuario/myAccount">Mi cuenta</option>
+                                    <option value="logout">Cerrar sesión</option>
+                                </select>
+                            </div>
+        
+                        </div>
+                        <div th:if="${username == null}">
+                            <a class="login" th:href="@{/login}">Login</a>
+                        </div>
+                        <span th:if="${role == 'ROLE_Administrador'}">Contenido solo para administradores</span>
+                    </div>
+                </nav>-->
+
+
         <nav class="nav" aria-label="Principal">
             <div class="nav-in">
-                <div th:if="${role == 'ROLE_Administrador'}">
-                    <div class="brand" onclick="window.location.href = '/usuario/list'"><div class="ball" aria-hidden="true"></div><span>PokéAPI · Administrador</span>
-                    </div>
-                </div>    
-                <div th:if="${role == 'ROLE_General'}">
-                    <div class="brand" onclick="window.location.href = '/pokemon'"><div class="ball" aria-hidden="true"></div><span>PokéAPI · Usuarios</span>
-                    </div>
-                </div>
-                <div th:if="${role == 'ROLE_ANONYMOUS'}">
-                    <div class="brand" onclick="window.location.href = '/pokemon'"><div class="ball" aria-hidden="true"></div><span>PokéAPI</span>
-                    </div>
-                </div>
-                <div th:if="${username != null}">
-
+                <div>
                     <div th:if="${role == 'ROLE_Administrador'}">
-                        <select id="opciones" name="opciones" class="login" onchange="handleSelectChange(this)">
-                            <option value="" disabled selected th:text="${username}">Usuario</option>
-                            <option value="/usuario/myAccount">Mi cuenta</option>
-                            <option value="pokemones">Pokemons</option>
-                            <option value="administrador">Administrador</option>
-                            <option value="logout">Cerrar sesión</option>
-                        </select>
+                        <div class="brand" onclick="window.location.href = '/usuario/list'">
+                            <div class="ball" aria-hidden="true"></div>
+                            <span>PokéAPI · Administrador</span>
+                        </div>
                     </div>
-                    <div th:if="${role != 'ROLE_Administrador'}">
-                        <select id="opciones" name="opciones" class="login" onchange="handleSelectChange(this)">
-                            <option value="" disabled selected th:text="${username}">Usuario</option>
-                            <option value="/usuario/myAccount">Mi cuenta</option>
-                            <option value="logout">Cerrar sesión</option>
-                        </select>
+                    <div th:if="${role == 'ROLE_General'}">
+                        <div class="brand" onclick="window.location.href = '/pokemon'">
+                            <div class="ball" aria-hidden="true"></div>
+                            <span>PokéAPI · Usuarios</span>
+                        </div>
+                    </div>
+                    <div th:if="${role == 'ROLE_ANONYMOUS'}">
+                        <div class="brand" onclick="window.location.href = '/pokemon'">
+                            <div class="ball" aria-hidden="true"></div>
+                            <span>PokéAPI</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div th:if="${username != null}">
+                        <div th:if="${role == 'ROLE_Administrador'}" class="nav-links">
+                            <span class="nav-username" th:text="${username}">Usuario</span>
+
+                            <a class="nav-btn" th:href="@{/pokemon}">Pokemons</a>
+                            <a class="nav-btn" th:href="@{/pokemon/totalPokemonesFavoritos}">Administrador</a>
+                            <a class="nav-btn" th:href="@{/pokemon/myAccount}">Mi cuenta</a>
+                            <a class="nav-btn" th:href="@{/logout}">Cerrar sesión</a>
+                        </div>
+
+                        <div th:if="${role != 'ROLE_Administrador'}">
+                            <select id="opciones" name="opciones" class="login" onchange="handleSelectChange(this)">
+                                <option value="" disabled selected th:text="${username}">Usuario</option>
+                                <option value="/usuario/myAccount">Mi cuenta</option>
+                                <option value="logout">Cerrar sesión</option>
+                            </select>
+                        </div>
                     </div>
 
+                    <div th:if="${username == null}">
+                        <a class="login" th:href="@{/login}">Login</a>
+                    </div>
                 </div>
-                <div th:if="${username == null}">
-                    <a class="login" th:href="@{/login}">Login</a>
-                </div>
-                <!--<span th:if="${role == 'ROLE_Administrador'}">Contenido solo para administradores</span>-->
             </div>
         </nav>
+
 
         <main class="wrap">
             <h1 class="title">Pokemons</h1>

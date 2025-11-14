@@ -80,7 +80,6 @@
       display:block;
     }
 
-    /* Varias utilidades ya existentes */
     .title{ font-size:28px; font-weight:800; margin:0 0 12px }
     .toolbar{ display:grid; grid-template-columns:1fr auto; gap:12px; align-items:center }
     @media (max-width:780px){ .toolbar{ grid-template-columns:1fr } }
@@ -113,6 +112,16 @@
     .p-btn[disabled]{ opacity:.5; cursor:not-allowed }
     .page-size{ display:flex; align-items:center; gap:8px }
     .page-size select{ border:1px solid #e5e7eb; border-radius:8px; padding:6px 8px; background:#fff }
+
+    .badge-role{
+      background:#fee2e2;
+      color:#b91c1c;
+      font-weight:600;
+      border-radius:999px;
+      padding:4px 10px;
+      font-size:12px;
+      border:1px solid #fecaca;
+    }
   </style>
 </head>
 <body>
@@ -176,46 +185,6 @@
     </div>
   </div>
 
-  <!-- CHARTS -->
-  <div class="row g-3 mt-1">
-    <div class="col-12 col-lg-6">
-      <div class="chart-card p-3">
-        <div class="d-flex align-items-center justify-content-between">
-          <h2 class="h6 m-0 fw-bold">Usuarios por Rol</h2>
-          <small class="text-muted">Distribución</small>
-        </div>
-        <div class="chart-wrap mt-2">
-          <canvas id="chartRoles" aria-label="Gráfica de usuarios por rol" role="img"></canvas>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-12 col-lg-6">
-      <div class="chart-card p-3">
-        <div class="d-flex align-items-center justify-content-between">
-          <h2 class="h6 m-0 fw-bold">Dominios de Email</h2>
-          <small class="text-muted">Top 6</small>
-        </div>
-        <div class="chart-wrap mt-2">
-          <canvas id="chartDominios" aria-label="Gráfica de dominios de email" role="img"></canvas>
-        </div>
-      </div>
-    </div>
-
-    <!-- OPCIONAL: Pokémones guardados por usuario (Top 10) -->
-    <div class="col-12">
-      <div id="favStatsCard" class="chart-card p-3 d-none">
-        <div class="d-flex align-items-center justify-content-between">
-          <h2 class="h6 m-0 fw-bold">Pokémones guardados por usuario</h2>
-          <small class="text-muted">Top 10</small>
-        </div>
-        <div class="chart-wrap mt-2">
-          <canvas id="chartFavs" aria-label="Pokémones guardados por usuario" role="img"></canvas>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- Lista -->
   <div class="card mt-3 shadow-sm">
     <div class="card-header bg-white">
@@ -248,36 +217,23 @@
               <span th:if="${u.email == null}" class="text-muted">—</span>
             </td>
             <td>
-              <span class="badge badge-role" th:text="${u.rol != null ? u.rol.nombre : '—'}">—</span>
+              <span class="badge badge-role"
+                    th:text="${u.rol != null && u.rol.nombre != null ? u.rol.nombre : 'Sin rol'}">
+                Sin rol
+              </span>
             </td>
             <td class="text-end">
               <a class="btn btn-sm btn-outline-secondary" th:href="@{'/usuario/' + ${u.idUsuario}}">Ver</a>
               <a class="btn btn-sm btn-outline-primary" th:href="@{'/usuario/edit/' + ${u.idUsuario}}">Editar</a>
 
-              <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal"
-                      th:attr="data-bs-target=${'#delModal-' + u.idUsuario}">Eliminar</button>
-
-              <div class="modal fade" th:id="${'delModal-' + u.idUsuario}" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title">Eliminar usuario</h5>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                    </div>
-                    <div class="modal-body">
-                      ¿Seguro que deseas eliminar al usuario
-                      <strong th:text="${u.username}">username</strong>?
-                    </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                      <form th:action="@{'/usuario/delete/' + ${u.idUsuario}}" method="post" class="m-0">
-                        <input type="hidden" name="_csrf" th:value="${_csrf?.token}"/>
-                        <button type="submit" class="btn btn-danger">Eliminar</button>
-                      </form>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <!-- Botón que abre el modal global -->
+              <button type="button"
+                      class="btn btn-sm btn-outline-danger"
+                      data-bs-toggle="modal"
+                      data-bs-target="#delModal"
+                      th:attr="data-id=${u.idUsuario}, data-username=${u.username}">
+                Eliminar
+              </button>
 
             </td>
           </tr>
@@ -287,7 +243,62 @@
     </div>
   </div>
 
+  <!-- CHARTS -->
+  <div class="row g-3 mt-1">
+    <div class="col-12 col-lg-6">
+      <div class="chart-card p-3">
+        <div class="d-flex align-items-center justify-content-between">
+          <h2 class="h6 m-0 fw-bold">Usuarios por Rol</h2>
+          <small class="text-muted">Distribución</small>
+        </div>
+        <div class="chart-wrap mt-2">
+          <canvas id="chartRoles" aria-label="Gráfica de usuarios por rol" role="img"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-6">
+      <div class="chart-card p-3">
+        <div class="d-flex align-items-center justify-content-between">
+          <h2 class="h6 m-0 fw-bold">Dominios de Email</h2>
+          <small class="text-muted">Top 6</small>
+        </div>
+        <div class="chart-wrap mt-2">
+          <canvas id="chartDominios" aria-label="Gráfica de dominios de email" role="img"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </main>
+
+<!-- MODAL GLOBAL DE ELIMINACIÓN -->
+<div class="modal fade" id="delModal" tabindex="-1" aria-labelledby="delModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="delModalLabel">Eliminar usuario</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <div class="modal-body">
+        ¿Seguro que deseas eliminar al usuario
+        <strong id="delUsername">username</strong>?
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+
+        <form id="delForm" method="post" class="m-0">
+          <input type="hidden" name="_csrf" th:value="${_csrf?.token}"/>
+          <button type="submit" class="btn btn-danger">Eliminar</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
 
 <!-- Offcanvas detalle -->
 <div class="offcanvas offcanvas-end" tabindex="-1" id="offUser" aria-labelledby="offUserLabel">
@@ -311,8 +322,6 @@
     /*[/]*/
   ];
 
-  /* Opcional: stats de favoritos por usuario que puedes pasar desde el controller.
-     Esperado: List<{username:String, total:int}> en el modelo como "favStats" */
   const __FAVSTATS__ = [
     /*[# th:each="s : ${favStats}"]*/
     { user: /*[['' + ${s.username}]]*/, count: /*[[${s.total}]]*/ },
@@ -434,13 +443,11 @@
     });
   }
 
-  /* ===== CHART 3 (OPCIONAL): Pokemones guardados por usuario =====
-     Muestra el card sólo si hay datos en __FAVSTATS__ */
+  /* ===== CHART 3 (OPCIONAL): Pokemones guardados por usuario ===== */
   (function renderFavs(){
     const data = Array.isArray(__FAVSTATS__) ? __FAVSTATS__.slice() : [];
-    if (!data.length) return; // no hay datos => card oculto
+    if (!data.length) return;
 
-    // Top 10 por cantidad
     data.sort((a,b)=> (b.count||0)-(a.count||0));
     const top = data.slice(0,10);
     const labels = top.map(x=> x.user || '—');
@@ -472,6 +479,22 @@
       }
     });
   })();
+
+  /* Modal eliminación: setea username y action del form */
+  const delModal = document.getElementById('delModal');
+  if (delModal) {
+    delModal.addEventListener('show.bs.modal', function (event) {
+      const button = event.relatedTarget;
+      const userId = button.getAttribute('data-id');
+      const username = button.getAttribute('data-username');
+
+      const userSpan = document.getElementById('delUsername');
+      if (userSpan) userSpan.textContent = username;
+
+      const form = document.getElementById('delForm');
+      if (form) form.action = '/usuario/delete/' + userId;
+    });
+  }
 </script>
 
 </body>
