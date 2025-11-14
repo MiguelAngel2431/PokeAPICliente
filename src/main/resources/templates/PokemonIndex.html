@@ -9,6 +9,8 @@
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
 
         <!-- JQuery -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 
         <style>
@@ -36,7 +38,7 @@
                 color:var(--ink)
             }
 
-            /* NAV creativa */
+            /* ===== NAV ===== */
             .nav{
                 position:sticky;
                 top:0;
@@ -51,14 +53,26 @@
                 display:flex;
                 align-items:center;
                 justify-content:space-between;
-                gap:12px
+                gap:12px;
+            }
+            .nav-left{
+                display:flex;
+                align-items:center;
+                gap:12px;
+            }
+            .nav-right{
+                display:flex;
+                align-items:center;
+                gap:10px;
+                margin-left:auto;
             }
             .brand{
                 display:flex;
                 gap:12px;
                 align-items:center;
                 font-weight:800;
-                letter-spacing:.5px
+                letter-spacing:.5px;
+                cursor:pointer;
             }
             .ball{
                 width:34px;
@@ -71,7 +85,9 @@
                 box-shadow: inset 0 0 0 2px #fff;
             }
             .brand span{
-                font-size:18px
+                font-size:18px;
+                color:var(--ink);
+                white-space:nowrap;
             }
             .login{
                 background:#fff;
@@ -79,10 +95,10 @@
                 font-weight:800;
                 padding:10px 14px;
                 border-radius:12px;
-                border:1px solid #fecaca
+                border:1px solid #fecaca;
             }
             .login:hover{
-                background:#ffe8e8
+                background:#ffe8e8;
             }
 
             .wrap{
@@ -96,37 +112,82 @@
                 margin:0 0 12px
             }
 
-            .nav-links{
-
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                flex-wrap: wrap;
+            /* NAV links / botones */
+            .nav-links-desktop{
+                display:flex;
+                align-items:center;
+                gap:10px;
+                flex-wrap:wrap;
             }
+
 
             .nav-username{
-                color: #ffffff;
-                font-weight: 600;
-                font-size: 14px;
+                display:inline-flex;
+                align-items:center;
+                gap:6px;
+                background:#fff;
+                color:var(--red);
+                font-weight:800;
+                padding:8px 12px;
+                border-radius:999px;
+                border:1px solid #fecaca;
+                text-decoration:none;
+                font-size:13px;
+                cursor:default;
             }
+
 
             .nav-btn{
-                background: #fff;
-                color: var(--red);
-                font-weight: 800;
-                padding: 8px 12px;
-                border-radius: 999px;
-                border: 1px solid #fecaca;
-                text-decoration: none;
+                background:#fff;
+                color:var(--red);
+                font-weight:800;
+                padding:8px 12px;
+                border-radius:999px;
+                border:1px solid #fecaca;
+                text-decoration:none;
                 font-size:13px;
-                cursor: pointer;
-
+                cursor:pointer;
+            }
+            .nav-btn:hover{
+                background:#ffe8e8;
+            }
+            .nav-dropdown-mobile{
+                display:none;
             }
 
-            .nav-btn:hover{
-
-                background: #ffe8e8;
-
+            /* ===== NAV RESPONSIVE ===== */
+            @media (max-width: 991.98px){
+                .nav-in{
+                    flex-wrap:wrap;
+                    padding:12px 10px;
+                    justify-content:center;
+                }
+                .nav-left,
+                .nav-right{
+                    flex:0 0 100%;
+                    justify-content:center;
+                }
+                .brand{
+                    justify-content:center;
+                }
+                .brand span{
+                    font-size:16px;
+                    white-space:normal;
+                    text-align:center;
+                }
+                .nav-links-desktop{
+                    display:none;
+                }
+                .nav-dropdown-mobile{
+                    display:block;
+                    width:100%;
+                    max-width:260px;
+                }
+                .login{
+                    width:100%;
+                    text-align:center;
+                    padding:8px 10px;
+                }
             }
 
             /* TOOLBAR */
@@ -142,7 +203,7 @@
                 }
             }
 
-            /* SEARCH como grid: input + botón alineados */
+            /* SEARCH */
             .search{
                 display:grid;
                 grid-template-columns: 1fr auto;
@@ -263,7 +324,7 @@
                 background:#ffe8e8
             }
 
-            /* Dropdowns (estilo igual a "Filtrar por tipos") */
+            /* Dropdowns */
             .dropdown{
                 position:relative;
                 display:inline-block
@@ -524,7 +585,7 @@
                 border:1px solid #ffd1d1
             }
 
-            /* PAGINACIÓN + page size */
+            /* PAGINACIÓN */
             .pagi{
                 display:flex;
                 align-items:center;
@@ -571,13 +632,9 @@
                 align-items:center;
                 gap:10px;
             }
-
-            /* Oculta el checkbox nativo (la lógica sigue igual) */
             .heart-checkbox input[type="checkbox"]{
                 display:none;
             }
-
-            /* Botón circular simple */
             .heart-checkbox .heart-icon{
                 --size: 38px;
                 --border: #e5e7eb;
@@ -597,29 +654,23 @@
                 user-select:none;
                 transition: transform .16s ease, border-color .16s ease, background-color .16s ease;
                 outline: none;
+                position:relative;
+                overflow:visible;
             }
-
-            /* Corazón con fuente (sin imágenes) */
             .heart-checkbox .heart-icon::before{
-                content:"\2764";              /* ♥ */
+                content:"\2764";
                 font-size:calc(var(--size)*.58);
                 line-height:1;
                 color:var(--off);
                 transition: color .16s ease, transform .16s ease;
             }
-
-            /* Hover: sutil */
             .heart-checkbox .heart-icon:hover{
                 border-color:var(--hover);
                 transform: translateY(-1px);
             }
-
-            /* Enfocado por teclado */
             .heart-checkbox .heart-icon:focus-visible{
                 box-shadow: 0 0 0 3px #fff, 0 0 0 5px #ffd1d1;
             }
-
-            /* Estado activo: relleno sólido, ícono blanco */
             .heart-checkbox input[type="checkbox"]:checked + .heart-icon{
                 background:var(--on);
                 border-color:transparent;
@@ -629,15 +680,11 @@
                 color:#fff;
                 transform: scale(1.04);
             }
-
-            /* Texto al lado, sobrio */
             .add-to-favorites-text{
                 font-size:13px;
                 font-weight:600;
-                color:#374151; /* slate-700 */
+                color:#374151;
             }
-
-            /* Tamaños opcionales */
             .heart-checkbox .heart-icon.heart-sm{
                 --size:32px;
             }
@@ -645,7 +692,6 @@
                 --size:46px;
             }
 
-            /* Respeta “reducir movimiento” */
             @media (prefers-reduced-motion: reduce){
                 .heart-checkbox .heart-icon,
                 .heart-checkbox .heart-icon::before{
@@ -653,13 +699,7 @@
                 }
             }
 
-            /* --- Partículas al dar like --- */
-            .heart-checkbox .heart-icon{
-                position: relative;          /* ancla las partículas al icono */
-                overflow: visible;           /* que se vean fuera del círculo */
-            }
-
-            /* Partícula genérica */
+            /* Partículas */
             .pfx {
                 position: absolute;
                 left: 50%;
@@ -673,8 +713,6 @@
                 animation: pfx-pop 700ms cubic-bezier(.2,.8,.2,1) forwards;
                 will-change: transform, opacity;
             }
-
-            /* Variante corazón (usa texto) */
             .pfx.heart {
                 width: auto;
                 height: auto;
@@ -683,7 +721,6 @@
                 background: transparent !important;
                 transform: translate(-50%, -50%) scale(.6);
             }
-
             @keyframes pfx-pop {
                 0%   {
                     opacity: 1;
@@ -694,12 +731,9 @@
                 }
                 100% {
                     opacity: 0;
-                    /* Se mueve según variables calculadas en JS */
                     transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0);
                 }
             }
-
-            /* Anillo sutil al activar */
             .heart-burst {
                 position: absolute;
                 left: 50%;
@@ -719,8 +753,6 @@
                     opacity: 0;
                 }
             }
-
-            /* Respeta reducir movimiento */
             @media (prefers-reduced-motion: reduce){
                 .pfx, .heart-burst {
                     animation: none !important;
@@ -729,64 +761,17 @@
             }
 
             .card.flipped .front img{
-
                 display:none;
-
             }
-
-
-
-
         </style>
     </head>
     <body>
 
-        <!-- NAV -->
-        <!--        <nav class="nav" aria-label="Principal">
-                    <div class="nav-in">
-                        <div th:if="${role == 'ROLE_Administrador'}">
-                            <div class="brand" onclick="window.location.href = '/usuario/list'"><div class="ball" aria-hidden="true"></div><span>PokéAPI · Administrador</span>
-                            </div>
-                        </div>    
-                        <div th:if="${role == 'ROLE_General'}">
-                            <div class="brand" onclick="window.location.href = '/pokemon'"><div class="ball" aria-hidden="true"></div><span>PokéAPI · Usuarios</span>
-                            </div>
-                        </div>
-                        <div th:if="${role == 'ROLE_ANONYMOUS'}">
-                            <div class="brand" onclick="window.location.href = '/pokemon'"><div class="ball" aria-hidden="true"></div><span>PokéAPI</span>
-                            </div>
-                        </div>
-                        <div th:if="${username != null}">
-        
-                            <div th:if="${role == 'ROLE_Administrador'}">
-                                <select id="opciones" name="opciones" class="login" onchange="handleSelectChange(this)">
-                                    <option value="" disabled selected th:text="${username}">Usuario</option>
-                                    <option value="/usuario/myAccount">Mi cuenta</option>
-                                    <option value="pokemones">Pokemons</option>
-                                    <option value="administrador">Administrador</option>
-                                    <option value="logout">Cerrar sesión</option>
-                                </select>
-                            </div>
-                            <div th:if="${role != 'ROLE_Administrador'}">
-                                <select id="opciones" name="opciones" class="login" onchange="handleSelectChange(this)">
-                                    <option value="" disabled selected th:text="${username}">Usuario</option>
-                                    <option value="/usuario/myAccount">Mi cuenta</option>
-                                    <option value="logout">Cerrar sesión</option>
-                                </select>
-                            </div>
-        
-                        </div>
-                        <div th:if="${username == null}">
-                            <a class="login" th:href="@{/login}">Login</a>
-                        </div>
-                        <span th:if="${role == 'ROLE_Administrador'}">Contenido solo para administradores</span>
-                    </div>
-                </nav>-->
-
-
+        <!-- NAV RESPONSIVA -->
         <nav class="nav" aria-label="Principal">
             <div class="nav-in">
-                <div>
+                <!-- IZQUIERDA -->
+                <div class="nav-left">
                     <div th:if="${role == 'ROLE_Administrador'}">
                         <div class="brand" onclick="window.location.href = '/usuario/list'">
                             <div class="ball" aria-hidden="true"></div>
@@ -807,17 +792,34 @@
                     </div>
                 </div>
 
-                <div>
+                <!-- DERECHA -->
+                <div class="nav-right">
                     <div th:if="${username != null}">
-                        <div th:if="${role == 'ROLE_Administrador'}" class="nav-links">
-                            <span class="nav-username" th:text="${username}">Usuario</span>
+                        <!-- ADMIN -->
+                        <div th:if="${role == 'ROLE_Administrador'}" class="d-flex align-items-center gap-2 flex-wrap">
+                            <span class="nav-username d-none d-lg-inline" th:text="${username}">Usuario</span>
 
-                            <a class="nav-btn" th:href="@{/pokemon}">Pokemons</a>
-                            <a class="nav-btn" th:href="@{/pokemon/totalPokemonesFavoritos}">Administrador</a>
-                            <a class="nav-btn" th:href="@{/pokemon/myAccount}">Mi cuenta</a>
-                            <a class="nav-btn" th:href="@{/logout}">Cerrar sesión</a>
+                            <!-- Desktop: botones -->
+                            <div class="nav-links-desktop d-none d-lg-flex">
+                                <a class="nav-btn" th:href="@{/pokemon}">Pokemons</a>
+                                <a class="nav-btn" th:href="@{/pokemon/totalPokemonesFavoritos}">Administrador</a>
+                                <a class="nav-btn" th:href="@{/pokemon/myAccount}">Mi cuenta</a>
+                                <a class="nav-btn" th:href="@{/logout}">Cerrar sesión</a>
+                            </div>
+
+                            <!-- Móvil / tablet: SOLO dropdown -->
+                            <div class="nav-dropdown-mobile">
+                                <select id="adminMobileNav" class="login" onchange="handleSelectChange(this)">
+                                    <option value="" disabled selected th:text="${username}">Usuario</option>
+                                    <option value="pokemones">Pokemons</option>
+                                    <option value="administrador">Administrador</option>
+                                    <option value="/usuario/myAccount">Mi cuenta</option>
+                                    <option value="logout">Cerrar sesión</option>
+                                </select>
+                            </div>
                         </div>
 
+                        <!-- NO ADMIN -->
                         <div th:if="${role != 'ROLE_Administrador'}">
                             <select id="opciones" name="opciones" class="login" onchange="handleSelectChange(this)">
                                 <option value="" disabled selected th:text="${username}">Usuario</option>
@@ -834,7 +836,6 @@
             </div>
         </nav>
 
-
         <main class="wrap">
             <h1 class="title">Pokemons</h1>
 
@@ -844,7 +845,7 @@
                 <span class="pill" th:text="'Página ' + ${page} + ' / ' + ${totalPages}">Página 1 / 1</span>
             </div>
 
-            <!-- BÚSQUEDA alineada -->
+            <!-- BÚSQUEDA -->
             <div class="toolbar">
                 <form class="search" role="search" method="get" th:action="@{/pokemon}">
                     <input id="q" name="q" type="search" placeholder="Buscar por nombre… (ej. mewtwo, pikachu)"
@@ -861,7 +862,7 @@
                 </form>
             </div>
 
-            <!-- Chips de tipos seleccionados (removibles) -->
+            <!-- Chips de tipos seleccionados -->
             <div class="sel-chips" id="selChips" th:if="${selectedTypes != null and !selectedTypes.isEmpty()}">
                 <span class="sel-chip" th:each="t : ${selectedTypes}" th:attr="data-type=${t}">
                     <span th:text="${t}">fire</span>
@@ -869,7 +870,7 @@
                 </span>
             </div>
 
-            <!-- FILTROS con el mismo diseño (dropdowns) -->
+            <!-- FILTROS -->
             <section class="filters" aria-label="Filtros">
                 <!-- Tipos -->
                 <div class="dropdown" id="ddTypes">
@@ -897,7 +898,7 @@
                     </div>
                 </div>
 
-                <!-- Locations como dropdown con radios -->
+                <!-- Locations -->
                 <div class="dropdown" id="ddLoc" th:attr="data-current=${loc}">
                     <button class="btn dd-btn" type="button" aria-haspopup="true" aria-expanded="false">
                         🌎 Locations: <strong id="locLabel">Todas</strong>
@@ -925,7 +926,7 @@
                     </div>
                 </div>
 
-                <!-- Habitats como dropdown con radios -->
+                <!-- Habitats -->
                 <div class="dropdown" id="ddHab" th:attr="data-current=${hab}">
                     <button class="btn dd-btn" type="button" aria-haspopup="true" aria-expanded="false">
                         🐾 Habitats: <strong id="habLabel">Todos</strong>
@@ -953,7 +954,7 @@
                     </div>
                 </div>
 
-                <!-- Orden (dropdown con radios; ordena en cliente) -->
+                <!-- Orden -->
                 <div class="dropdown" id="ddSort" data-current="name-asc">
                     <button class="btn dd-btn" type="button" aria-haspopup="true" aria-expanded="false">
                         ↕ Ordenar: <strong id="sortLabel">Nombre A–Z</strong>
@@ -1004,7 +1005,7 @@
                                     <span class="chip-type" th:each="t : ${p.types}" th:text="${t}">electric</span>
                                 </div>
 
-                                <!-- Agregar a favoritos -->
+                                <!-- Favoritos -->
                                 <div class="agregar-favoritos">
                                     <span th:if="${usuario != null}">
                                         <input type="hidden" class="idUsuario" name="idUsuario" th:value="${usuario.IdUsuario}">
@@ -1069,7 +1070,7 @@
                 </div>
             </section>
 
-            <!-- PAGINACIÓN + tamaño de página -->
+            <!-- PAGINACIÓN -->
             <div class="pagi">
                 <a class="p-btn" th:href="@{'/pokemon'(page=${page-1}, size=${size}, q=${q}, types=${typesQuery}, loc=${loc}, hab=${hab})}" th:attr="disabled=${page<=1}? 'disabled' : null">← Anterior</a>
                 <div class="pill" th:text="'Página ' + ${page} + ' de ' + ${totalPages}">Página 1 de 1</div>
@@ -1088,7 +1089,7 @@
         </main>
 
         <script>
-            /* Utilidad: abrir/cerrar dropdown genérico */
+            /* Dropdown genérico */
             function setupDropdown(rootId, onApply, onClear, initChecked) {
                 const root = document.getElementById(rootId);
                 const btn = root.querySelector('.dd-btn');
@@ -1124,368 +1125,345 @@
                 card.classList.toggle('flipped');
             }
 
-            /* ---- Tipos ---- */
-            const ddTypes = 'ddTypes';
+            /* Tipos */
             setupDropdown(
-                    ddTypes,
-                    // apply
-                            (root, panel) => {
-                        const list = panel.querySelectorAll('#typeList input[type=checkbox]');
-                        const selected = Array.from(list).filter(c => c.checked && c.value !== '__all').map(c => c.value);
-                        const base = new URL(window.location.href);
-                        base.searchParams.set('page', '1');
+                    'ddTypes',
+                    (root, panel) => {
+                const list = panel.querySelectorAll('#typeList input[type=checkbox]');
+                const selected = Array.from(list).filter(c => c.checked && c.value !== '__all').map(c => c.value);
+                const base = new URL(window.location.href);
+                base.searchParams.set('page', '1');
 
-                        const term = (document.getElementById('q')?.value || '').trim();
-                        if (term)
-                            base.searchParams.set('q', term);
-                        else
-                            base.searchParams.delete('q');
+                const term = (document.getElementById('q')?.value || '').trim();
+                if (term)
+                    base.searchParams.set('q', term);
+                else
+                    base.searchParams.delete('q');
 
-                        if (selected.length > 0)
-                            base.searchParams.set('types', selected.join(','));
-                        else
-                            base.searchParams.delete('types');
+                if (selected.length > 0)
+                    base.searchParams.set('types', selected.join(','));
+                else
+                    base.searchParams.delete('types');
 
-                        const loc = new URL(window.location.href).searchParams.get('loc');
-                        if (loc)
-                            base.searchParams.set('loc', loc);
-                        const hab = new URL(window.location.href).searchParams.get('hab');
-                        if (hab)
-                            base.searchParams.set('hab', hab);
+                const loc = new URL(window.location.href).searchParams.get('loc');
+                if (loc)
+                    base.searchParams.set('loc', loc);
+                const hab = new URL(window.location.href).searchParams.get('hab');
+                if (hab)
+                    base.searchParams.set('hab', hab);
 
-                        window.location.href = base.toString();
-                    },
-                            // clear
-                                    (root, panel) => {
-                                panel.querySelectorAll('#typeList input[type=checkbox]').forEach(c => c.checked = false);
-                                const all = panel.querySelector('#t_all');
-                                if (all)
-                                    all.checked = true;
+                window.location.href = base.toString();
+            },
+                    (root, panel) => {
+                panel.querySelectorAll('#typeList input[type=checkbox]').forEach(c => c.checked = false);
+                const all = panel.querySelector('#t_all');
+                if (all)
+                    all.checked = true;
+            }
+            );
+
+            /* Locations */
+            setupDropdown(
+                    'ddLoc',
+                    (root, panel) => {
+                const val = panel.querySelector('input[name="loc-radio"]:checked')?.value ?? '';
+                const base = new URL(window.location.href);
+                base.searchParams.set('page', '1');
+
+                const term = (document.getElementById('q')?.value || '').trim();
+                if (term)
+                    base.searchParams.set('q', term);
+                else
+                    base.searchParams.delete('q');
+
+                const types = new URL(window.location.href).searchParams.get('types');
+                if (types)
+                    base.searchParams.set('types', types);
+                else
+                    base.searchParams.delete('types');
+
+                if (val)
+                    base.searchParams.set('loc', val);
+                else
+                    base.searchParams.delete('loc');
+
+                const hab = new URL(window.location.href).searchParams.get('hab');
+                if (hab)
+                    base.searchParams.set('hab', hab);
+
+                window.location.href = base.toString();
+            },
+                    (root, panel) => {
+                const radios = panel.querySelectorAll('input[name="loc-radio"]');
+                radios.forEach(r => r.checked = r.value === '');
+                root.dataset.current = '';
+                document.getElementById('locLabel').textContent = 'Todas';
+            },
+                    (root, panel) => {
+                const current = root.dataset.current || '';
+                const radios = panel.querySelectorAll('input[name="loc-radio"]');
+                let matched = false;
+                radios.forEach(r => {
+                    if (r.value === current) {
+                        r.checked = true;
+                        matched = true;
+                    }
+                });
+                if (!matched)
+                    radios[0].checked = true;
+                document.getElementById('locLabel').textContent = current ? current.charAt(0).toUpperCase() + current.slice(1) : 'Todas';
+            }
+            );
+
+            /* Habitats */
+            setupDropdown(
+                    'ddHab',
+                    (root, panel) => {
+                const val = panel.querySelector('input[name="hab-radio"]:checked')?.value ?? '';
+                const base = new URL(window.location.href);
+                base.searchParams.set('page', '1');
+
+                const term = (document.getElementById('q')?.value || '').trim();
+                if (term)
+                    base.searchParams.set('q', term);
+                else
+                    base.searchParams.delete('q');
+
+                const types = new URL(window.location.href).searchParams.get('types');
+                if (types)
+                    base.searchParams.set('types', types);
+                else
+                    base.searchParams.delete('types');
+
+                const loc = new URL(window.location.href).searchParams.get('loc');
+                if (loc)
+                    base.searchParams.set('loc', loc);
+
+                if (val)
+                    base.searchParams.set('hab', val);
+                else
+                    base.searchParams.delete('hab');
+
+                window.location.href = base.toString();
+            },
+                    (root, panel) => {
+                const radios = panel.querySelectorAll('input[name="hab-radio"]');
+                radios.forEach(r => r.checked = r.value === '');
+                root.dataset.current = '';
+                document.getElementById('habLabel').textContent = 'Todos';
+            },
+                    (root, panel) => {
+                const current = root.dataset.current || '';
+                const radios = panel.querySelectorAll('input[name="hab-radio"]');
+                let matched = false;
+                radios.forEach(r => {
+                    if (r.value === current) {
+                        r.checked = true;
+                        matched = true;
+                    }
+                });
+                if (!matched)
+                    radios[0].checked = true;
+                document.getElementById('habLabel').textContent = current ? current.replace('-', ' ') : 'Todos';
+            }
+            );
+
+            /* Orden (cliente) */
+            const grid = document.getElementById('grid');
+            function sortGrid(mode) {
+                const collator = new Intl.Collator('es', {sensitivity: 'base'});
+                const cards = Array.from(grid.children);
+                cards.sort((a, b) => {
+                    if (mode === 'name-asc')
+                        return collator.compare(a.dataset.name, b.dataset.name);
+                    if (mode === 'name-desc')
+                        return collator.compare(b.dataset.name, a.dataset.name);
+                    return 0;
+                });
+                for (const c of cards)
+                    grid.appendChild(c);
+            }
+            setupDropdown(
+                    'ddSort',
+                    (root, panel) => {
+                const mode = panel.querySelector('input[name="sort-radio"]:checked')?.value || 'name-asc';
+                sortGrid(mode);
+                const label = document.getElementById('sortLabel');
+                label.textContent = (mode === 'name-desc') ? 'Nombre Z–A' : 'Nombre A–Z';
+            },
+                    (root, panel) => {
+                const radios = panel.querySelectorAll('input[name="sort-radio"]');
+                radios.forEach(r => r.checked = (r.value === 'name-asc'));
+                sortGrid('name-asc');
+                document.getElementById('sortLabel').textContent = 'Nombre A–Z';
+            },
+                    (root, panel) => {
+                const radios = panel.querySelectorAll('input[name="sort-radio"]');
+                radios.forEach(r => r.checked = (r.value === 'name-asc'));
+            }
+            );
+
+            /* Chips eliminar tipo */
+            const chips = document.getElementById('selChips');
+            if (chips) {
+                chips.addEventListener('click', (e) => {
+                    const btn = e.target.closest('.chip-x');
+                    if (!btn)
+                        return;
+                    const chip = btn.closest('.sel-chip');
+                    if (!chip)
+                        return;
+                    const t = chip.getAttribute('data-type');
+                    const base = new URL(window.location.href);
+                    const types = (base.searchParams.get('types') || '').split(',').filter(Boolean);
+                    const next = types.filter(x => x !== t);
+                    if (next.length > 0)
+                        base.searchParams.set('types', next.join(','));
+                    else
+                        base.searchParams.delete('types');
+                    base.searchParams.set('page', '1');
+                    window.location.href = base.toString();
+                });
+            }
+
+            /* Tamaño de página */
+            const pageSizeSel = document.getElementById('pageSize');
+            if (pageSizeSel) {
+                pageSizeSel.addEventListener('change', () => {
+                    const base = new URL(window.location.href);
+                    base.searchParams.set('page', '1');
+                    base.searchParams.set('size', pageSizeSel.value);
+
+                    const term = (document.getElementById('q')?.value || '').trim();
+                    if (term)
+                        base.searchParams.set('q', term);
+                    else
+                        base.searchParams.delete('q');
+
+                    const types = new URL(window.location.href).searchParams.get('types');
+                    if (types)
+                        base.searchParams.set('types', types);
+                    const loc = new URL(window.location.href).searchParams.get('loc');
+                    if (loc)
+                        base.searchParams.set('loc', loc);
+                    const hab = new URL(window.location.href).searchParams.get('hab');
+                    if (hab)
+                        base.searchParams.set('hab', hab);
+
+                    window.location.href = base.toString();
+                });
+            }
+
+            /* Orden por defecto */
+            window.addEventListener('load', () => {
+                sortGrid('name-asc');
+            });
+
+            /* Select usuario (dropdowns nav) */
+            function handleSelectChange(selectElement) {
+                var selectedValue = selectElement.value;
+                if (selectedValue == "logout") {
+                    window.location.href = "/logout";
+                }
+                if (selectedValue == "/usuario/myAccount") {
+                    window.location.href = "/pokemon/myAccount";
+                }
+                if (selectedValue == "administrador") {
+                    window.location.href = "/pokemon/totalPokemonesFavoritos";
+                }
+                if (selectedValue == "pokemones") {
+                    window.location.href = "/pokemon";
+                }
+            }
+
+            /* Favoritos */
+            $(document).ready(function () {
+                $('.cboxFav').change(function () {
+                    const card = $(this).closest('.agregar-favoritos');
+                    const idUsuario = card.find('.idUsuario').val();
+                    const idPokemon = card.find('.idPokemon').val();
+                    const agregar = $(this).is(':checked');
+
+                    if (idUsuario == 0) {
+                        alert('Debes iniciar sesión para agregar favoritos');
+                        $(this).prop('checked', false);
+                        return;
+                    }
+
+                    const usuarioData = {usuario: {idUsuario: idUsuario}, idPokemon: idPokemon};
+                    const url = agregar
+                            ? 'http://localhost:8080/api/usuario/addFavorites'
+                            : 'http://localhost:8080/api/usuario/removeFavorites';
+
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(usuarioData),
+                        success: function (data) {
+                            if (!data.correct) {
+                                alert('Error al procesar favorito');
+                                $(this).prop('checked', !agregar);
                             }
-                            );
+                        }.bind(this),
+                        error: function () {
+                            alert('Error en la petición');
+                            $(this).prop('checked', !agregar);
+                        }.bind(this)
+                    });
+                });
+            });
 
-                    /* ---- Locations ---- */
-                    setupDropdown(
-                            'ddLoc',
-                            // apply
-                                    (root, panel) => {
-                                const val = panel.querySelector('input[name="loc-radio"]:checked')?.value ?? '';
-                                const base = new URL(window.location.href);
-                                base.searchParams.set('page', '1');
+            /* Partículas favoritos */
+            function emitParticles(iconEl, options = {}){
+                const count = options.count ?? 12;
+                const confettiColors = ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#a855f7', '#ec4899'];
+                const minDist = 26, maxDist = 46;
 
-                                const term = (document.getElementById('q')?.value || '').trim();
-                                if (term)
-                                    base.searchParams.set('q', term);
-                                else
-                                    base.searchParams.delete('q');
+                const ring = document.createElement('span');
+                ring.className = 'heart-burst';
+                iconEl.appendChild(ring);
+                setTimeout(() => ring.remove(), 420);
 
-                                const types = new URL(window.location.href).searchParams.get('types');
-                                if (types)
-                                    base.searchParams.set('types', types);
-                                else
-                                    base.searchParams.delete('types');
+                for (let i = 0; i < count; i++) {
+                    const el = document.createElement('span');
+                    const isHeart = i % 4 === 0;
+                    el.className = 'pfx' + (isHeart ? ' heart' : '');
+                    const angle = (Math.PI * 2) * Math.random();
+                    const dist = minDist + Math.random() * (maxDist - minDist);
+                    const dx = Math.cos(angle) * dist;
+                    const dy = Math.sin(angle) * dist;
+                    el.style.setProperty('--dx', dx.toFixed(1) + 'px');
+                    el.style.setProperty('--dy', dy.toFixed(1) + 'px');
 
-                                if (val)
-                                    base.searchParams.set('loc', val);
-                                else
-                                    base.searchParams.delete('loc');
+                    if (isHeart) {
+                        el.textContent = '♥';
+                        el.style.color = confettiColors[i % confettiColors.length];
+                    } else {
+                        el.style.background = confettiColors[i % confettiColors.length];
+                        if (Math.random() < .3) {
+                            el.style.width = '6px';
+                            el.style.height = '6px';
+                        }
+                    }
 
-                                const hab = new URL(window.location.href).searchParams.get('hab');
-                                if (hab)
-                                    base.searchParams.set('hab', hab);
+                    iconEl.appendChild(el);
+                    el.addEventListener('animationend', () => el.remove());
+            }
+            }
 
-                                window.location.href = base.toString();
-                            },
-                                    // clear
-                                            (root, panel) => {
-                                        const radios = panel.querySelectorAll('input[name="loc-radio"]');
-                                        radios.forEach(r => r.checked = r.value === '');
-                                        root.dataset.current = '';
-                                        document.getElementById('locLabel').textContent = 'Todas';
-                                    },
-                                            // init checked
-                                                    (root, panel) => {
-                                                const current = root.dataset.current || '';
-                                                const radios = panel.querySelectorAll('input[name="loc-radio"]');
-                                                let matched = false;
-                                                radios.forEach(r => {
-                                                    if (r.value === current) {
-                                                        r.checked = true;
-                                                        matched = true;
-                                                    }
-                                                });
-                                                if (!matched)
-                                                    radios[0].checked = true; // "Todas"
-                                                document.getElementById('locLabel').textContent = current ? current.charAt(0).toUpperCase() + current.slice(1) : 'Todas';
-                                            }
-                                            );
-
-                                    /* ---- Habitats ---- */
-                                    setupDropdown(
-                                            'ddHab',
-                                            // apply
-                                                    (root, panel) => {
-                                                const val = panel.querySelector('input[name="hab-radio"]:checked')?.value ?? '';
-                                                const base = new URL(window.location.href);
-                                                base.searchParams.set('page', '1');
-
-                                                const term = (document.getElementById('q')?.value || '').trim();
-                                                if (term)
-                                                    base.searchParams.set('q', term);
-                                                else
-                                                    base.searchParams.delete('q');
-
-                                                const types = new URL(window.location.href).searchParams.get('types');
-                                                if (types)
-                                                    base.searchParams.set('types', types);
-                                                else
-                                                    base.searchParams.delete('types');
-
-                                                const loc = new URL(window.location.href).searchParams.get('loc');
-                                                if (loc)
-                                                    base.searchParams.set('loc', loc);
-
-                                                if (val)
-                                                    base.searchParams.set('hab', val);
-                                                else
-                                                    base.searchParams.delete('hab');
-
-                                                window.location.href = base.toString();
-                                            },
-                                                    // clear
-                                                            (root, panel) => {
-                                                        const radios = panel.querySelectorAll('input[name="hab-radio"]');
-                                                        radios.forEach(r => r.checked = r.value === '');
-                                                        root.dataset.current = '';
-                                                        document.getElementById('habLabel').textContent = 'Todos';
-                                                    },
-                                                            // init checked
-                                                                    (root, panel) => {
-                                                                const current = root.dataset.current || '';
-                                                                const radios = panel.querySelectorAll('input[name="hab-radio"]');
-                                                                let matched = false;
-                                                                radios.forEach(r => {
-                                                                    if (r.value === current) {
-                                                                        r.checked = true;
-                                                                        matched = true;
-                                                                    }
-                                                                });
-                                                                if (!matched)
-                                                                    radios[0].checked = true; // "Todos"
-                                                                document.getElementById('habLabel').textContent = current ? current.replace('-', ' ') : 'Todos';
-                                                            }
-                                                            );
-
-                                                    /* ---- Orden (cliente) ---- */
-                                                    const grid = document.getElementById('grid');
-                                                    function sortGrid(mode) {
-                                                        const collator = new Intl.Collator('es', {sensitivity: 'base'});
-                                                        const cards = Array.from(grid.children);
-                                                        cards.sort((a, b) => {
-                                                            if (mode === 'name-asc')
-                                                                return collator.compare(a.dataset.name, b.dataset.name);
-                                                            if (mode === 'name-desc')
-                                                                return collator.compare(b.dataset.name, a.dataset.name);
-                                                            return 0;
-                                                        });
-                                                        for (const c of cards)
-                                                            grid.appendChild(c);
-                                                    }
-                                                    setupDropdown(
-                                                            'ddSort',
-                                                            // apply
-                                                                    (root, panel) => {
-                                                                const mode = panel.querySelector('input[name="sort-radio"]:checked')?.value || 'name-asc';
-                                                                sortGrid(mode);
-                                                                const label = document.getElementById('sortLabel');
-                                                                label.textContent = (mode === 'name-desc') ? 'Nombre Z–A' : 'Nombre A–Z';
-                                                            },
-                                                                    // clear
-                                                                            (root, panel) => {
-                                                                        const radios = panel.querySelectorAll('input[name="sort-radio"]');
-                                                                        radios.forEach(r => r.checked = (r.value === 'name-asc'));
-                                                                        sortGrid('name-asc');
-                                                                        document.getElementById('sortLabel').textContent = 'Nombre A–Z';
-                                                                    },
-                                                                            // init checked
-                                                                                    (root, panel) => {
-                                                                                // por defecto name-asc
-                                                                                const radios = panel.querySelectorAll('input[name="sort-radio"]');
-                                                                                radios.forEach(r => r.checked = (r.value === 'name-asc'));
-                                                                            }
-                                                                            );
-
-                                                                    /* ---- Chips seleccionados (quitar) ---- */
-                                                                    const chips = document.getElementById('selChips');
-                                                                    if (chips) {
-                                                                        chips.addEventListener('click', (e) => {
-                                                                            const btn = e.target.closest('.chip-x');
-                                                                            if (!btn)
-                                                                                return;
-                                                                            const chip = btn.closest('.sel-chip');
-                                                                            if (!chip)
-                                                                                return;
-                                                                            const t = chip.getAttribute('data-type');
-                                                                            const base = new URL(window.location.href);
-                                                                            const types = (base.searchParams.get('types') || '').split(',').filter(Boolean);
-                                                                            const next = types.filter(x => x !== t);
-                                                                            if (next.length > 0)
-                                                                                base.searchParams.set('types', next.join(','));
-                                                                            else
-                                                                                base.searchParams.delete('types');
-                                                                            base.searchParams.set('page', '1');
-                                                                            window.location.href = base.toString();
-                                                                        });
-                                                                    }
-
-                                                                    // Tamaño de página
-                                                                    const pageSizeSel = document.getElementById('pageSize');
-                                                                    if (pageSizeSel) {
-                                                                        pageSizeSel.addEventListener('change', () => {
-                                                                            const base = new URL(window.location.href);
-                                                                            base.searchParams.set('page', '1');
-                                                                            base.searchParams.set('size', pageSizeSel.value);
-
-                                                                            const term = (document.getElementById('q')?.value || '').trim();
-                                                                            if (term)
-                                                                                base.searchParams.set('q', term);
-                                                                            else
-                                                                                base.searchParams.delete('q');
-
-                                                                            const types = new URL(window.location.href).searchParams.get('types');
-                                                                            if (types)
-                                                                                base.searchParams.set('types', types);
-                                                                            const loc = new URL(window.location.href).searchParams.get('loc');
-                                                                            if (loc)
-                                                                                base.searchParams.set('loc', loc);
-                                                                            const hab = new URL(window.location.href).searchParams.get('hab');
-                                                                            if (hab)
-                                                                                base.searchParams.set('hab', hab);
-
-                                                                            window.location.href = base.toString();
-                                                                        });
-                                                                    }
-
-                                                                    // Init: ordenar A–Z por defecto
-                                                                    window.addEventListener('load', () => {
-                                                                        sortGrid('name-asc');
-                                                                    });
-
-                                                                    // Select de usuario
-                                                                    function handleSelectChange(selectElement) {
-                                                                        var selectedValue = selectElement.value;
-                                                                        if (selectedValue == "logout") {
-                                                                            window.location.href = "/logout";
-                                                                        }
-                                                                        if (selectedValue == "/usuario/myAccount") {
-                                                                            window.location.href = "/pokemon/myAccount";
-                                                                        }
-                                                                        if (selectedValue == "administrador") {
-                                                                            window.location.href = "/pokemon/totalPokemonesFavoritos";
-                                                                        }
-                                                                        if (selectedValue == "pokemones") {
-                                                                            window.location.href = "/pokemon";
-                                                                        }
-                                                                    }
-
-                                                                    // Favoritos
-                                                                    $(document).ready(function () {
-                                                                        $('.cboxFav').change(function () {
-                                                                            const card = $(this).closest('.agregar-favoritos');
-                                                                            const idUsuario = card.find('.idUsuario').val();
-                                                                            const idPokemon = card.find('.idPokemon').val();
-                                                                            const agregar = $(this).is(':checked');
-
-                                                                            if (idUsuario == 0) {
-                                                                                alert('Debes iniciar sesión para agregar favoritos');
-                                                                                $(this).prop('checked', false);
-                                                                                return;
-                                                                            }
-
-                                                                            const usuarioData = {usuario: {idUsuario: idUsuario}, idPokemon: idPokemon};
-                                                                            const url = agregar
-                                                                                    ? 'http://localhost:8080/api/usuario/addFavorites'
-                                                                                    : 'http://localhost:8080/api/usuario/removeFavorites';
-
-                                                                            $.ajax({
-                                                                                url: url,
-                                                                                type: 'POST',
-                                                                                contentType: 'application/json',
-                                                                                data: JSON.stringify(usuarioData),
-                                                                                success: function (data) {
-                                                                                    if (!data.correct) {
-                                                                                        alert('Error al procesar favorito');
-                                                                                        $(this).prop('checked', !agregar);
-                                                                                    }
-                                                                                }.bind(this),
-                                                                                error: function () {
-                                                                                    alert('Error en la petición');
-                                                                                    $(this).prop('checked', !agregar);
-                                                                                }.bind(this)
-                                                                            });
-                                                                        });
-                                                                    });
-
-                                                                    // Emite partículas alrededor del elemento "iconEl"
-                                                                    function emitParticles(iconEl, options = {}){
-                                                                        const count = options.count ?? 12;                 // cantidad de partículas
-                                                                        const confettiColors = ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#a855f7', '#ec4899']; // paleta
-                                                                        const minDist = 26, maxDist = 46;                    // radio de dispersión (px)
-
-                                                                        // Anillo burst
-                                                                        const ring = document.createElement('span');
-                                                                        ring.className = 'heart-burst';
-                                                                        iconEl.appendChild(ring);
-                                                                        setTimeout(() => ring.remove(), 420);
-
-                                                                        for (let i = 0; i < count; i++) {
-                                                                            const el = document.createElement('span');
-
-                                                                            // mezcla: confetti sólido + corazones
-                                                                            const isHeart = i % 4 === 0; // 1 de cada 4 será corazón
-                                                                            el.className = 'pfx' + (isHeart ? ' heart' : '');
-
-                                                                            // Trayectoria aleatoria
-                                                                            const angle = (Math.PI * 2) * Math.random();
-                                                                            const dist = minDist + Math.random() * (maxDist - minDist);
-                                                                            const dx = Math.cos(angle) * dist;
-                                                                            const dy = Math.sin(angle) * dist;
-
-                                                                            el.style.setProperty('--dx', dx.toFixed(1) + 'px');
-                                                                            el.style.setProperty('--dy', dy.toFixed(1) + 'px');
-
-                                                                            if (isHeart) {
-                                                                                el.textContent = '♥';
-                                                                                el.style.color = confettiColors[i % confettiColors.length];
-                                                                            } else {
-                                                                                el.style.background = confettiColors[i % confettiColors.length];
-                                                                                // confetti más pequeños de vez en cuando
-                                                                                if (Math.random() < .3) {
-                                                                                    el.style.width = '6px';
-                                                                                    el.style.height = '6px';
-                                                                                }
-                                                                            }
-
-                                                                            iconEl.appendChild(el);
-                                                                            // Limpieza tras la animación
-                                                                            el.addEventListener('animationend', () => el.remove());
-                                                                    }
-                                                                    }
-
-                                                                    // Conecta el efecto a tus checkboxes existentes
-                                                                    document.addEventListener('DOMContentLoaded', () => {
-                                                                        document.querySelectorAll('.cboxFav').forEach(cb => {
-                                                                            cb.addEventListener('change', function () {
-                                                                                if (this.checked) {
-                                                                                    // el ícono es el siguiente hermano del checkbox en tu markup actual
-                                                                                    const icon = this.nextElementSibling;
-                                                                                    if (icon && icon.classList.contains('heart-icon')) {
-                                                                                        emitParticles(icon);
-                                                                                    }
-                                                                                }
-                                                                            });
-                                                                        });
-                                                                    });
+            document.addEventListener('DOMContentLoaded', () => {
+                document.querySelectorAll('.cboxFav').forEach(cb => {
+                    cb.addEventListener('change', function () {
+                        if (this.checked) {
+                            const icon = this.nextElementSibling;
+                            if (icon && icon.classList.contains('heart-icon')) {
+                                emitParticles(icon);
+                            }
+                        }
+                    });
+                });
+            });
         </script>
 
     </body>

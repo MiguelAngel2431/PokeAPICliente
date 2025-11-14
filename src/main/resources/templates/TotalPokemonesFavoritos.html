@@ -1,512 +1,1040 @@
 <!doctype html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PokéAPI · Dashboard</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PokéAPI · Dashboard</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
 
-  <!-- JQuery -->
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- JQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-  <!-- chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 
-  <style>
-    :root{
-      --red:#ef4444; --red-700:#b91c1c; --ink:#0f172a; --muted:#64748b;
-      --chip:#fee2e2; --shadow:0 12px 28px rgba(15,23,42,.12);
-      --radius:18px; --bg:#ffffff; --ring:#ffd1d1; --soft:#fff7f7;
-    }
-    *{ box-sizing:border-box }
-    html,body{ margin:0; background:var(--bg) }
-    body{ font-family:Poppins,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif; color:var(--ink) }
+    <!-- chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    /* NAV */
-    .nav{
-      position:sticky; top:0; z-index:2000;
-      background:linear-gradient(180deg,#fff 0,#fff 60%, #000 60%, #000 63%, #ef4444 63%, #ef4444 100%);
-      box-shadow:0 10px 20px rgba(239,68,68,.25);
-    }
-    .nav-in{ max-width:1160px; margin:0 auto; padding:18px 16px; display:flex; align-items:center; justify-content:space-between; gap:12px }
-    .brand{ display:flex; gap:12px; align-items:center; font-weight:800; letter-spacing:.5px }
-    .ball{ width:34px; height:34px; border-radius:50%; background:
-      radial-gradient(circle at 50% 48%, #fff 0 12px, transparent 13px),
-      linear-gradient(#fff 50%, #000 0 52%, #ef4444 0);
-      border:3px solid #000; box-shadow: inset 0 0 0 2px #fff;
-    }
-    .brand span{ font-size:18px }
-    .login{
-      background:#fff; color:var(--red); font-weight:800; padding:10px 14px;
-      border-radius:12px; border:1px solid #fecaca
-    }
-    .login:hover{ background:#ffe8e8 }
+    <style>
+        :root{
+            --red:#ef4444;
+            --red-700:#b91c1c;
+            --ink:#0f172a;
+            --muted:#64748b;
+            --chip:#fee2e2;
+            --shadow:0 12px 28px rgba(15,23,42,.12);
+            --radius:18px;
+            --bg:#ffffff;
+            --ring:#ffd1d1;
+            --soft:#fff7f7;
+        }
+        *{
+            box-sizing:border-box
+        }
+        html,body{
+            margin:0;
+            background:var(--bg)
+        }
+        body{
+            font-family:Poppins,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+            color:var(--ink)
+        }
 
-    .wrap{ max-width:1160px; margin:18px auto; padding:0 16px }
-    .title{ font-size:28px; font-weight:800; margin:0 0 12px }
+        /* NAV */
+        .nav{
+            position:sticky;
+            top:0;
+            z-index:2000;
+            background:linear-gradient(180deg,#fff 0,#fff 60%, #000 60%, #000 63%, #ef4444 63%, #0000FF 100%);
+            box-shadow:0 10px 20px rgba(239,68,68,.25);
+        }
+        .nav-in{
+            max-width:1160px;
+            margin:0 auto;
+            padding:18px 16px;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:12px
+        }
+        .brand{
+            display:flex;
+            gap:12px;
+            align-items:center;
+            font-weight:800;
+            letter-spacing:.5px
+        }
+        .ball{
+            width:34px;
+            height:34px;
+            border-radius:50%;
+            background:
+                radial-gradient(circle at 50% 48%, #fff 0 12px, transparent 13px),
+                linear-gradient(#fff 50%, #000 0 52%, #ef4444 0);
+            border:3px solid #000;
+            box-shadow: inset 0 0 0 2px #fff;
+        }
+        .brand span{
+            font-size:18px
+        }
+        .login{
+            background:#fff;
+            color:var(--red);
+            font-weight:800;
+            padding:10px 14px;
+            border-radius:12px;
+            border:1px solid #fecaca
+        }
+        .login:hover{
+            background:#ffe8e8
+        }
 
-    /* KPI CARDS */
-    .kpi-grid{
-      display:grid; grid-template-columns:repeat(12,1fr); gap:16px; margin:16px 0 8px;
-    }
-    .kpi{ grid-column:span 4; background:#fff; border:1px solid #f1f5f9; border-radius:16px; box-shadow:var(--shadow); padding:16px; display:flex; align-items:center; gap:14px }
-    .kpi .badge{
-      width:46px; height:46px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-weight:800;
-      background:#fff0f0; border:1px solid #ffd1d1; color:var(--red-700)
-    }
-    .kpi .meta{ display:flex; flex-direction:column; line-height:1.2 }
-    .kpi .meta .label{ font-size:12px; color:var(--muted); font-weight:700; letter-spacing:.2px }
-    .kpi .meta .value{ font-size:20px; font-weight:800 }
+        .wrap{
+            max-width:1160px;
+            margin:18px auto;
+            padding:0 16px
+        }
+        .title{
+            font-size:28px;
+            font-weight:800;
+            margin:0 0 12px
+        }
 
-    @media (max-width:980px){ .kpi{ grid-column:span 6 } }
-    @media (max-width:560px){ .kpi{ grid-column:span 12 } }
+        .nav-links-desktop{
+            display:flex;
+            align-items:center;
+            gap:10px;
+            flex-wrap:wrap;
+        }
+        .nav-username{
+            display:inline-flex;
+            align-items:center;
+            gap:6px;
+            background:#fff;
+            color:var(--red);
+            font-weight:800;
+            padding:8px 12px;
+            border-radius:999px;
+            border:1px solid #fecaca;
+            text-decoration:none;
+            font-size:13px;
+            cursor:default;
+        }
 
-    /* BOARD: primero tarjetas, al lado/abajo chart */
-    .board{
-      display:grid; grid-template-columns: 1.25fr .75fr; gap:18px; align-items:start;
-    }
-    @media (max-width:980px){ .board{ grid-template-columns:1fr; } }
+        .nav-btn{
+            background:#fff;
+            color:var(--red);
+            font-weight:800;
+            padding:8px 12px;
+            border-radius:999px;
+            border:1px solid #fecaca;
+            text-decoration:none;
+            font-size:13px;
+            cursor:pointer;
+        }
+        .nav-btn:hover{
+            background:#ffe8e8;
+        }
+        .nav-dropdown-mobile{
+            display:none;
+        }
 
-    /* GRID de tarjetas */
-    .grid{ position:relative; z-index:1; display:grid; grid-template-columns:repeat(12,1fr); gap:18px; }
-    @media (max-width:1160px){ .grid{ grid-template-columns:repeat(8,1fr) } }
-    @media (max-width:780px){ .grid{ grid-template-columns:repeat(6,1fr) } }
-    @media (max-width:560px){ .grid{ grid-template-columns:repeat(2,1fr) } }
+        /* ===== NAV RESPONSIVE ===== */
+        @media (max-width: 991.98px){
+            .nav-in{
+                flex-wrap:wrap;
+                padding:12px 10px;
+                justify-content:center;
+                gap:8px;
+            }
+            .nav-left,
+            .nav-right{
+                flex:0 0 100%;
+                justify-content:center;
+                display:flex;
+            }
+            .brand{
+                justify-content:center;
+            }
+            .brand span{
+                font-size:16px;
+                white-space:normal;
+                text-align:center;
+            }
+            .nav-links-desktop{
+                display:none;
+            }
+            .nav-dropdown-mobile{
+                display:block;
+                width:100%;
+                max-width:260px;
+            }
+            .login{
+                width:100%;
+                text-align:center;
+                padding:8px 10px;
+            }
+            .title{
+                font-size:24px;
+                text-align:center;
+            }
+        }
 
-    .card{ grid-column:span 3; perspective:1000px; min-height:330px }
-    @media (max-width:1160px){ .card{ grid-column:span 4 } }
-    @media (max-width:780px){ .card{ grid-column:span 3 } }
-    @media (max-width:560px){ .card{ grid-column:span 2; min-height:300px } }
+        /* KPI CARDS */
+        .kpi-grid{
+            display:grid;
+            grid-template-columns:repeat(12,1fr);
+            gap:16px;
+            margin:16px 0 8px;
+        }
+        .kpi{
+            grid-column:span 4;
+            background:#fff;
+            border:1px solid #f1f5f9;
+            border-radius:16px;
+            box-shadow:var(--shadow);
+            padding:16px;
+            display:flex;
+            align-items:center;
+            gap:14px
+        }
+        .kpi .badge{
+            width:46px;
+            height:46px;
+            border-radius:12px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-weight:800;
+            background:#fff0f0;
+            border:1px solid #ffd1d1;
+            color:var(--red-700)
+        }
+        .kpi .meta{
+            display:flex;
+            flex-direction:column;
+            line-height:1.2
+        }
+        .kpi .meta .label{
+            font-size:12px;
+            color:var(--muted);
+            font-weight:700;
+            letter-spacing:.2px
+        }
+        .kpi .meta .value{
+            font-size:20px;
+            font-weight:800
+        }
 
-    .card-inner{ position:relative; width:100%; height:100%; transform-style:preserve-3d; transition:transform .7s cubic-bezier(.2,.8,.2,1) }
-    .card.flipped .card-inner{ transform:rotateY(180deg) }
-    .face{ position:absolute; inset:0; border-radius:var(--radius); overflow:hidden; backface-visibility:hidden; background:#fff; box-shadow:var(--shadow); border:1px solid #f1f5f9 }
+        @media (max-width:980px){
+            .kpi{
+                grid-column:span 6
+            }
+        }
+        @media (max-width:560px){
+            .kpi{
+                grid-column:span 12
+            }
+        }
 
-    .front .top{
-      height:160px; position:relative; display:flex; align-items:center; justify-content:center;
-      background: radial-gradient(120px 80px at 70% -20%, rgba(239,68,68,.18), transparent 60%),
-                 radial-gradient(140px 90px at 0% 0%, rgba(239,68,68,.12), transparent 70%),
-                 linear-gradient(180deg,#fff 0,#ffecec 100%);
-    }
-    .halo{ position:absolute; width:140px; height:140px; border-radius:50%; background:rgba(255,255,255,.9); filter:blur(10px) }
-    .front img{ max-width:88%; max-height:140px; object-fit:contain; z-index:1; filter:drop-shadow(0 10px 18px rgba(0,0,0,.12)) }
-    .front .body{ padding:12px 14px 14px; display:flex; flex-direction:column; gap:10px }
+        /* BOARD: primero tarjetas, al lado/abajo chart */
+        .board{
+            display:grid;
+            grid-template-columns: 1.25fr .75fr;
+            gap:18px;
+            align-items:start;
+        }
+        @media (max-width:980px){
+            .board{
+                grid-template-columns:1fr;
+                gap:16px;
+            }
+        }
 
-    /* ====== Nombre sin azul / sin subrayado + hover/focus accesible ====== */
-    .name{ display:flex; align-items:center; gap:6px; font-weight:800; font-size:16px; letter-spacing:.2px }
-    .name a.name-link, .back-title a.name-link{ color: var(--ink); text-decoration: none; }
-    .name a.name-link:visited, .back-title a.name-link:visited{ color: var(--ink); }
-    .name a.name-link:hover, .back-title a.name-link:hover{ text-decoration: none; color: var(--red-700); }
-    .name a.name-link:focus-visible, .back-title a.name-link:focus-visible{
-      outline: 0; box-shadow: 0 0 0 3px var(--ring); border-radius: 8px;
-    }
+        /* GRID de tarjetas */
+        .grid{
+            position:relative;
+            z-index:1;
+            display:grid;
+            grid-template-columns:repeat(12,1fr);
+            gap:18px;
+        }
+        @media (max-width:1160px){
+            .grid{
+                grid-template-columns:repeat(8,1fr)
+            }
+        }
+        @media (max-width:780px){
+            .grid{
+                grid-template-columns:repeat(6,1fr);
+                gap:14px;
+            }
+        }
+        @media (max-width:560px){
+            .grid{
+                grid-template-columns:repeat(2,1fr);
+                gap:12px;
+            }
+        }
 
-    .chips{ display:flex; gap:6px; flex-wrap:wrap }
-    .chip-type{ background:var(--chip); color:var(--red-700); padding:4px 8px; border-radius:999px; font-size:12px; font-weight:800; text-transform:capitalize }
-    .hint{ font-size:12px; color:var(--muted) }
-    .tap{ position:absolute; right:10px; top:10px; background:rgba(239,68,68,.08); border:1px dashed #fecaca; border-radius:999px; padding:4px 8px; font-size:10px; color:var(--red-700); font-weight:800 }
+        .card{
+            grid-column:span 3;
+            perspective:1000px;
+            min-height:330px
+        }
+        @media (max-width:1160px){
+            .card{
+                grid-column:span 4
+            }
+        }
+        @media (max-width:780px){
+            .card{
+                grid-column:span 3;
+                min-height:300px;
+            }
+        }
+        @media (max-width:560px){
+            .card{
+                grid-column:span 2;
+                min-height:280px;
+            }
+        }
+        @media (max-width:420px){
+            .card{
+                min-height:260px;
+            }
+        }
 
-    .back{ transform:rotateY(180deg) }
-    .back-head{ padding:12px 14px; background:linear-gradient(0deg,#fff 0,#ffe8e8 100%); border-bottom:1px solid #f1f5f9; display:flex; align-items:center; justify-content:space-between }
-    .back-title{ font-weight:800; text-transform:capitalize }
-    .flip-note{ font-size:12px; color:var(--muted) }
-    .stats{ padding:14px; display:flex; flex-direction:column; gap:12px }
-    .stat-row{ display:grid; grid-template-columns:86px 1fr 40px; gap:10px; align-items:center }
-    @media (max-width:560px){ .stat-row{ grid-template-columns:70px 1fr 36px } }
-    .stat-label{ font-size:12px; color:#475569; text-transform:uppercase; font-weight:800; letter-spacing:.5px }
-    .bar{ height:10px; border-radius:999px; background:#fee2e2; overflow:hidden }
-    .bar i{ display:block; height:100%; background:var(--red); transform-origin:left center; transition:width .35s ease }
-    .meta{ display:flex; gap:10px; flex-wrap:wrap }
-    .meta .pill{ background:#fff0f0; border:1px solid #ffd1d1 }
+        .card-inner{
+            position:relative;
+            width:100%;
+            height:100%;
+            transform-style:preserve-3d;
+            transition:transform .7s cubic-bezier(.2,.8,.2,1)
+        }
+        .card.flipped .card-inner{
+            transform:rotateY(180deg)
+        }
+        .face{
+            position:absolute;
+            inset:0;
+            border-radius:var(--radius);
+            overflow:hidden;
+            backface-visibility:hidden;
+            background:#fff;
+            box-shadow:var(--shadow);
+            border:1px solid #f1f5f9
+        }
 
-    /* PAGINACIÓN */
-    .pagi{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin:16px 0 0; flex-wrap:wrap }
-    .p-btn{ padding:10px 12px; border-radius:10px; border:1px solid #fecaca; background:#fff; color:var(--red); font-weight:800 }
-    .p-btn[disabled]{ opacity:.5; cursor:not-allowed }
-    .page-size{ display:flex; align-items:center; gap:8px }
-    .page-size select{ border:1px solid #e5e7eb; border-radius:8px; padding:6px 8px; background:#fff }
+        .front .top{
+            height:160px;
+            position:relative;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            background: radial-gradient(120px 80px at 70% -20%, rgba(239,68,68,.18), transparent 60%),
+                radial-gradient(140px 90px at 0% 0%, rgba(239,68,68,.12), transparent 70%),
+                linear-gradient(180deg,#fff 0,#ffecec 100%);
+        }
+        @media (max-width:480px){
+            .front .top{
+                height:140px;
+            }
+        }
+        .halo{
+            position:absolute;
+            width:140px;
+            height:140px;
+            border-radius:50%;
+            background:rgba(255,255,255,.9);
+            filter:blur(10px)
+        }
+        .front img{
+            max-width:88%;
+            max-height:140px;
+            object-fit:contain;
+            z-index:1;
+            filter:drop-shadow(0 10px 18px rgba(0,0,0,.12))
+        }
+        .front .body{
+            padding:12px 14px 14px;
+            display:flex;
+            flex-direction:column;
+            gap:10px
+        }
 
-    /* Favoritos hearts */
-    .heart-checkbox-container { display:flex; align-items:center; gap:10px; }
-    .heart-checkbox input[type="checkbox"] { display:none; }
-    .heart-checkbox .heart-icon {
-      width:40px; height:40px; background-color:transparent; border:2px solid #ccc; border-radius:50%;
-      display:flex; justify-content:center; align-items:center; transition:all .3s ease; cursor:pointer;
-    }
-    .heart-checkbox .heart-icon::before{ content:'\\2764'; font-size:24px; color:#ccc; transition:all .3s ease }
-    .heart-checkbox input[type="checkbox"]:checked + .heart-icon::before{ color:#e74c3c }
-    .heart-checkbox input[type="checkbox"]:checked + .heart-icon{ border-color:#e74c3c; transform:scale(1.2) }
-    .add-to-favorites-text{ font-size:14px; font-weight:600 }
+        /* ====== Nombre sin azul / sin subrayado + hover/focus accesible ====== */
+        .name{
+            display:flex;
+            align-items:center;
+            gap:6px;
+            font-weight:800;
+            font-size:16px;
+            letter-spacing:.2px
+        }
+        .name a.name-link, .back-title a.name-link{
+            color: var(--ink);
+            text-decoration: none;
+        }
+        .name a.name-link:visited, .back-title a.name-link:visited{
+            color: var(--ink);
+        }
+        .name a.name-link:hover, .back-title a.name-link:hover{
+            text-decoration: none;
+            color: var(--red-700);
+        }
+        .name a.name-link:focus-visible, .back-title a.name-link:focus-visible{
+            outline: 0;
+            box-shadow: 0 0 0 3px var(--ring);
+            border-radius: 8px;
+        }
 
-    /* PANEL CHART (compacto y responsive) */
-    .panel{
-      background:#fff; border:1px solid #f1f5f9; border-radius:16px; box-shadow:var(--shadow); padding:16px;
-    }
-    .panel h2{ margin:0 0 8px; font-size:20px; font-weight:800 }
-    .panel .sub{ margin:0 0 12px; font-size:12px; color:var(--muted) }
+        .chips{
+            display:flex;
+            gap:6px;
+            flex-wrap:wrap
+        }
+        .chip-type{
+            background:var(--chip);
+            color:var(--red-700);
+            padding:4px 8px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:800;
+            text-transform:capitalize
+        }
+        .hint{
+            font-size:12px;
+            color:var(--muted)
+        }
+        .tap{
+            position:absolute;
+            right:10px;
+            top:10px;
+            background:rgba(239,68,68,.08);
+            border:1px dashed #fecaca;
+            border-radius:999px;
+            padding:4px 8px;
+            font-size:10px;
+            color:var(--red-700);
+            font-weight:800
+        }
 
-    .chart-wrap{ position:relative; height: 300px; }
-    @media (max-width:980px){ .chart-wrap{ height:260px; } }
-    @media (max-width:560px){ .chart-wrap{ height:210px; } }
+        .back{
+            transform:rotateY(180deg)
+        }
+        .back-head{
+            padding:12px 14px;
+            background:linear-gradient(0deg,#fff 0,#ffe8e8 100%);
+            border-bottom:1px solid #f1f5f9;
+            display:flex;
+            align-items:center;
+            justify-content:space-between
+        }
+        .back-title{
+            font-weight:800;
+            text-transform:capitalize
+        }
+        .flip-note{
+            font-size:12px;
+            color:var(--muted)
+        }
+        .stats{
+            padding:14px;
+            display:flex;
+            flex-direction:column;
+            gap:12px
+        }
+        .stat-row{
+            display:grid;
+            grid-template-columns:86px 1fr 40px;
+            gap:10px;
+            align-items:center
+        }
+        @media (max-width:560px){
+            .stat-row{
+                grid-template-columns:70px 1fr 36px
+            }
+        }
+        .stat-label{
+            font-size:12px;
+            color:#475569;
+            text-transform:uppercase;
+            font-weight:800;
+            letter-spacing:.5px
+        }
+        .bar{
+            height:10px;
+            border-radius:999px;
+            background:#fee2e2;
+            overflow:hidden
+        }
+        .bar i{
+            display:block;
+            height:100%;
+            background:var(--red);
+            transform-origin:left center;
+            transition:width .35s ease
+        }
+        .meta{
+            display:flex;
+            gap:10px;
+            flex-wrap:wrap
+        }
+        .meta .pill{
+            background:#fff0f0;
+            border:1px solid #ffd1d1
+        }
 
-    .empty{
-      display:flex; align-items:center; justify-content:center; height:100%; color:var(--muted); font-weight:600;
-      background:linear-gradient(180deg,#fff, #fff7f7);
-      border:1px dashed #ffd1d1; border-radius:12px;
-    }
-    
-    .ball-link { display:inline-flex; }
-.ball { cursor: pointer; }
-  </style>
+        /* PAGINACIÓN */
+        .pagi{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:10px;
+            margin:16px 0 0;
+            flex-wrap:wrap
+        }
+        .p-btn{
+            padding:10px 12px;
+            border-radius:10px;
+            border:1px solid #fecaca;
+            background:#fff;
+            color:var(--red);
+            font-weight:800
+        }
+        .p-btn[disabled]{
+            opacity:.5;
+            cursor:not-allowed
+        }
+        .page-size{
+            display:flex;
+            align-items:center;
+            gap:8px
+        }
+        .page-size select{
+            border:1px solid #e5e7eb;
+            border-radius:8px;
+            padding:6px 8px;
+            background:#fff
+        }
+
+        /* Favoritos hearts */
+        .heart-checkbox-container {
+            display:flex;
+            align-items:center;
+            gap:10px;
+        }
+        .heart-checkbox input[type="checkbox"] {
+            display:none;
+        }
+        .heart-checkbox .heart-icon {
+            width:40px;
+            height:40px;
+            background-color:transparent;
+            border:2px solid #ccc;
+            border-radius:50%;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            transition:all .3s ease;
+            cursor:pointer;
+        }
+        .heart-checkbox .heart-icon::before{
+            content:'\2764';
+            font-size:24px;
+            color:#ccc;
+            transition:all .3s ease
+        }
+        .heart-checkbox input[type="checkbox"]:checked + .heart-icon::before{
+            color:#e74c3c
+        }
+        .heart-checkbox input[type="checkbox"]:checked + .heart-icon{
+            border-color:#e74c3c;
+            transform:scale(1.2)
+        }
+        .add-to-favorites-text{
+            font-size:14px;
+            font-weight:600
+        }
+
+        /* PANEL CHART (compacto y responsive) */
+        .panel{
+            background:#fff;
+            border:1px solid #f1f5f9;
+            border-radius:16px;
+            box-shadow:var(--shadow);
+            padding:16px;
+        }
+        .panel h2{
+            margin:0 0 8px;
+            font-size:20px;
+            font-weight:800
+        }
+        .panel .sub{
+            margin:0 0 12px;
+            font-size:12px;
+            color:var(--muted)
+        }
+
+        .chart-wrap{
+            position:relative;
+            height:300px;
+        }
+        @media (max-width:980px){
+            .chart-wrap{
+                height:260px;
+            }
+        }
+        @media (max-width:560px){
+            .chart-wrap{
+                height:220px;
+            }
+        }
+
+        .empty{
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            height:100%;
+            color:var(--muted);
+            font-weight:600;
+            background:linear-gradient(180deg,#fff, #fff7f7);
+            border:1px dashed #ffd1d1;
+            border-radius:12px;
+        }
+
+        .ball-link {
+            display:inline-flex;
+        }
+        .ball {
+            cursor: pointer;
+        }
+
+        .card.flipped .front img{
+            display:none;
+        }
+
+        /* NUMERO DE FAVORITOS */
+        .fav-counter{
+            align-self:flex-start;
+            margin-top:6px;
+            padding:4px 10px;
+            border-radius:999px;
+            background:#fff0f0;
+            border:1px solid #ffd1d1;
+            font-size:11px;
+            font-weight:700;
+            color:var(--red-700);
+            display:inline-flex;
+            gap:4px;
+            align-items:center;
+            line-height:1.2;
+            white-space:nowrap;
+        }
+        .fav-counter span{
+            font-weight:800;
+        }
+        @media (max-width:780px){
+            .fav-counter{
+                font-size:10px;
+                padding:3px 8px;
+                white-space:normal;
+            }
+        }
+
+        /* Ajustes generales pequeños */
+        @media (max-width:768px){
+            .wrap{
+                padding:0 12px;
+            }
+        }
+        @media (max-width:480px){
+            .nav-username{
+                font-size:12px;
+                max-width:100%;
+            }
+        }
+    </style>
 </head>
 <body>
 
-  <!-- NAV -->
-  <nav class="nav" aria-label="Principal">
-    <div class="nav-in">
-      <div class="brand">
-        <a th:href="@{/usuario/list}" class="ball-link" aria-label="Ir al inicio" title="Inicio">
-          <div class="ball" aria-hidden="true"></div>
-        </a>
-        <span>PokéAPI · Administrador</span>
-      </div>
-      <div th:if="${username != null}">
-        <div th:if="${role == 'ROLE_Administrador'}">
-          <select id="opciones" name="opciones" class="login" onchange="handleSelectChange(this)">
-            <option value="" disabled selected th:text="${username}">Usuario</option>
-            <option value="/usuario/myAccount">Mi cuenta</option>
-            <option value="pokemones">Pokemons</option>
-            <option value="administrador">Administrador</option>
-            <option value="logout">Cerrar sesión</option>
-          </select>
-        </div>
-        <div th:if="${role != 'ROLE_Administrador'}">
-          <select id="opciones" name="opciones" class="login" onchange="handleSelectChange(this)">
-            <option value="" disabled selected th:text="${username}">Usuario</option>
-            <option value="/usuario/myAccount">Mi cuenta</option>
-            <option value="logout">Cerrar sesión</option>
-          </select>
-        </div>
-      </div>
-      <div th:if="${username == null}">
-        <a class="login" th:href="@{/login}">Login</a>
-      </div>
-    </div>
-  </nav>
-
-  <main class="wrap">
-    <h1 class="title">Dashboard</h1>
-
-    <!-- KPI -->
-    <section class="kpi-grid" aria-label="Indicadores">
-      <div class="kpi">
-        <div class="badge">📦</div>
-        <div class="meta">
-          <span class="label">Total Pokémons</span>
-          <span class="value" th:text="${count}">0</span>
-        </div>
-      </div>
-      <div class="kpi">
-        <div class="badge">📄</div>
-        <div class="meta">
-          <span class="label">Página</span>
-          <span class="value" th:text="${page} + ' / ' + ${totalPages}">1 / 1</span>
-        </div>
-      </div>
-      <div class="kpi">
-        <div class="badge">❤️</div>
-        <div class="meta">
-          <span class="label">Favoritos guardados</span>
-          <span id="kpiFavTotal" class="value">0</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- BOARD: Grid + Chart -->
-    <section class="board">
-      <!-- GRID -->
-      <section class="grid" id="grid" aria-label="Listado">
-        <div class="card"
-             th:each="p : ${pokemones}"
-             th:attr="data-name=${p.name},
-                      data-types=${#strings.arrayJoin(p.types, ',')},
-                      data-hp=${p.stats.hp},
-                      data-attack=${p.stats.attack},
-                      data-defense=${p.stats.defense},
-                      data-speed=${p.stats.speed},
-                      data-generation=${p.generation},
-                      data-habitat=${p.habitat}">
-          <div class="card-inner" onclick="flip(this.parentElement)" tabindex="0" onkeypress="if (event.key === 'Enter') { flip(this.parentElement); }">
-            <article class="face front" aria-label="Frente">
-              <div class="top">
-                <div class="halo" aria-hidden="true"></div>
-                <span class="tap">Tap/Click</span>
-                <img th:src="${p.image}" th:alt="${p.name} + ' image'" loading="lazy"/>
-              </div>
-              <div class="body">
-                <div class="name">
-                  <a class="name-link" th:href="@{'/pokemon/' + ${p.id}}" onclick="event.stopPropagation()" th:text="${p.name}">pikachu</a>
-                </div>
-                <div class="chips">
-                  <span class="chip-type" th:each="t : ${p.types}" th:text="${t}">electric</span>
-                </div>
-
-                <!-- Favoritos -->
-                <div class="agregar-favoritos">
-                  <span th:if="${usuario != null}">
-                    <input type="hidden" class="idUsuario" name="idUsuario" th:value="${usuario.IdUsuario}">
-                  </span>
-                  <span th:if="${usuario == null}">
-                    <input type="hidden" th:value="0">
-                  </span>
-                  <input type="hidden" class="idPokemon" name="idPokemon" th:value="${p.id}">
-                  <span th:if="${usuario != null}">
-                    <div class="heart-checkbox-container">
-                      <label class="heart-checkbox">
-                        <input type="checkbox" class="cboxFav" th:checked="${favoritosIds.contains(p.id)}" />
-                        <span class="heart-icon"></span>
-                      </label>
-                      <span class="add-to-favorites-text">Add to Favorites</span>
+    <!-- NAV -->
+    <nav class="nav" aria-label="Principal">
+        <div class="nav-in">
+            <!-- IZQUIERDA -->
+            <div class="nav-left">
+                <div th:if="${role == 'ROLE_Administrador'}">
+                    <div class="brand" onclick="window.location.href = '/usuario/list'">
+                        <div class="ball" aria-hidden="true"></div>
+                        <span>PokéAPI · Administrador</span>
                     </div>
-                  </span>
+                </div>
+                <div th:if="${role == 'ROLE_General'}">
+                    <div class="brand" onclick="window.location.href = '/pokemon'">
+                        <div class="ball" aria-hidden="true"></div>
+                        <span>PokéAPI · Usuarios</span>
+                    </div>
+                </div>
+                <div th:if="${role == 'ROLE_ANONYMOUS'}">
+                    <div class="brand" onclick="window.location.href = '/pokemon'">
+                        <div class="ball" aria-hidden="true"></div>
+                        <span>PokéAPI</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DERECHA -->
+            <div class="nav-right">
+                <div th:if="${username != null}">
+                    <!-- ADMIN -->
+                    <div th:if="${role == 'ROLE_Administrador'}" class="d-flex align-items-center gap-2 flex-wrap">
+                        <span class="nav-username d-none d-lg-inline" th:text="${username}">Usuario</span>
+
+                        <!-- Desktop: botones -->
+                        <div class="nav-links-desktop d-none d-lg-flex">
+                            <a class="nav-btn" th:href="@{/pokemon}">Pokemons</a>
+                            <a class="nav-btn" th:href="@{/pokemon/totalPokemonesFavoritos}">Administrador</a>
+                            <a class="nav-btn" th:href="@{/pokemon/myAccount}">Mi cuenta</a>
+                            <a class="nav-btn" th:href="@{/logout}">Cerrar sesión</a>
+                        </div>
+
+                        <!-- Móvil / tablet: SOLO dropdown -->
+                        <div class="nav-dropdown-mobile">
+                            <select id="adminMobileNav" class="login" onchange="handleSelectChange(this)">
+                                <option value="" disabled selected th:text="${username}">Usuario</option>
+                                <option value="pokemones">Pokemons</option>
+                                <option value="administrador">Administrador</option>
+                                <option value="/usuario/myAccount">Mi cuenta</option>
+                                <option value="logout">Cerrar sesión</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- NO ADMIN -->
+                    <div th:if="${role != 'ROLE_Administrador'}">
+                        <select id="opciones" name="opciones" class="login" onchange="handleSelectChange(this)">
+                            <option value="" disabled selected th:text="${username}">Usuario</option>
+                            <option value="/usuario/myAccount">Mi cuenta</option>
+                            <option value="logout">Cerrar sesión</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div class="hint">Toca para ver estadísticas</div>
-              </div>
-            </article>
+                <div th:if="${username == null}">
+                    <a class="login" th:href="@{/login}">Login</a>
+                </div>
+            </div>
+        </div>
+    </nav>
 
-            <!-- BACK -->
-            <article class="face back" aria-label="Reverso">
-              <div class="back-head">
-                <div class="back-title">
-                  <a class="name-link" th:href="@{'/pokemon/' + ${p.id}}" onclick="event.stopPropagation()" th:text="${p.name}">pikachu</a>
-                </div>
-                <div class="flip-note">Click para volver</div>
-              </div>
-              <div class="stats">
-                <div class="stat-row">
-                  <div class="stat-label">HP</div>
-                  <div class="bar"><i class="bar-hp" th:style="'width:' + (${p.stats.hp} * 100 / 255) + '%'"></i></div>
-                  <strong th:text="${p.stats.hp}">0</strong>
-                </div>
-                <div class="stat-row">
-                  <div class="stat-label">Attack</div>
-                  <div class="bar"><i class="bar-attack" th:style="'width:' + (${p.stats.attack} * 100 / 255) + '%'"></i></div>
-                  <strong th:text="${p.stats.attack}">0</strong>
-                </div>
-                <div class="stat-row">
-                  <div class="stat-label">Defense</div>
-                  <div class="bar"><i class="bar-defense" th:style="'width:' + (${p.stats.defense} * 100 / 255) + '%'"></i></div>
-                  <strong th:text="${p.stats.defense}">0</strong>
-                </div>
-                <div class="stat-row">
-                  <div class="stat-label">Speed</div>
-                  <div class="bar"><i class="bar-speed" th:style="'width:' + (${p.stats.speed} * 100 / 255) + '%'"></i></div>
-                  <strong th:text="${p.stats.speed}">0</strong>
-                </div>
+    <main class="wrap">
+        <h1 class="title">Dashboard</h1>
+
+        <!-- KPI -->
+        <section class="kpi-grid" aria-label="Indicadores">
+            <div class="kpi">
+                <div class="badge">📦</div>
                 <div class="meta">
-                  <span class="pill" th:text="'Altura: ' + ${#numbers.formatDecimal(p.heightM,1,1)} + ' m'">Altura: 0.0 m</span>
-                  <span class="pill" th:text="'Peso: ' + ${#numbers.formatDecimal(p.weightKg,1,1)} + ' kg'">Peso: 0.0 kg</span>
-                  <span class="pill" th:text="'EXP: ' + ${p.baseExp}">EXP: 0</span>
+                    <span class="label">Total Pokémons</span>
+                    <span class="value" th:text="${count}">0</span>
                 </div>
-              </div>
-            </article>
-          </div>
+            </div>
+            <div class="kpi">
+                <div class="badge">📄</div>
+                <div class="meta">
+                    <span class="label">Página</span>
+                    <span class="value" th:text="${page} + ' / ' + ${totalPages}">1 / 1</span>
+                </div>
+            </div>
+            <div class="kpi">
+                <div class="badge">❤️</div>
+                <div class="meta">
+                    <span class="label">Favoritos guardados</span>
+                    <span id="kpiFavTotal" class="value">0</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- BOARD: Grid + Chart -->
+        <section class="board">
+            <!-- GRID -->
+            <section class="grid" id="grid" aria-label="Listado">
+
+                <div class="card"
+                     th:each="p : ${pokemones}"
+                     th:attr="data-name=${p.name},
+                     data-types=${#strings.arrayJoin(p.types, ',')},
+                     data-hp=${p.stats.hp},
+                     data-attack=${p.stats.attack},
+                     data-defense=${p.stats.defense},
+                     data-speed=${p.stats.speed},
+                     data-generation=${p.generation},
+                     data-habitat=${p.habitat}">
+                    <div class="card-inner" onclick="flip(this.parentElement)" tabindex="0" onkeypress="if (event.key === 'Enter') { flip(this.parentElement); }">
+                        <article class="face front" aria-label="Frente">
+                            <div class="top">
+                                <div class="halo" aria-hidden="true"></div>
+                                <span class="tap">Tap/Click</span>
+                                <img th:src="${p.image}" th:alt="${p.name} + ' image'" loading="lazy"/>
+                            </div>
+                            <div class="body">
+                                <div class="name">
+                                    <a class="name-link" th:href="@{'/pokemon/' + ${p.id}}" onclick="event.stopPropagation()" th:text="${p.name}">pikachu</a>
+                                </div>
+                                <div class="chips">
+                                    <span class="chip-type" th:each="t : ${p.types}" th:text="${t}">electric</span>
+                                </div>
+
+                                <div class="fav-counter">
+                                    Guardado <span>25</span> veces
+                                </div>
+
+                                <div class="hint">Toca para ver estadísticas</div>
+                            </div>
+                        </article>
+
+                        <!-- BACK -->
+                        <article class="face back" aria-label="Reverso">
+                            <div class="back-head">
+                                <div class="back-title">
+                                    <a class="name-link" th:href="@{'/pokemon/' + ${p.id}}" onclick="event.stopPropagation()" th:text="${p.name}">pikachu</a>
+                                </div>
+                                <div class="flip-note">Click para volver</div>
+                            </div>
+                            <div class="stats">
+                                <div class="stat-row">
+                                    <div class="stat-label">HP</div>
+                                    <div class="bar"><i class="bar-hp" th:style="'width:' + (${p.stats.hp} * 100 / 255) + '%'"></i></div>
+                                    <strong th:text="${p.stats.hp}">0</strong>
+                                </div>
+                                <div class="stat-row">
+                                    <div class="stat-label">Attack</div>
+                                    <div class="bar"><i class="bar-attack" th:style="'width:' + (${p.stats.attack} * 100 / 255) + '%'"></i></div>
+                                    <strong th:text="${p.stats.attack}">0</strong>
+                                </div>
+                                <div class="stat-row">
+                                    <div class="stat-label">Defense</div>
+                                    <div class="bar"><i class="bar-defense" th:style="'width:' + (${p.stats.defense} * 100 / 255) + '%'"></i></div>
+                                    <strong th:text="${p.stats.defense}">0</strong>
+                                </div>
+                                <div class="stat-row">
+                                    <div class="stat-label">Speed</div>
+                                    <div class="bar"><i class="bar-speed" th:style="'width:' + (${p.stats.speed} * 100 / 255) + '%'"></i></div>
+                                    <strong th:text="${p.stats.speed}">0</strong>
+                                </div>
+                                <div class="meta">
+                                    <span class="pill" th:text="'Altura: ' + ${#numbers.formatDecimal(p.heightM,1,1)} + ' m'">Altura: 0.0 m</span>
+                                    <span class="pill" th:text="'Peso: ' + ${#numbers.formatDecimal(p.weightKg,1,1)} + ' kg'">Peso: 0.0 kg</span>
+                                    <span class="pill" th:text="'EXP: ' + ${p.baseExp}">EXP: 0</span>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PANEL CHART -->
+            <aside class="panel" aria-label="Relación de favoritos">
+                <h2>Favoritos más guardados</h2>
+                <p class="sub">Distribución de los Pokémons con más favoritos</p>
+                <div class="chart-wrap">
+                    <canvas id="favoritosDona" aria-label="Gráfica de favoritos" role="img"></canvas>
+                    <div id="emptyState" class="empty" style="display:none">Sin datos de favoritos aún</div>
+                </div>
+            </aside>
+        </section>
+
+        <!-- Paginación -->
+        <div class="pagi">
+            <a class="p-btn" th:href="@{'/pokemon'(page=${page-1}, size=${size}, q=${q}, types=${typesQuery}, loc=${loc}, hab=${hab})}" th:attr="disabled=${page<=1}? 'disabled' : null">← Anterior</a>
+            <div class="pill" th:text="'Página ' + ${page} + ' de ' + ${totalPages}">Página 1 de 1</div>
+            <a class="p-btn" th:href="@{'/pokemon'(page=${page+1}, size=${size}, q=${q}, types=${typesQuery}, loc=${loc}, hab=${hab})}" th:attr="disabled=${page>=totalPages}? 'disabled' : null">Siguiente →</a>
+
+            <div class="page-size">
+                <label for="pageSize"><strong>Tamaño:</strong></label>
+                <select id="pageSize" th:value="${size}">
+                    <option th:selected="${size==12}" value="12">12</option>
+                    <option th:selected="${size==24}" value="24">24</option>
+                    <option th:selected="${size==48}" value="48">48</option>
+                    <option th:selected="${size==96}" value="96">96</option>
+                </select>
+            </div>
         </div>
-      </section>
+    </main>
 
-      <!-- PANEL CHART -->
-      <aside class="panel" aria-label="Relación de favoritos">
-        <h2>Favoritos más guardados</h2>
-        <p class="sub">Distribución de los Pokémons con más favoritos</p>
-        <div class="chart-wrap">
-          <canvas id="favoritosDona" aria-label="Gráfica de favoritos" role="img"></canvas>
-          <div id="emptyState" class="empty" style="display:none">Sin datos de favoritos aún</div>
-        </div>
-      </aside>
-    </section>
-
-    <!-- Paginación -->
-    <div class="pagi">
-      <a class="p-btn" th:href="@{'/pokemon'(page=${page-1}, size=${size}, q=${q}, types=${typesQuery}, loc=${loc}, hab=${hab})}" th:attr="disabled=${page<=1}? 'disabled' : null">← Anterior</a>
-      <div class="pill" th:text="'Página ' + ${page} + ' de ' + ${totalPages}">Página 1 de 1</div>
-      <a class="p-btn" th:href="@{'/pokemon'(page=${page+1}, size=${size}, q=${q}, types=${typesQuery}, loc=${loc}, hab=${hab})}" th:attr="disabled=${page>=totalPages}? 'disabled' : null">Siguiente →</a>
-
-      <div class="page-size">
-        <label for="pageSize"><strong>Tamaño:</strong></label>
-        <select id="pageSize" th:value="${size}">
-          <option th:selected="${size==12}" value="12">12</option>
-          <option th:selected="${size==24}" value="24">24</option>
-          <option th:selected="${size==48}" value="48">48</option>
-          <option th:selected="${size==96}" value="96">96</option>
-        </select>
-      </div>
-    </div>
-  </main>
-
-  <script>
-    function flip(card){ card.classList.toggle('flipped'); }
-
-    function handleSelectChange(selectElement) {
-      const v = selectElement.value;
-      if (v === "logout") window.location.href = "/logout";
-      if (v === "/usuario/myAccount") window.location.href = "/pokemon/myAccount";
-      if (v === "administrador") window.location.href = "/pokemon/totalPokemonesFavoritos";
-      if (v === "pokemones") window.location.href = "/pokemon";
-    }
-
-   
-    $(function(){
-      $('.cboxFav').change(function(){
-        const card = $(this).closest('.agregar-favoritos');
-        const idUsuario = card.find('.idUsuario').val();
-        const idPokemon = card.find('.idPokemon').val();
-        const agregar   = $(this).is(':checked');
-
-        if (idUsuario == 0) {
-          alert('Debes iniciar sesión para agregar favoritos');
-          $(this).prop('checked', false);
-          return;
+    <script>
+        function flip(card) {
+            card.classList.toggle('flipped');
         }
 
-        const usuarioData = { usuario: { idUsuario: idUsuario }, idPokemon: idPokemon };
-        const url = agregar
-          ? 'http://localhost:8080/api/usuario/addFavorites'
-          : 'http://localhost:8080/api/usuario/removeFavorites';
+        function handleSelectChange(selectElement) {
+            const v = selectElement.value;
+            if (v === "logout")
+                window.location.href = "/logout";
+            if (v === "/usuario/myAccount")
+                window.location.href = "/pokemon/myAccount";
+            if (v === "administrador")
+                window.location.href = "/pokemon/totalPokemonesFavoritos";
+            if (v === "pokemones")
+                window.location.href = "/pokemon";
+        }
 
-        $.ajax({
-          url, type:'POST', contentType:'application/json', data: JSON.stringify(usuarioData),
-          success: function (data) {
-            if (!data.correct) {
-              alert('Error al procesar favorito');
-              $(this).prop('checked', !agregar);
-            }
-          }.bind(this),
-          error: function () {
-            alert('Error en la petición');
-            $(this).prop('checked', !agregar);
-          }.bind(this)
-        });
-      });
-    });
-  </script>
+        $(function () {
+            $('.cboxFav').change(function () {
+                const card = $(this).closest('.agregar-favoritos');
+                const idUsuario = card.find('.idUsuario').val();
+                const idPokemon = card.find('.idPokemon').val();
+                const agregar = $(this).is(':checked');
 
-  <script th:inline="javascript">
-    /*<![CDATA[*/
-    const labels = /*[[${favoritosLabels}]]*/ [];
-    const data   = /*[[${favoritosData}]]*/ [];
-
-    
-    (function(){
-      const sum = (data || []).reduce((a,b)=>a + (Number(b)||0), 0);
-      const kpi = document.getElementById('kpiFavTotal');
-      if (kpi) kpi.textContent = sum;
-    })();
-
-    (function(){
-      const canvas   = document.getElementById('favoritosDona');
-      const emptyBox = document.getElementById('emptyState');
-
-      if (!labels || !labels.length || !data || !data.length || data.every(v => Number(v)===0)) {
-        canvas.style.display = 'none';
-        emptyBox.style.display = 'flex';
-        return;
-      }
-
-      // Gradientes suaves (paleta afín a tu rojo)
-      const ctx = canvas.getContext('2d');
-      const gradients = [
-        ['#fecaca','#ef4444'], ['#c7d2fe','#6366f1'], ['#fde68a','#f59e0b'],
-        ['#bbf7d0','#10b981'], ['#bae6fd','#38bdf8'], ['#ffd6a5','#fb923c'],
-        ['#fbcfe8','#ec4899'], ['#e9d5ff','#a855f7']
-      ];
-      const bg = data.map((_,i)=>{
-        const g = ctx.createLinearGradient(0,0,0,240);
-        const pair = gradients[i % gradients.length];
-        g.addColorStop(0, pair[0]); g.addColorStop(1, pair[1]);
-        return g;
-      });
-
-      new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-          labels,
-          datasets: [{
-            label: 'Pokémon Favoritos',
-            data,
-            backgroundColor: bg,
-            borderColor: 'rgba(255,255,255,1)',
-            borderWidth: 2,
-            hoverOffset: 8
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          cutout: '58%',
-          animation: {
-            animateRotate: true,
-            animateScale: true,
-            duration: 900,
-            easing: 'easeOutCubic'
-          },
-          plugins: {
-            legend: {
-              position: 'bottom',
-              labels: { usePointStyle: true, pointStyle: 'circle', font: { weight: 600 } }
-            },
-            tooltip: {
-              callbacks: {
-                label: (ctx) => {
-                  const total = ctx.dataset.data.reduce((a,b)=>a+Number(b),0);
-                  const val = Number(ctx.parsed);
-                  const pct = total ? ((val/total)*100).toFixed(1) : 0;
-                  return ` ${ctx.label}: ${val} (${pct}%)`;
+                if (idUsuario == 0) {
+                    alert('Debes iniciar sesión para agregar favoritos');
+                    $(this).prop('checked', false);
+                    return;
                 }
-              }
+
+                const usuarioData = {usuario: {idUsuario: idUsuario}, idPokemon: idPokemon};
+                const url = agregar
+                        ? 'http://localhost:8080/api/usuario/addFavorites'
+                        : 'http://localhost:8080/api/usuario/removeFavorites';
+
+                $.ajax({
+                    url, type: 'POST', contentType: 'application/json', data: JSON.stringify(usuarioData),
+                    success: function (data) {
+                        if (!data.correct) {
+                            alert('Error al procesar favorito');
+                            $(this).prop('checked', !agregar);
+                        }
+                    }.bind(this),
+                    error: function () {
+                        alert('Error en la petición');
+                        $(this).prop('checked', !agregar);
+                    }.bind(this)
+                });
+            });
+        });
+    </script>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const labels = /*[[${favoritosLabels}]]*/ [];
+        const data = /*[[${favoritosData}]]*/ [];
+
+        (function () {
+            const sum = (data || []).reduce((a, b) => a + (Number(b) || 0), 0);
+            const kpi = document.getElementById('kpiFavTotal');
+            if (kpi)
+                kpi.textContent = sum;
+        })();
+
+        (function () {
+            const canvas = document.getElementById('favoritosDona');
+            const emptyBox = document.getElementById('emptyState');
+
+            if (!labels || !labels.length || !data || !data.length || data.every(v => Number(v) === 0)) {
+                canvas.style.display = 'none';
+                emptyBox.style.display = 'flex';
+                return;
             }
-          }
+
+            const ctx = canvas.getContext('2d');
+            const gradients = [
+                ['#fecaca', '#ef4444'], ['#c7d2fe', '#6366f1'], ['#fde68a', '#f59e0b'],
+                ['#bbf7d0', '#10b981'], ['#bae6fd', '#38bdf8'], ['#ffd6a5', '#fb923c'],
+                ['#fbcfe8', '#ec4899'], ['#e9d5ff', '#a855f7']
+            ];
+            const bg = data.map((_, i) => {
+                const g = ctx.createLinearGradient(0, 0, 0, 240);
+                const pair = gradients[i % gradients.length];
+                g.addColorStop(0, pair[0]);
+                g.addColorStop(1, pair[1]);
+                return g;
+            });
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Pokémon Favoritos',
+                        data,
+                        backgroundColor: bg,
+                        borderColor: 'rgba(255,255,255,1)',
+                        borderWidth: 2,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '58%',
+                    animation: {
+                        animateRotate: true,
+                        animateScale: true,
+                        duration: 900,
+                        easing: 'easeOutCubic'
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {usePointStyle: true, pointStyle: 'circle', font: {weight: 600}}
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => {
+                                    const total = ctx.dataset.data.reduce((a, b) => a + Number(b), 0);
+                                    const val = Number(ctx.parsed);
+                                    const pct = total ? ((val / total) * 100).toFixed(1) : 0;
+                                    return ` ${ctx.label}: ${val} (${pct}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        })();
+        /*]]>*/
+    </script>
+
+    <script>
+        // Paginación: tamaño de página (preserva filtros existentes en server)
+        const pageSizeSel = document.getElementById('pageSize');
+        if (pageSizeSel) {
+            pageSizeSel.addEventListener('change', () => {
+                const base = new URL(window.location.href);
+                base.searchParams.set('page', '1');
+                base.searchParams.set('size', pageSizeSel.value);
+
+                const types = new URL(window.location.href).searchParams.get('types');
+                if (types)
+                    base.searchParams.set('types', types);
+                const loc = new URL(window.location.href).searchParams.get('loc');
+                if (loc)
+                    base.searchParams.set('loc', loc);
+                const hab = new URL(window.location.href).searchParams.get('hab');
+                if (hab)
+                    base.searchParams.set('hab', hab);
+
+                base.searchParams.delete('q');
+                window.location.href = base.toString();
+            });
         }
-      });
-    })();
-    /*]]>*/
-  </script>
 
-  <script>
-    // Paginación: tamaño de página (preserva filtros existentes en server)
-    const pageSizeSel = document.getElementById('pageSize');
-    if (pageSizeSel) {
-      pageSizeSel.addEventListener('change', () => {
-        const base = new URL(window.location.href);
-        base.searchParams.set('page', '1');
-        base.searchParams.set('size', pageSizeSel.value);
-
-        const types = new URL(window.location.href).searchParams.get('types');
-        if (types) base.searchParams.set('types', types);
-        const loc = new URL(window.location.href).searchParams.get('loc');
-        if (loc) base.searchParams.set('loc', loc);
-        const hab = new URL(window.location.href).searchParams.get('hab');
-        if (hab) base.searchParams.set('hab', hab);
-
-        // búsqueda ya no se usa: eliminar q si existiera
-        base.searchParams.delete('q');
-        window.location.href = base.toString();
-      });
-    }
-
-   
-    (function sortGridDefault(){
-      const grid = document.getElementById('grid');
-      if (!grid) return;
-      const collator = new Intl.Collator('es', {sensitivity: 'base'});
-      const cards = Array.from(grid.children);
-      cards.sort((a,b)=> collator.compare(a.dataset.name, b.dataset.name));
-      for (const c of cards) grid.appendChild(c);
-    })();
-  </script>
+        (function sortGridDefault() {
+            const grid = document.getElementById('grid');
+            if (!grid)
+                return;
+            const collator = new Intl.Collator('es', {sensitivity: 'base'});
+            const cards = Array.from(grid.children);
+            cards.sort((a, b) => collator.compare(a.dataset.name, b.dataset.name));
+            for (const c of cards)
+                grid.appendChild(c);
+        })();
+    </script>
 
 </body>
 </html>

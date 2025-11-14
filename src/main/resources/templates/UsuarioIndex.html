@@ -1,500 +1,815 @@
 <!doctype html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>PokéAPI · Usuarios</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>PokéAPI · Usuarios</title>
 
-  <!-- Bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
-  <!-- Fuente -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- Fuente -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
 
-  <style>
-    :root{
-      --red:#ef4444; --red-700:#b91c1c; --ink:#0f172a; --muted:#64748b;
-      --chip:#fee2e2; --shadow:0 12px 28px rgba(15,23,42,.12);
-      --radius:18px; --bg:#ffffff; --ring:#ffd1d1; --soft:#fff7f7;
+    <style>
+        :root{
+            --red:#ef4444;
+            --red-700:#b91c1c;
+            --ink:#0f172a;
+            --muted:#64748b;
+            --chip:#fee2e2;
+            --shadow:0 12px 28px rgba(15,23,42,.12);
+            --radius:18px;
+            --bg:#ffffff;
+            --ring:#ffd1d1;
+            --soft:#fff7f7;
+        }
+        *{
+            box-sizing:border-box
+        }
+        html,body{
+            margin:0;
+            background:var(--bg)
+        }
+        body{
+            font-family:Poppins,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+            color:var(--ink)
+        }
+
+        /* ===== NAV ===== */
+        .nav{
+            position:sticky;
+            top:0;
+            z-index:2000;
+            background:linear-gradient(180deg,#fff 0,#fff 60%, #000 60%, #000 63%, #ef4444 63%, #0000FF 100%);
+            box-shadow:0 10px 20px rgba(239,68,68,.25);
+            width:100%;
+        }
+        .nav-in{
+            width:100%;
+            padding:18px 16px;
+            display:flex;
+            align-items:center;
+            gap:12px;
+        }
+        .nav-left{
+            display:flex;
+            align-items:center;
+            gap:12px;
+        }
+        .nav-right{
+            display:flex;
+            align-items:center;
+            gap:10px;
+            margin-left:auto !important;
+        }
+        .brand{
+            display:flex;
+            gap:12px;
+            align-items:center;
+            font-weight:800;
+            letter-spacing:.5px;
+            cursor:pointer;
+        }
+        .brand span{
+            font-size:18px;
+            color:var(--ink);
+            white-space:nowrap;
+        }
+        .ball{
+            width:34px;
+            height:34px;
+            border-radius:50%;
+            background:
+                radial-gradient(circle at 50% 48%, #fff 0 12px, transparent 13px),
+                linear-gradient(#fff 50%, #000 0 52%, #ef4444 0);
+            border:3px solid #000;
+            box-shadow: inset 0 0 0 2px #fff;
+            flex:0 0 34px;
+        }
+        .login{
+            background:#fff;
+            color:var(--red);
+            font-weight:800;
+            padding:10px 14px;
+            border-radius:12px;
+            border:1px solid #fecaca;
+        }
+        .login:hover{
+            background:#ffe8e8;
+        }
+
+        /* Contenido centrado */
+        .wrap{
+            max-width:1160px;
+            margin:18px auto;
+            padding:0 16px
+        }
+
+        .nav-links-desktop{
+            display:flex;
+            align-items:center;
+            gap:10px;
+            flex-wrap:wrap;
+        }
+
+  .nav-username{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:#fff;
+    color:var(--red);
+    font-weight:800;
+    padding:8px 12px;
+    border-radius:999px;         
+    border:1px solid #fecaca;
+    text-decoration:none;
+    font-size:13px;
+    cursor:default;              
+}
+
+@media (max-width: 991.98px){
+    .nav-username{
+        width:100%;
+        justify-content:center;
+        max-width:260px;
+        margin:8px auto 0;
     }
-    *{ box-sizing:border-box }
-    html,body{ margin:0; background:var(--bg) }
-    body{ font-family:Poppins,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif; color:var(--ink) }
+}
 
-    /* ===== NAV ===== */
-    .nav{
-      position:sticky; top:0; z-index:2000;
-      background:linear-gradient(180deg,#fff 0,#fff 60%, #000 60%, #000 63%, #ef4444 63%, #ef4444 100%);
-      box-shadow:0 10px 20px rgba(239,68,68,.25);
-      width:100%;
-    }
-    .nav-in{
-      width:100%;
-      padding:18px 16px;
-      display:flex;
-      align-items:center;
-      gap:12px;
-      justify-content:flex-start !important;
-    }
-    .nav-left{ display:flex; align-items:center; gap:12px; }
-    .nav-right{ display:flex; align-items:center; gap:10px; margin-left:auto !important; }
-    .brand{ display:flex; gap:12px; align-items:center; font-weight:800; letter-spacing:.5px; cursor:pointer; }
-    .brand span{ font-size:18px; color:var(--ink); }
-    .ball{
-      width:34px; height:34px; border-radius:50%;
-      background:
-        radial-gradient(circle at 50% 48%, #fff 0 12px, transparent 13px),
-        linear-gradient(#fff 50%, #000 0 52%, #ef4444 0);
-      border:3px solid #000; box-shadow: inset 0 0 0 2px #fff;
-      flex:0 0 34px;
-    }
-    .login{
-      background:#fff; color:var(--red); font-weight:800;
-      padding:10px 14px; border-radius:12px; border:1px solid #fecaca;
-    }
-    .login:hover{ background:#ffe8e8; }
 
-    /* Contenido centrado */
-    .wrap{ max-width:1160px; margin:18px auto; padding:0 16px }
+        .nav-btn{
+            background:#fff;
+            color:var(--red);
+            font-weight:800;
+            padding:8px 12px;
+            border-radius:999px;
+            border:1px solid #fecaca;
+            text-decoration:none;
+            font-size:13px;
+            cursor:pointer;
+        }
+        .nav-btn:hover{
+            background:#ffe8e8;
+        }
 
-    /* ===== CHART CARDS del mismo tamaño ===== */
-    .chart-card{
-      background:#fff; border:1px solid #f1f5f9; border-radius:16px; box-shadow:var(--shadow);
-      display:flex; flex-direction:column;
-    }
-    .chart-wrap{
-      position:relative; width:100%;
-      /* altura unificada para TODOS los charts */
-      height:320px;
-    }
-    .chart-wrap > canvas{
-      width:100% !important;
-      height:100% !important;
-      display:block;
-    }
+        .nav-dropdown-mobile{
+            display:none;
+        }
 
-    .title{ font-size:28px; font-weight:800; margin:0 0 12px }
-    .toolbar{ display:grid; grid-template-columns:1fr auto; gap:12px; align-items:center }
-    @media (max-width:780px){ .toolbar{ grid-template-columns:1fr } }
-    .search{ display:grid; grid-template-columns:1fr auto; gap:10px; align-items:center }
-    .search input{ width:100%; height:44px; padding:10px 14px; border-radius:999px; border:1px solid #e5e7eb; outline:0; box-shadow:var(--shadow); font-size:14px; line-height:22px; }
-    .search .btn-find{ height:40px; padding:0 16px; display:inline-flex; align-items:center; justify-content:center; border-radius:999px; border:1px solid #fecaca; background:#fff; color:var(--red-700); font-weight:800; cursor:pointer; white-space:nowrap; }
-    .search .hint{ grid-column:1 / -1; font-size:12px; color:var(--muted); margin-top:4px }
-    @media (max-width:480px){ .search{ grid-template-columns:1fr } .search .btn-find{ width:100% } }
-    .meta-line{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end; margin-bottom:10px }
-    .pill{ background:var(--chip); color:var(--red-700); padding:8px 12px; border-radius:999px; font-weight:800; border:1px solid #fecaca }
-    .sel-chips{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px }
-    .sel-chip{ display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; background:#fff0f0; border:1px solid var(--ring); color:var(--red-700); font-weight:800; text-transform:capitalize }
-    .sel-chip button{ border:none; background:transparent; font-weight:900; cursor:pointer; color:var(--red-700) }
+        /* ===== NAV RESPONSIVE ===== */
+        /* A partir de < 992px (tablets y móviles) esconder botones y usar SOLO dropdown */
+        @media (max-width: 991.98px){
+            .nav-in{
+                flex-wrap:wrap;
+                padding:12px 10px;
+                justify-content:center;
+            }
+            .nav-left,
+            .nav-right{
+                flex:0 0 100%;
+                justify-content:center;
+            }
+            .brand{
+                justify-content:center;
+            }
+            .brand span{
+                font-size:16px;
+                white-space:normal;
+                text-align:center;
+            }
+            .nav-links-desktop{
+                display:none;
+            }
+            .nav-dropdown-mobile{
+                display:block;
+                width:100%;
+                max-width:260px;
+            }
+            .login{
+                width:100%;
+                text-align:center;
+                padding:8px 10px;
+            }
+        }
 
-    .grid{ position:relative; z-index:1; display:grid; grid-template-columns:repeat(12,1fr); gap:18px; margin-top:16px }
-    @media (max-width:1160px){ .grid{ grid-template-columns:repeat(8,1fr) } }
-    @media (max-width:780px){ .grid{ grid-template-columns:repeat(6,1fr) } }
-    @media (max-width:560px){ .grid{ grid-template-columns:repeat(2,1fr) } }
+        /* ===== CHART CARDS del mismo tamaño ===== */
+        .chart-card{
+            background:#fff;
+            border:1px solid #f1f5f9;
+            border-radius:16px;
+            box-shadow:var(--shadow);
+            display:flex;
+            flex-direction:column;
+        }
+        .chart-wrap{
+            position:relative;
+            width:100%;
+            height:320px;
+        }
+        .chart-wrap > canvas{
+            width:100% !important;
+            height:100% !important;
+            display:block;
+        }
 
-    .card{ grid-column:span 3; perspective:1000px; min-height:330px }
-    @media (max-width:1160px){ .card{ grid-column:span 4 } }
-    @media (max-width:780px){ .card{ grid-column:span 3 } }
-    @media (max-width:560px){ .card{ grid-column:span 2; min-height:300px } }
-    .card-inner{ position:relative; width:100%; height:100%; transform-style:preserve-3d; transition:transform .7s cubic-bezier(.2,.8,.2,1) }
-    .card.flipped .card-inner{ transform:rotateY(180deg) }
-    .face{ position:absolute; inset:0; border-radius:var(--radius); overflow:hidden; backface-visibility:hidden; background:#fff; box-shadow:var(--shadow); border:1px solid #f1f5f9 }
+        .title{
+            font-size:28px;
+            font-weight:800;
+            margin:0 0 12px
+        }
+        .toolbar{
+            display:grid;
+            grid-template-columns:1fr auto;
+            gap:12px;
+            align-items:center
+        }
+        @media (max-width:780px){
+            .toolbar{
+                grid-template-columns:1fr
+            }
+        }
+        .search{
+            display:grid;
+            grid-template-columns:1fr auto;
+            gap:10px;
+            align-items:center
+        }
+        .search input{
+            width:100%;
+            height:44px;
+            padding:10px 14px;
+            border-radius:999px;
+            border:1px solid #e5e7eb;
+            outline:0;
+            box-shadow:var(--shadow);
+            font-size:14px;
+            line-height:22px;
+        }
+        .search .btn-find{
+            height:40px;
+            padding:0 16px;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            border-radius:999px;
+            border:1px solid #fecaca;
+            background:#fff;
+            color:var(--red-700);
+            font-weight:800;
+            cursor:pointer;
+            white-space:nowrap;
+        }
+        .search .hint{
+            grid-column:1 / -1;
+            font-size:12px;
+            color:var(--muted);
+            margin-top:4px
+        }
+        @media (max-width:480px){
+            .search{
+                grid-template-columns:1fr
+            }
+            .search .btn-find{
+                width:100%
+            }
+        }
+        .meta-line{
+            display:flex;
+            gap:10px;
+            align-items:center;
+            flex-wrap:wrap;
+            justify-content:flex-end;
+            margin-bottom:10px
+        }
+        .pill{
+            background:var(--chip);
+            color:var(--red-700);
+            padding:8px 12px;
+            border-radius:999px;
+            font-weight:800;
+            border:1px solid #fecaca
+        }
+        .sel-chips{
+            display:flex;
+            gap:8px;
+            flex-wrap:wrap;
+            margin-top:10px
+        }
+        .sel-chip{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:6px 10px;
+    border-radius:999px;
+    background:#fff0f0;
+    border:1px solid var(--ring);
+    color:var(--red-700);
+    font-weight:800;
+    text-transform:capitalize;
+}
 
-    .pagi{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:16px; flex-wrap:wrap }
-    .p-btn{ padding:10px 12px; border-radius:10px; border:1px solid #fecaca; background:#fff; color:var(--red); font-weight:800 }
-    .p-btn[disabled]{ opacity:.5; cursor:not-allowed }
-    .page-size{ display:flex; align-items:center; gap:8px }
-    .page-size select{ border:1px solid #e5e7eb; border-radius:8px; padding:6px 8px; background:#fff }
+        .sel-chip button{
+            border:none;
+            background:transparent;
+            font-weight:900;
+            cursor:pointer;
+            color:var(--red-700)
+        }
 
-    .badge-role{
-      background:#fee2e2;
-      color:#b91c1c;
-      font-weight:600;
-      border-radius:999px;
-      padding:4px 10px;
-      font-size:12px;
-      border:1px solid #fecaca;
-    }
-  </style>
+        .grid{
+            position:relative;
+            z-index:1;
+            display:grid;
+            grid-template-columns:repeat(12,1fr);
+            gap:18px;
+            margin-top:16px
+        }
+        @media (max-width:1160px){
+            .grid{
+                grid-template-columns:repeat(8,1fr)
+            }
+        }
+        @media (max-width:780px){
+            .grid{
+                grid-template-columns:repeat(6,1fr)
+            }
+        }
+        @media (max-width:560px){
+            .grid{
+                grid-template-columns:repeat(2,1fr)
+            }
+        }
+
+        .card{
+            grid-column:span 3;
+            perspective:1000px;
+            min-height:330px
+        }
+        @media (max-width:1160px){
+            .card{
+                grid-column:span 4
+            }
+        }
+        @media (max-width:780px){
+            .card{
+                grid-column:span 3
+            }
+        }
+        @media (max-width:560px){
+            .card{
+                grid-column:span 2;
+                min-height:300px
+            }
+        }
+        .card-inner{
+            position:relative;
+            width:100%;
+            height:100%;
+            transform-style:preserve-3d;
+            transition:transform .7s cubic-bezier(.2,.8,.2,1)
+        }
+        .card.flipped .card-inner{
+            transform:rotateY(180deg)
+        }
+        .face{
+            position:absolute;
+            inset:0;
+            border-radius:var(--radius);
+            overflow:hidden;
+            backface-visibility:hidden;
+            background:#fff;
+            box-shadow:var(--shadow);
+            border:1px solid #f1f5f9
+        }
+
+        .pagi{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:10px;
+            margin-top:16px;
+            flex-wrap:wrap
+        }
+        .p-btn{
+            padding:10px 12px;
+            border-radius:10px;
+            border:1px solid #fecaca;
+            background:#fff;
+            color:var(--red);
+            font-weight:800
+        }
+        .p-btn[disabled]{
+            opacity:.5;
+            cursor:not-allowed
+        }
+        .page-size{
+            display:flex;
+            align-items:center;
+            gap:8px
+        }
+        .page-size select{
+            border:1px solid #e5e7eb;
+            border-radius:8px;
+            padding:6px 8px;
+            background:#fff
+        }
+
+        .badge-role{
+            background:#fee2e2;
+            color:#b91c1c;
+            font-weight:600;
+            border-radius:999px;
+            padding:4px 10px;
+            font-size:12px;
+            border:1px solid #fecaca;
+        }
+    </style>
 </head>
 <body>
 
 <!-- NAV -->
 <nav class="nav" aria-label="Principal">
-  <div class="nav-in">
-    <!-- IZQUIERDA -->
-    <div class="nav-left">
-      <div th:switch="${role}">
-        <div th:case="'ROLE_Administrador'" class="brand" onclick="window.location.href='/usuario/list'">
-          <div class="ball" aria-hidden="true"></div><span>PokéAPI · Administrador</span>
+    <div class="nav-in">
+        <!-- IZQUIERDA -->
+        <div class="nav-left">
+            <div th:if="${role == 'ROLE_Administrador'}">
+                <div class="brand" onclick="window.location.href = '/usuario/list'">
+                    <div class="ball" aria-hidden="true"></div>
+                    <span>PokéAPI · Administrador</span>
+                </div>
+            </div>
+            <div th:if="${role == 'ROLE_General'}">
+                <div class="brand" onclick="window.location.href = '/pokemon'">
+                    <div class="ball" aria-hidden="true"></div>
+                    <span>PokéAPI · Usuarios</span>
+                </div>
+            </div>
+            <div th:if="${role == 'ROLE_ANONYMOUS'}">
+                <div class="brand" onclick="window.location.href = '/pokemon'">
+                    <div class="ball" aria-hidden="true"></div>
+                    <span>PokéAPI</span>
+                </div>
+            </div>
         </div>
-        <div th:case="'ROLE_General'" class="brand" onclick="window.location.href='/pokemon'">
-          <div class="ball" aria-hidden="true"></div><span>PokéAPI · Usuarios</span>
-        </div>
-        <div th:case="*" class="brand" onclick="window.location.href='/pokemon'">
-          <div class="ball" aria-hidden="true"></div><span>PokéAPI</span>
-        </div>
-      </div>
-    </div>
 
-    <!-- DERECHA -->
-    <div class="nav-right">
-      <div th:if="${username != null}">
-        <div th:if="${role == 'ROLE_Administrador'}">
-          <select id="opciones" name="opciones" class="login" onchange="handleSelectChange(this)">
-            <option value="" disabled selected th:text="${username}">Usuario</option>
-            <option value="/usuario/myAccount">Mi cuenta</option>
-            <option value="pokemones">Pokemons</option>
-            <option value="administrador">Administrador</option>
-            <option value="logout">Cerrar sesión</option>
-          </select>
+        <!-- DERECHA -->
+        <div class="nav-right">
+            <div th:if="${username != null}">
+                <!-- ADMIN -->
+                <div th:if="${role == 'ROLE_Administrador'}" class="d-flex align-items-center gap-2 flex-wrap">
+                    <span class="nav-username d-none d-lg-inline" th:text="${username}">Usuario</span>
+
+                    <!-- Desktop: botones -->
+                    <div class="nav-links-desktop d-none d-lg-flex">
+                        <a class="nav-btn" th:href="@{/pokemon}">Pokemons</a>
+                        <a class="nav-btn" th:href="@{/pokemon/totalPokemonesFavoritos}">Administrador</a>
+                        <a class="nav-btn" th:href="@{/pokemon/myAccount}">Mi cuenta</a>
+                        <a class="nav-btn" th:href="@{/logout}">Cerrar sesión</a>
+                    </div>
+
+                    <!-- Móvil / tablet: SOLO dropdown -->
+                    <div class="nav-dropdown-mobile">
+                        <select id="adminMobileNav" class="login" onchange="handleSelectChange(this)">
+                            <option value="" disabled selected th:text="${username}">Usuario</option>
+                            <option value="pokemones">Pokemons</option>
+                            <option value="administrador">Administrador</option>
+                            <option value="/usuario/myAccount">Mi cuenta</option>
+                            <option value="logout">Cerrar sesión</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- NO ADMIN -->
+                <div th:if="${role != 'ROLE_Administrador'}">
+                    <select id="opciones" name="opciones" class="login" onchange="handleSelectChange(this)">
+                        <option value="" disabled selected th:text="${username}">Usuario</option>
+                        <option value="/usuario/myAccount">Mi cuenta</option>
+                        <option value="logout">Cerrar sesión</option>
+                    </select>
+                </div>
+            </div>
+
+            <div th:if="${username == null}">
+                <a class="login" th:href="@{/login}">Login</a>
+            </div>
         </div>
-        <div th:if="${role != 'ROLE_Administrador'}">
-          <select id="opciones" name="opciones" class="login" onchange="handleSelectChange(this)">
-            <option value="" disabled selected th:text="${username}">Usuario</option>
-            <option value="/usuario/myAccount">Mi cuenta</option>
-            <option value="logout">Cerrar sesión</option>
-          </select>
-        </div>
-      </div>
-      <div th:if="${username == null}">
-        <a class="login" th:href="@{/login}">Login</a>
-      </div>
     </div>
-  </div>
 </nav>
 
 <main class="wrap">
 
-  <!-- Mensajes -->
-  <div th:if="${mensaje}" class="alert alert-success" role="alert" th:text="${mensaje}">OK</div>
-  <div th:if="${mensajeError}" class="alert alert-danger" role="alert" th:text="${mensajeError}">Error</div>
+    <div th:if="${mensaje}" class="alert alert-success" role="alert" th:text="${mensaje}">OK</div>
+    <div th:if="${mensajeError}" class="alert alert-danger" role="alert" th:text="${mensajeError}">Error</div>
 
-  <!-- Header + acciones -->
-  <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-2">
-    <h1 class="h3 m-0 fw-bold">Dashboard de usuarios</h1>
-    <div class="d-flex gap-2">
-      <a class="btn btn-outline-danger" th:href="@{/usuario/list}">Refrescar</a>
-    </div>
-  </div>
-
-  <!-- Lista -->
-  <div class="card mt-3 shadow-sm">
-    <div class="card-header bg-white">
-      <strong>Usuarios</strong>
-    </div>
-    <div class="card-body p-0">
-      <div th:if="${#lists.isEmpty(usuarios)}" class="p-4 alert-soft rounded-0">
-        No hay usuarios registrados aún.
-      </div>
-
-      <div th:unless="${#lists.isEmpty(usuarios)}" class="table-responsive">
-        <table class="table align-middle mb-0">
-          <thead>
-          <tr>
-            <th class="text-nowrap">ID</th>
-            <th class="text-nowrap">Username</th>
-            <th class="text-nowrap">Nombre</th>
-            <th class="text-nowrap">Email</th>
-            <th class="text-nowrap">Rol</th>
-            <th class="text-nowrap text-end">Acciones</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr th:each="u : ${usuarios}">
-            <td th:text="${u.idUsuario}">1</td>
-            <td th:text="${u.username}">misty</td>
-            <td th:text="${u.nombre} + ' ' + ${u.apellidoPaterno} + ' ' + ${u.apellidoMaterno}">Nombre Apellidos</td>
-            <td>
-              <a th:if="${u.email != null}" th:href="${'mailto:' + u.email}" th:text="${u.email}">email@site.com</a>
-              <span th:if="${u.email == null}" class="text-muted">—</span>
-            </td>
-            <td>
-              <span class="badge badge-role"
-                    th:text="${u.rol != null && u.rol.nombre != null ? u.rol.nombre : 'Sin rol'}">
-                Sin rol
-              </span>
-            </td>
-            <td class="text-end">
-              <a class="btn btn-sm btn-outline-secondary" th:href="@{'/usuario/' + ${u.idUsuario}}">Ver</a>
-              <a class="btn btn-sm btn-outline-primary" th:href="@{'/usuario/edit/' + ${u.idUsuario}}">Editar</a>
-
-              <!-- Botón que abre el modal global -->
-              <button type="button"
-                      class="btn btn-sm btn-outline-danger"
-                      data-bs-toggle="modal"
-                      data-bs-target="#delModal"
-                      th:attr="data-id=${u.idUsuario}, data-username=${u.username}">
-                Eliminar
-              </button>
-
-            </td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- CHARTS -->
-  <div class="row g-3 mt-1">
-    <div class="col-12 col-lg-6">
-      <div class="chart-card p-3">
-        <div class="d-flex align-items-center justify-content-between">
-          <h2 class="h6 m-0 fw-bold">Usuarios por Rol</h2>
-          <small class="text-muted">Distribución</small>
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-2">
+        <h1 class="h3 m-0 fw-bold">Dashboard de usuarios</h1>
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-danger" th:href="@{/usuario/list}">Refrescar</a>
         </div>
-        <div class="chart-wrap mt-2">
-          <canvas id="chartRoles" aria-label="Gráfica de usuarios por rol" role="img"></canvas>
-        </div>
-      </div>
     </div>
 
-    <div class="col-12 col-lg-6">
-      <div class="chart-card p-3">
-        <div class="d-flex align-items-center justify-content-between">
-          <h2 class="h6 m-0 fw-bold">Dominios de Email</h2>
-          <small class="text-muted">Top 6</small>
+    <div class="card mt-3 shadow-sm">
+        <div class="card-header bg-white">
+            <strong>Usuarios</strong>
         </div>
-        <div class="chart-wrap mt-2">
-          <canvas id="chartDominios" aria-label="Gráfica de dominios de email" role="img"></canvas>
+        <div class="card-body p-0">
+            <div th:if="${#lists.isEmpty(usuarios)}" class="p-4 alert-soft rounded-0">
+                No hay usuarios registrados aún.
+            </div>
+
+            <div th:unless="${#lists.isEmpty(usuarios)}" class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead>
+                    <tr>
+                        <th class="text-nowrap">ID</th>
+                        <th class="text-nowrap">Username</th>
+                        <th class="text-nowrap">Nombre</th>
+                        <th class="text-nowrap">Email</th>
+                        <th class="text-nowrap">Rol</th>
+                        <th class="text-nowrap text-end">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="u : ${usuarios}">
+                        <td th:text="${u.idUsuario}">1</td>
+                        <td th:text="${u.username}">misty</td>
+                        <td th:text="${u.nombre} + ' ' + ${u.apellidoPaterno} + ' ' + ${u.apellidoMaterno}">Nombre Apellidos</td>
+                        <td>
+                            <a th:if="${u.email != null}" th:href="${'mailto:' + u.email}" th:text="${u.email}">email@site.com</a>
+                            <span th:if="${u.email == null}" class="text-muted">—</span>
+                        </td>
+                        <td>
+                            <span class="badge badge-role"
+                                  th:text="${u.rol != null && u.rol.nombre != null ? u.rol.nombre : 'Sin rol'}">
+                                Sin rol
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-secondary" th:href="@{'/usuario/' + ${u.idUsuario}}">Ver</a>
+                            <a class="btn btn-sm btn-outline-primary" th:href="@{'/usuario/edit/' + ${u.idUsuario}}">Editar</a>
+
+                            <button type="button"
+                                    class="btn btn-sm btn-outline-danger"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#delModal"
+                                    th:attr="data-id=${u.idUsuario}, data-username=${u.username}">
+                                Eliminar
+                            </button>
+
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
+
+    <!-- CHARTS -->
+    <div class="row g-3 mt-1">
+        <div class="col-12 col-lg-6">
+            <div class="chart-card p-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <h2 class="h6 m-0 fw-bold">Usuarios por Rol</h2>
+                    <small class="text-muted">Distribución</small>
+                </div>
+                <div class="chart-wrap mt-2">
+                    <canvas id="chartRoles" aria-label="Gráfica de usuarios por rol" role="img"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-6">
+            <div class="chart-card p-3">
+                <div class="d-flex align-items-center justify-content-between">
+                    <h2 class="h6 m-0 fw-bold">Dominios de Email</h2>
+                    <small class="text-muted">Top 6</small>
+                </div>
+                <div class="chart-wrap mt-2">
+                    <canvas id="chartDominios" aria-label="Gráfica de dominios de email" role="img"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </main>
 
-<!-- MODAL GLOBAL DE ELIMINACIÓN -->
 <div class="modal fade" id="delModal" tabindex="-1" aria-labelledby="delModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
 
-      <div class="modal-header">
-        <h5 class="modal-title" id="delModalLabel">Eliminar usuario</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
+            <div class="modal-header">
+                <h5 class="modal-title" id="delModalLabel">Eliminar usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
 
-      <div class="modal-body">
-        ¿Seguro que deseas eliminar al usuario
-        <strong id="delUsername">username</strong>?
-      </div>
+            <div class="modal-body">
+                ¿Seguro que deseas eliminar al usuario
+                <strong id="delUsername">username</strong>?
+            </div>
 
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
 
-        <form id="delForm" method="post" class="m-0">
-          <input type="hidden" name="_csrf" th:value="${_csrf?.token}"/>
-          <button type="submit" class="btn btn-danger">Eliminar</button>
-        </form>
-      </div>
+                <form id="delForm" method="post" class="m-0">
+                    <input type="hidden" name="_csrf" th:value="${_csrf?.token}"/>
+                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                </form>
+            </div>
 
+        </div>
     </div>
-  </div>
 </div>
 
-<!-- Offcanvas detalle -->
 <div class="offcanvas offcanvas-end" tabindex="-1" id="offUser" aria-labelledby="offUserLabel">
-  <div class="offcanvas-header">
-    <h5 class="offcanvas-title" id="offUserLabel">Detalle de usuario</h5>
-    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
-  </div>
-  <div class="offcanvas-body">
-    <div id="offUserBody" class="small text-muted">Busca un username para ver el detalle aquí.</div>
-  </div>
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offUserLabel">Detalle de usuario</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div id="offUserBody" class="small text-muted">Busca un username para ver el detalle aquí.</div>
+    </div>
 </div>
 
-<!-- Datos para charts (Thymeleaf) -->
 <script th:inline="javascript">
-/*<![CDATA[*/
-  const __USERS__ = [
-    /*[# th:each="u : ${usuarios}"]*/
-    { id: /*[[${u.idUsuario}]]*/, username: /*[['' + ${u.username}]]*/,
-      email: /*[['' + (${u.email} != null ? ${u.email} : '')]]*/,
-      role: /*[['' + (${u.rol} != null ? ${u.rol.nombre} : 'Sin rol')]]*/ },
-    /*[/]*/
-  ];
-
-  const __FAVSTATS__ = [
-    /*[# th:each="s : ${favStats}"]*/
-    { user: /*[['' + ${s.username}]]*/, count: /*[[${s.total}]]*/ },
-    /*[/]*/
-  ];
-/*]]>*/
+    /*<![CDATA[*/
+    const __USERS__ = [
+        /*[# th:each="u : ${usuarios}"]*/
+        { id: /*[[${u.idUsuario}]]*/, username: /*[['' + ${u.username}]]*/,
+          email: /*[['' + (${u.email} != null ? ${u.email} : '')]]*/,
+          role: /*[['' + (${u.rol} != null ? ${u.rol.nombre} : 'Sin rol')]]*/ },
+        /*[/]*/
+    ];
+    const __FAVSTATS__ = [
+        /*[# th:each="s : ${favStats}"]*/
+        { user: /*[['' + ${s.username}]]*/, count: /*[[${s.total}]]*/ },
+        /*[/]*/
+    ];
+    /*]]>*/
 </script>
 
 <script>
-  /* NAV select */
-  function handleSelectChange(selectElement) {
-    const v = selectElement.value;
-    if (v === "logout") window.location.href = "/logout";
-    else if (v === "/usuario/myAccount") window.location.href = "/pokemon/myAccount";
-    else if (v === "administrador") window.location.href = "/pokemon/totalPokemonesFavoritos";
-    else if (v === "pokemones") window.location.href = "/pokemon";
-    else if (v) window.location.href = v;
-  }
-
-  /* Offcanvas búsqueda username */
-  const btnBuscar = document.getElementById('btnBuscar');
-  const qUser = document.getElementById('qUser');
-  const off = new bootstrap.Offcanvas('#offUser');
-  const offBody = document.getElementById('offUserBody');
-  const offTitle = document.getElementById('offUserLabel');
-
-  async function doBuscar() {
-    const u = (qUser?.value || '').trim();
-    if (!u) {
-      offTitle.textContent = 'Detalle de usuario';
-      offBody.innerHTML = '<div class="alert alert-warning">Ingresa un username.</div>';
-      off.show(); return;
+    /* NAV select */
+    function handleSelectChange(selectElement) {
+        const v = selectElement.value;
+        if (v === "logout") window.location.href = "/logout";
+        else if (v === "/usuario/myAccount") window.location.href = "/pokemon/myAccount";
+        else if (v === "administrador") window.location.href = "/pokemon/totalPokemonesFavoritos";
+        else if (v === "pokemones") window.location.href = "/pokemon";
+        else if (v) window.location.href = v;
     }
-    try {
-      const resp = await fetch(`/usuario/by-username?u=${encodeURIComponent(u)}`, {headers: {'X-Requested-With':'XMLHttpRequest'}});
-      const html = await resp.text();
-      offTitle.textContent = `Usuario: ${u}`;
-      offBody.innerHTML = html;
-      off.show();
-    } catch {
-      offTitle.textContent = 'Detalle de usuario';
-      offBody.innerHTML = '<div class="alert alert-danger">No se pudo cargar el detalle.</div>';
-      off.show();
-    }
-  }
-  btnBuscar?.addEventListener('click', doBuscar);
-  qUser?.addEventListener('keydown', (e)=>{ if (e.key === 'Enter'){ e.preventDefault(); doBuscar(); } });
 
-  /* Utilidad conteo */
-  function groupCount(arr) {
-    const map = new Map();
-    for (const v of arr) map.set(v, (map.get(v) || 0) + 1);
-    return [...map.entries()].sort((a,b)=> b[1]-a[1]);
-  }
-
-  /* ===== CHART 1: Roles (doughnut) ===== */
-  const roles = groupCount(__USERS__.map(u => (u.role && u.role.trim()) ? u.role : 'Sin rol'));
-  const roleLabels = roles.map(([k])=>k);
-  const roleData   = roles.map(([_,v])=>v);
-
-  const baseColors = ['#ef4444','#f59e0b','#10b981','#3b82f6','#a855f7','#ec4899','#22c55e','#eab308'];
-  const colors = (n)=> Array.from({length:n}, (_,i)=> baseColors[i % baseColors.length]);
-
-  const ctxRoles = document.getElementById('chartRoles')?.getContext('2d');
-  if (ctxRoles && roleLabels.length){
-    new Chart(ctxRoles, {
-      type: 'doughnut',
-      data: {
-        labels: roleLabels,
-        datasets: [{
-          data: roleData,
-          borderWidth: 2,
-          borderColor: '#fff',
-          backgroundColor: colors(roleLabels.length),
-          hoverOffset: 8
-        }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false, cutout: '58%',
-        plugins: {
-          legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle' } },
-          tooltip: { callbacks: {
-            label: (ctx)=>{
-              const total = ctx.dataset.data.reduce((a,b)=>a+b,0);
-              const val = ctx.parsed;
-              const pct = total ? ((val/total)*100).toFixed(1):0;
-              return ` ${ctx.label}: ${val} (${pct}%)`;
-            }
-          } }
+    /* Offcanvas búsqueda username */
+    const btnBuscar = document.getElementById('btnBuscar');
+    const qUser = document.getElementById('qUser');
+    const off = new bootstrap.Offcanvas('#offUser');
+    const offBody = document.getElementById('offUserBody');
+    const offTitle = document.getElementById('offUserLabel');
+    async function doBuscar() {
+        const u = (qUser?.value || '').trim();
+        if (!u) {
+            offTitle.textContent = 'Detalle de usuario';
+            offBody.innerHTML = '<div class="alert alert-warning">Ingresa un username.</div>';
+            off.show(); return;
         }
-      }
-    });
-  }
+        try {
+            const resp = await fetch(`/usuario/by-username?u=${encodeURIComponent(u)}`, {headers: {'X-Requested-With':'XMLHttpRequest'}});
+            const html = await resp.text();
+            offTitle.textContent = `Usuario: ${u}`;
+            offBody.innerHTML = html;
+            off.show();
+        } catch {
+            offTitle.textContent = 'Detalle de usuario';
+            offBody.innerHTML = '<div class="alert alert-danger">No se pudo cargar el detalle.</div>';
+            off.show();
+        }
+    }
+    btnBuscar?.addEventListener('click', doBuscar);
+    qUser?.addEventListener('keydown', (e) => { if (e.key === 'Enter'){ e.preventDefault(); doBuscar(); } });
 
-  /* ===== CHART 2: Dominios (bar) ===== */
-  const dominios = groupCount(__USERS__.map(u => (u.email||'').split('@')[1] || '—')).slice(0,6);
-  const domLabels = dominios.map(([k])=>k);
-  const domData   = dominios.map(([_,v])=>v);
+    /* Utilidad conteo */
+    function groupCount(arr) {
+        const map = new Map();
+        for (const v of arr) map.set(v, (map.get(v) || 0) + 1);
+        return [...map.entries()].sort((a, b) => b[1] - a[1]);
+    }
 
-  const ctxDom = document.getElementById('chartDominios')?.getContext('2d');
-  if (ctxDom && domLabels.length){
-    new Chart(ctxDom, {
-      type: 'bar',
-      data: {
-        labels: domLabels,
-        datasets: [{
-          label: 'Usuarios',
-          data: domData,
-          backgroundColor: colors(domLabels.length),
-          borderColor: '#ffffff',
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        scales: { y: { beginAtZero: true, ticks: { precision:0 } } },
-        plugins: { legend: { display:false } }
-      }
-    });
-  }
+    /* ===== CHART 1: Roles (doughnut) ===== */
+    const roles = groupCount(__USERS__.map(u => (u.role && u.role.trim()) ? u.role : 'Sin rol'));
+    const roleLabels = roles.map(([k]) => k);
+    const roleData = roles.map(([_, v]) => v);
+    const baseColors = ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#a855f7', '#ec4899', '#22c55e', '#eab308'];
+    const colors = (n) => Array.from({length:n}, (_, i) => baseColors[i % baseColors.length]);
+    const ctxRoles = document.getElementById('chartRoles')?.getContext('2d');
+    if (ctxRoles && roleLabels.length){
+        new Chart(ctxRoles, {
+            type: 'doughnut',
+            data: {
+                labels: roleLabels,
+                datasets: [{
+                    data: roleData,
+                    borderWidth: 2,
+                    borderColor: '#fff',
+                    backgroundColor: colors(roleLabels.length),
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false, cutout: '58%',
+                plugins: {
+                    legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle' } },
+                    tooltip: { callbacks: {
+                        label: (ctx) => {
+                            const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                            const val = ctx.parsed;
+                            const pct = total ? ((val / total) * 100).toFixed(1):0;
+                            return ` ${ctx.label}: ${val} (${pct}%)`;
+                        }
+                    } }
+                }
+            }
+        });
+    }
 
-  /* ===== CHART 3 (OPCIONAL): Pokemones guardados por usuario ===== */
-  (function renderFavs(){
-    const data = Array.isArray(__FAVSTATS__) ? __FAVSTATS__.slice() : [];
-    if (!data.length) return;
+    /* ===== CHART 2: Dominios (bar) ===== */
+    const dominios = groupCount(__USERS__.map(u => (u.email || '').split('@')[1] || '—')).slice(0, 6);
+    const domLabels = dominios.map(([k]) => k);
+    const domData = dominios.map(([_, v]) => v);
+    const ctxDom = document.getElementById('chartDominios')?.getContext('2d');
+    if (ctxDom && domLabels.length){
+        new Chart(ctxDom, {
+            type: 'bar',
+            data: {
+                labels: domLabels,
+                datasets: [{
+                    label: 'Usuarios',
+                    data: domData,
+                    backgroundColor: colors(domLabels.length),
+                    borderColor: '#ffffff',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                scales: { y: { beginAtZero: true, ticks: { precision:0 } } },
+                plugins: { legend: { display:false } }
+            }
+        });
+    }
 
-    data.sort((a,b)=> (b.count||0)-(a.count||0));
-    const top = data.slice(0,10);
-    const labels = top.map(x=> x.user || '—');
-    const values = top.map(x=> x.count || 0);
+    /* ===== CHART 3 (OPCIONAL): Pokemones guardados por usuario ===== */
+    (function renderFavs(){
+        const data = Array.isArray(__FAVSTATS__) ? __FAVSTATS__.slice() : [];
+        if (!data.length) return;
+        data.sort((a, b) => (b.count || 0) - (a.count || 0));
+        const top = data.slice(0, 10);
+        const labels = top.map(x => x.user || '—');
+        const values = top.map(x => x.count || 0);
+        const card = document.getElementById('favStatsCard');
+        card?.classList.remove('d-none');
+        const ctx = document.getElementById('chartFavs')?.getContext('2d');
+        if (!ctx) return;
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Pokémones',
+                    data: values,
+                    backgroundColor: colors(labels.length),
+                    borderColor: '#ffffff',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive:true, maintainAspectRatio:false,
+                indexAxis:'y',
+                scales:{ x:{ beginAtZero:true, ticks:{ precision:0 } } },
+                plugins:{ legend:{ display:false } }
+            }
+        });
+    })();
 
-    const card = document.getElementById('favStatsCard');
-    card?.classList.remove('d-none');
-
-    const ctx = document.getElementById('chartFavs')?.getContext('2d');
-    if (!ctx) return;
-
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels,
-        datasets: [{
-          label: 'Pokémones',
-          data: values,
-          backgroundColor: colors(labels.length),
-          borderColor: '#ffffff',
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive:true, maintainAspectRatio:false,
-        indexAxis:'y',
-        scales:{ x:{ beginAtZero:true, ticks:{ precision:0 } } },
-        plugins:{ legend:{ display:false } }
-      }
-    });
-  })();
-
-  /* Modal eliminación: setea username y action del form */
-  const delModal = document.getElementById('delModal');
-  if (delModal) {
-    delModal.addEventListener('show.bs.modal', function (event) {
-      const button = event.relatedTarget;
-      const userId = button.getAttribute('data-id');
-      const username = button.getAttribute('data-username');
-
-      const userSpan = document.getElementById('delUsername');
-      if (userSpan) userSpan.textContent = username;
-
-      const form = document.getElementById('delForm');
-      if (form) form.action = '/usuario/delete/' + userId;
-    });
-  }
+    /* Modal eliminación */
+    const delModal = document.getElementById('delModal');
+    if (delModal) {
+        delModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const userId = button.getAttribute('data-id');
+            const username = button.getAttribute('data-username');
+            const userSpan = document.getElementById('delUsername');
+            if (userSpan) userSpan.textContent = username;
+            const form = document.getElementById('delForm');
+            if (form) form.action = '/usuario/delete/' + userId;
+        });
+    }
 </script>
 
 </body>
