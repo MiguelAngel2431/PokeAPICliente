@@ -31,6 +31,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf ->csrf.disable())
+                .securityContext(context -> context.requireExplicitSave(false))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/pokemon/**", "/api/auth/**", "/usuario/add", "/usuario", "/login/**", "/api/usuario/**").permitAll()
                         .anyRequest().authenticated()

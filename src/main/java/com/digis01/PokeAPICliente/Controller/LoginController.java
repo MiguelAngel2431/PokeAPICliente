@@ -2,9 +2,12 @@
 package com.digis01.PokeAPICliente.Controller;
 
 import com.digis01.PokeAPICliente.DAO.IRepositoryUsuario;
+import com.digis01.PokeAPICliente.JPA.Rol;
 import com.digis01.PokeAPICliente.JPA.Usuario;
 import com.digis01.PokeAPICliente.Service.ServiceEmail;
 import com.digis01.PokeAPICliente.Service.TokenService;
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,6 +21,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @Controller
 @RequestMapping("login")
@@ -127,6 +133,46 @@ public class LoginController {
             return "ResetPassword";
         }
         
+    }
+    
+    @GetMapping("/validacion-enviada")
+    public String validacionEnviada() {
+        return "Login-validacion";
+    }
+    
+    @GetMapping("/confirm")
+    public String confirmarLogin(@RequestParam("token") String token,
+            HttpServletRequest request) {
+        
+        //Validamos token
+        String email = tokenService.validateToken(token);
+        
+        if (email == null) {
+            return "redirect:/login?error=token";
+        }
+        
+        Usuario usuario = iRepositoryUsuario.findByEmail(email);
+        
+        Rol rol = usuario.getRol();
+        
+        String rolString = "ROLE_" + rol.getNombre();
+        
+        List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(rolString));
+        
+        UsernamePasswordAuthenticationToken auth = 
+                new UsernamePasswordAuthenticationToken(usuario.getUsername(), null, authorities);
+        
+        SecurityContextHolder.getContext().setAuthentication(auth);
+        
+        String redirectURL = "/"; // default
+        
+        if (rolString.equals("ROLE_Administrador")) {
+            redirectURL = "/usuario/list";
+        } else if (rolString.equals("ROLE_General")) {
+            redirectURL = "/pokemon";
+        }
+        
+        return "redirect:" + redirectURL;
     }
     
 }

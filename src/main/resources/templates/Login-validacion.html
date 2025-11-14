@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Validación de Inicio de Sesión</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+    <div class="container">
+        <h2>¡Casi listo!</h2>
+        <p>Hola <span th:text="${email}">usuario</span>,</p>
+        <p>Hemos enviado un correo de verificación a tu dirección. Por favor, revisa tu correo y haz clic en el enlace para completar el inicio de sesión.</p>
+        
+        <p>Si no recibiste el correo, verifica tu carpeta de spam o <a th:href="@{/resend-verification?email=${email}}">reenviar correo</a>.</p>
+
+        <div class="note">
+            <small>Este enlace de validación expira en 1 minuto.</small>
+        </div>
+    </div>
+</body>
+</html>
+

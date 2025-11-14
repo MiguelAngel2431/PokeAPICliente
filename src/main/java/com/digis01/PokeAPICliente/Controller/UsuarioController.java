@@ -89,7 +89,7 @@ public class UsuarioController {
                 ? authentication.getName() : null;
 
         String role = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
+                .map(GrantedAuthority::getAuthority)//
                 .findFirst()
                 .orElse("ROLE_General"); // Si no hay rol, asignamos ROLE_General
         
