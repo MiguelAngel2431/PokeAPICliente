@@ -66,7 +66,7 @@ public class TokenService {
     public String generateVerificationToken(String email) {
         
         String token = UUID.randomUUID().toString();
-        LocalDateTime expiration = LocalDateTime.now().plusMinutes(1); //1 minuto
+        LocalDateTime expiration = LocalDateTime.now().plusMinutes(2); //2 minutos
         storeToken(token, email, expiration);
         return token;
         

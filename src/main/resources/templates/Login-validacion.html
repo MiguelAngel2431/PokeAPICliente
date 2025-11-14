@@ -4,19 +4,117 @@
     <meta charset="UTF-8">
     <title>Validación de Inicio de Sesión</title>
     <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <style>
+        /* Fondo suave */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Tarjeta central */
+        .card {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+            color: #333;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #2575fc;
+        }
+
+        p {
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        a {
+            color: #6a11cb;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Spinner animado */
+        .spinner {
+            margin: 20px auto;
+            width: 60px;
+            height: 60px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #2575fc;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Contador regresivo */
+        .countdown {
+            margin-top: 20px;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #6a11cb;
+        }
+
+        .note {
+            margin-top: 15px;
+            font-size: 0.85em;
+            color: #777;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
+    <div class="card">
         <h2>¡Casi listo!</h2>
         <p>Hola <span th:text="${email}">usuario</span>,</p>
         <p>Hemos enviado un correo de verificación a tu dirección. Por favor, revisa tu correo y haz clic en el enlace para completar el inicio de sesión.</p>
         
+        <div class="spinner"></div>
+
+        <div class="countdown" id="countdown">02:00</div>
+
         <p>Si no recibiste el correo, verifica tu carpeta de spam o <a th:href="@{/resend-verification?email=${email}}">reenviar correo</a>.</p>
 
         <div class="note">
-            <small>Este enlace de validación expira en 1 minuto.</small>
+            <small>Este enlace de validación expira en 2 minutos.</small>
         </div>
     </div>
+
+    <script>
+        // Redirigir automáticamente al login después de 2 minutos
+        const totalSeconds = 120; // 2 minutos
+        let remaining = totalSeconds;
+
+        const countdownEl = document.getElementById('countdown');
+
+        const interval = setInterval(() => {
+            const minutes = Math.floor(remaining / 60);
+            const seconds = remaining % 60;
+            countdownEl.textContent = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+            remaining--;
+
+            if (remaining < 0) {
+                clearInterval(interval);
+                alert("El enlace de verificación ha expirado. Serás redirigido al login.");
+                window.location.href = "/login";
+            }
+        }, 1000);
+    </script>
 </body>
 </html>
-
