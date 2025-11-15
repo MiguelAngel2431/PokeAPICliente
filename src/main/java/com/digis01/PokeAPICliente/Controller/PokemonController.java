@@ -524,7 +524,8 @@ public class PokemonController {
         // GRAFICA
          // Obtener todos los favoritos (duplicados incluidos)
         List<Favoritos> todosFavoritos = iRepositoryFavorito.findAll();
-
+        
+        //Tambien me sirve para la card
         // Mapear idPokemon -> cantidad de veces que fue favorito
         Map<Integer, Long> favoritosCount = todosFavoritos.stream()
                 .collect(Collectors.groupingBy(Favoritos::getIdPokemon, Collectors.counting()));
@@ -577,6 +578,11 @@ public class PokemonController {
             m.put("baseExp", c.baseExp);
             m.put("habitat", c.habitat);
             m.put("generation", c.generation);
+            
+            //Mostrar el total de veces que ha sido agregado a favoritos
+            
+            long totalFav = favoritosCount.getOrDefault(c.id, 0L);
+            m.put("totalFavoritos", (int) totalFav);
             return m;
         }).toList();
 
