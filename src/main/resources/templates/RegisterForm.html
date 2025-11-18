@@ -150,14 +150,35 @@
 
       // Regex
       const reNombre  = /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ ]{2,}$/;
-      const reUser    = /^(?![_\d])[A-Za-z][A-Za-z0-9_]{3,15}$/; // 4-16, inicia con letra, no _ ni número al inicio
+      const reUser    = /^(?![_\d])[A-Za-z][A-Za-z0-9_]{3,15}$/; 
       const reEmail   = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-      function setValidity($input, ok) {
-        const $wrap = $input.closest('.input-wrap');
-        $input.toggleClass('is-valid', ok).toggleClass('is-invalid', !ok);
-        $wrap.toggleClass('valid', ok);
-      }
+//      function setValidity($input, ok) {
+//        const $wrap = $input.closest('.input-wrap');
+//        $input.toggleClass('is-valid', ok).toggleClass('is-invalid', !ok);
+//        $wrap.toggleClass('valid', ok);
+//      }
+
+            function setValidity($input,ok){
+                
+                 const $wrap = $input.closest('.input-wrap');
+                 const value = $input.val().trim();
+                 
+                 if(value === ''){
+                     
+                     $input.removeClass('is-valid is-invalid');
+                     $wrap.removeClass('valid');
+                     return;
+                 }
+                 
+                 $input
+                         .toggleClass('is-valid',ok)
+                         .toggleClass('is-invalid',!ok);
+                 
+                 $wrap.toggleClass('valid',ok);
+   
+            }
+
 
       function checkNombre() { const ok = reNombre.test($nombre.val().trim()); setValidity($nombre, ok); return ok; }
       function checkApPat()  { const ok = reNombre.test($apPat.val().trim()); setValidity($apPat, ok); return ok; }
@@ -178,7 +199,6 @@
       function checkPass() {
         const v = $pass.val();
         const s = scorePassword(v);
-        // barra de fuerza
         let pct = 0, cls = 'strength-weak';
         if (s >= 5) { pct = 100; cls = 'strength-strong'; }
         else if (s >= 3) { pct = 60; cls = 'strength-medium'; }
@@ -186,7 +206,6 @@
         else { pct = 15; cls = 'strength-weak'; }
         $strength.removeClass('strength-weak strength-medium strength-strong').addClass(cls).css('width', pct + '%');
 
-        // criterios mínimos obligatorios:
         const ok = (v.length >= 8 && /[A-Z]/.test(v) && /[a-z]/.test(v) && /\d/.test(v) && /[^A-Za-z0-9]/.test(v));
         setValidity($pass, ok);
         return ok;
@@ -203,7 +222,7 @@
         $submit.prop('disabled', !ok);
       }
 
-      // Eventos
+      
       $nombre.on('input blur', checkNombre);
       $apPat .on('input blur', checkApPat);
       $apMat .on('input blur', checkApMat);
@@ -214,21 +233,18 @@
 
       $('input').on('input blur', updateSubmit);
 
-      // Bloquear copiar/pegar/cortar/arrastrar en password y confirm
       [$pass[0], $pass2[0]].forEach(el => {
         ['copy','cut','paste','drop','dragstart','dragover','contextmenu'].forEach(evt =>
           el.addEventListener(evt, e => e.preventDefault())
         );
       });
 
-      // Al enviar, si algo no está válido, evita submit
       $('form').on('submit', function(e){
         updateSubmit();
         if ($submit.prop('disabled')) e.preventDefault();
       });
 
-      // Validación inicial
-      updateSubmit();
+//      updateSubmit();
     });
   </script>
 </body>

@@ -1,180 +1,588 @@
 <!doctype html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title th:text="${#strings.capitalize(p.name)} + ' · Pokédex'">Pokédex</title>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <title>Pokedex</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
 
-  <style>
-    :root{
-      --red:#ef4444; --red-700:#b91c1c; --ink:#0f172a; --muted:#64748b;
-      --chip:#fee2e2; --radius:20px; --shadow:0 12px 28px rgba(15,23,42,.12);
-      --ok:#16a34a; --blue:#2563eb; --amber:#d97706;
-      --grad:linear-gradient(90deg,#ff5a5f 0%,#ef4444 35%,#f97316 100%);
-      /* tamaño del visor de sprites: cuadrado responsive */
-      --viewer: clamp(280px, min(60vh, 80vw), 640px);
-    }
-    *{box-sizing:border-box}
-    html,body{margin:0;background:#fff;color:var(--ink)}
-    body{font-family:Poppins,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+        <!-- JQuery -->
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-    /* NAV igual a index */
-    .nav{position:sticky;top:0;z-index:30;background:
-      linear-gradient(180deg,#fff 0,#fff 60%, #000 60%, #000 63%, #ef4444 63%, #ef4444 100%);
-      box-shadow:0 10px 20px rgba(239,68,68,.25);}
-    .nav-in{max-width:1160px;margin:0 auto;padding:18px 16px;display:flex;align-items:center;justify-content:space-between}
-    .brand{display:flex;gap:12px;align-items:center;font-weight:800}
-    .ball{width:34px;height:34px;border-radius:50%;
-      background:radial-gradient(circle at 50% 48%,#fff 0 12px,transparent 13px),linear-gradient(#fff 50%,#000 0 52%,#ef4444 0);
-      border:3px solid #000;box-shadow:inset 0 0 0 2px #fff}
-    .login{background:#fff;color:var(--red);font-weight:800;padding:10px 14px;border-radius:12px;border:1px solid #fecaca}
-    .login:hover{background:#ffe8e8}
+        <!-- Bootstrap -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 
-    .wrap{max-width:1280px;margin:18px auto 30px;padding:0 16px}
+        <style>
+            :root{
+                --red:#ef4444;
+                --red-700:#b91c1c;
+                --ink:#0f172a;
+                --muted:#64748b;
+                --chip:#fee2e2;
+                --radius:20px;
+                --shadow:0 12px 28px rgba(15,23,42,.12);
+                --ok:#16a34a;
+                --blue:#2563eb;
+                --amber:#d97706;
+                --grad:linear-gradient(90deg,#ff5a5f 0%,#ef4444 35%,#f97316 100%);
+                /* tamaño del visor de sprites: cuadrado responsive */
+                --viewer: clamp(280px, min(60vh, 80vw), 640px);
+            }
+            *{
+                box-sizing:border-box
+            }
+            html,body{
+                margin:0;
+                background:#fff;
+                color:var(--ink)
+            }
+            body{
+                font-family:Poppins,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif
+            }
 
-    /* ===== Pokédex shell ===== */
-    .dex{display:grid;grid-template-columns:1.1fr 1fr;gap:20px}
-    @media (max-width:1100px){ .dex{grid-template-columns:1fr} }
+            /* NAV */
+            .nav-poke{
+                position:sticky;
+                top:0;
+                z-index:30;
+                background:
+                    linear-gradient(180deg,#fff 0,#fff 60%, #000 60%, #000 63%, #ef4444 63%, #0000FF 100%);
+                box-shadow:0 10px 20px rgba(239,68,68,.25);
+            }
+             .nav-in{
+                max-width:1160px;
+                margin:0 auto;
+                padding:18px 16px;
+                display:flex;
+                align-items:center;
+                justify-content:space-between;
+                gap:12px;
+            }
+            
+            .nav-left{
+                display: flex;
+                align-items: center;
+                gap: 12px;   
+            }
+           
+            .nav-right{
+                display: flex;
+                gap: 12px;
+                align-items: center;
+                margin-left: auto;
+                
+            }
+            
+            .brand{
+                display:flex;
+                gap:12px;
+                align-items: center;
+                font-weight:800;
+                letter-spacing: .5px;
+                cursor: pointer;
+            }
+            
+            .ball{
+                width:34px;
+                height:34px;
+                border-radius:50%;
+                background:
+                    radial-gradient(circle at 50% 48%, #fff 0 12px, transparent 13px),
+                    linear-gradient(#fff 50%, #000 0 52%, #ef4444 0);
+                border:3px solid #000;
+                box-shadow: inset 0 0 0 2px #fff;
+            }
+            
+            
+            .brand span{
+                font-size:18px;
+                color:var(--ink);
+                white-space:nowrap;
+            }
+            
+            .login{
+                background:#fff;
+                color:var(--red);
+                font-weight:800;
+                padding:10px 14px;
+                border-radius:12px;
+                border:1px solid #fecaca
+            }
+            .login:hover{
+                background:#ffe8e8
+            }
 
-    .dex-left,.dex-right{background:#fff;border:1px solid #f1f5f9;border-radius:22px;box-shadow:var(--shadow)}
-    .dex-left{padding:16px 16px 20px}
-    .dex-right{padding:14px}
+            .wrap{
+                max-width:1280px;
+                margin:18px auto 30px;
+                padding:0 16px
+            }
+            .title{
+                font-size: 28px;
+                font-weight: 800;
+                padding: 0 16px
+            }
+            
+            .nav-links-desktop{
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+                
+            }
+            
+            .nav-username{
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                background: #fff;
+                color: var(--red);
+                font-weight: 800;
+                padding: 8px 12px;
+                border-radius: 999px;
+                border: 1px solid #fecaca;
+                text-decoration: none;
+                font-size: 13px;
+                cursor: default;
 
-    /* Cabezal pokédex */
-    .lid{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-    .title{display:flex;flex-direction:column}
-    .name{font-weight:800;font-size:clamp(22px,2.4vw,30px);text-transform:capitalize;line-height:1.1}
-    .genus{color:var(--muted);font-weight:600}
-    .idchip{background:var(--chip);color:var(--red-700);border:1px solid #ffcccc;border-radius:12px;padding:6px 10px;font-weight:800}
+            }
+            
+            .nav-btn{
+                background: #fff;
+                color:var(--red);
+                font-weight: 800;
+                padding: 8px 12px;
+                border-radius: 999px;
+                border:1px solid #fecaca;
+                text-decoration: none;
+                font-size: 13px;
+                cursor: pointer;
+                
+            }
+            
+            .nav-btn:hover{
+                background: #ffe08a;
+            }
+            .nav-dropdown-mobile{
+                display: none;
+            }
+            
+            .login{
+                width: auto;
+                text-align: center;
+                padding: 8px 10px;
+                
+            }
 
-    .types{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
-    .type{background:#fff0f0;border:1px solid #ffd1d1;color:var(--red);padding:6px 10px;border-radius:999px;font-weight:800;text-transform:capitalize;font-size:12px}
+            /* ===== Pokédex shell ===== */
+            .dex{
+                display:grid;
+                grid-template-columns:1.1fr 1fr;
+                gap:20px
+            }
+            @media (max-width:1100px){
+                .dex{
+                    grid-template-columns:1fr
+                }
+            }
 
-    /* ===== Visor: SIEMPRE CUADRADO, sprites escalan a tope ===== */
-    .viewer{margin-top:14px;display:grid;justify-items:center}
-    .frame{
-      width:min(100%, var(--viewer)); aspect-ratio:1/1; position:relative; border-radius:18px;
-      background:radial-gradient(60% 60% at 75% 0%, rgba(239,68,68,.12), transparent 65%), #fff;
-      border:1px solid #ffd1d1; box-shadow:inset 0 0 0 10px #fff, var(--shadow);
-      overflow:hidden;
-    }
+            .dex-left,.dex-right{
+                background:#fff;
+                border:1px solid #f1f5f9;
+                border-radius:22px;
+                box-shadow:var(--shadow)
+            }
+            .dex-left{
+                padding:16px 16px 20px
+            }
+            .dex-right{
+                padding:14px
+            }
 
-    /* Carrusel */
-    .c-viewport{position:absolute; inset:12px; border-radius:12px; overflow:hidden}
-    .c-track{display:flex;height:100%;transition:transform .55s cubic-bezier(.2,.8,.2,1)}
-    .c-slide{flex:0 0 100%; height:100%; display:grid; place-items:center; gap:8px}
-    .c-slide img{
-      width:100%; height:100%; object-fit:contain;
-      /* escala sprites 96px sin verse borrosas (look retro) */
-      image-rendering: pixelated;
-      filter: drop-shadow(0 16px 28px rgba(0,0,0,.12));
-    }
-    .cap{position:absolute; left:50%; bottom:10px; transform:translateX(-50%);
-         background:#fff0f0;border:1px solid #ffd1d1;color:var(--red);padding:6px 10px;border-radius:999px;font-weight:800}
+            /* Cabezal pokédex */
+            .lid{
+                display:flex;
+                align-items:center;
+                justify-content:space-between;
+                margin-bottom:10px
+            }
+            .title{
+                display:flex;
+                flex-direction:column
+            }
+            .name{
+                font-weight:800;
+                font-size:clamp(22px,2.4vw,30px);
+                text-transform:capitalize;
+                line-height:1.1
+            }
+            .genus{
+                color:var(--muted);
+                font-weight:600
+            }
+            .idchip{
+                background:var(--chip);
+                color:var(--red-700);
+                border:1px solid #ffcccc;
+                border-radius:12px;
+                padding:6px 10px;
+                font-weight:800
+            }
 
-    .c-nav{position:absolute;top:50%;transform:translateY(-50%);border:none;background:#fff;color:var(--red);
-           width:42px;height:42px;border-radius:50%;box-shadow:var(--shadow);cursor:pointer;border:1px solid #ffd1d1}
-    .c-prev{left:10px} .c-next{right:10px}
-    .c-nav:hover{background:#ffe8e8}
+            .types{
+                margin-top:10px;
+                display:flex;
+                gap:8px;
+                flex-wrap:wrap
+            }
+            .type{
+                background:#fff0f0;
+                border:1px solid #ffd1d1;
+                color:var(--red);
+                padding:6px 10px;
+                border-radius:999px;
+                font-weight:800;
+                text-transform:capitalize;
+                font-size:12px
+            }
 
-    .dots{display:flex;gap:8px;justify-content:center;margin-top:10px}
-    .dot{width:10px;height:10px;border-radius:50%;border:1px solid #ffd1d1;background:#fff0f0;cursor:pointer}
-    .dot.is-active{background:var(--red);border-color:var(--red)}
+            /* ===== Visor: SIEMPRE CUADRADO ===== */
+            .viewer{
+                margin-top:14px;
+                display:grid;
+                justify-items:center
+            }
+            .frame{
+                width:min(100%, var(--viewer));
+                aspect-ratio:1/1;
+                position:relative;
+                border-radius:18px;
+                background:radial-gradient(60% 60% at 75% 0%, rgba(239,68,68,.12), transparent 65%), #fff;
+                border:1px solid #ffd1d1;
+                box-shadow:inset 0 0 0 10px #fff, var(--shadow);
+                overflow:hidden;
+            }
 
-    .viewer-actions{margin-top:10px;display:flex;gap:10px}
-    .btn{padding:10px 12px;border-radius:12px;border:1px solid #fecaca;background:#fff;color:var(--red);font-weight:800}
-    .btn:hover{background:#ffe8e8}
-    .btn.disabled{opacity:.5;pointer-events:none}
+            /* Carrusel */
+            .c-viewport{
+                position:absolute;
+                inset:12px;
+                border-radius:12px;
+                overflow:hidden
+            }
+            .c-track{
+                display:flex;
+                height:100%;
+                transition:transform .55s cubic-bezier(.2,.8,.2,1)
+            }
+            .c-slide{
+                flex:0 0 100%;
+                height:100%;
+                display:grid;
+                place-items:center;
+                gap:8px
+            }
+            .c-slide img{
+                width:100%;
+                height:100%;
+                object-fit:contain;
+                image-rendering: pixelated;
+                filter: drop-shadow(0 16px 28px rgba(0,0,0,.12));
+            }
+            .cap{
+                position:absolute;
+                left:50%;
+                bottom:10px;
+                transform:translateX(-50%);
+                background:#fff0f0;
+                border:1px solid #ffd1d1;
+                color:var(--red);
+                padding:6px 10px;
+                border-radius:999px;
+                font-weight:800
+            }
 
-    .mini{margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:12px;width:min(100%, var(--viewer))}
-    @media (max-width:520px){ .mini{grid-template-columns:1fr} }
-    .mini .box{background:#fff;border:1px solid #ffd1d1;border-radius:14px;padding:12px}
-    .mini .lbl{font-size:12px;color:var(--muted)}
-    .mini .val{font-size:20px;font-weight:800}
+            .c-nav{
+                position:absolute;
+                top:50%;
+                transform:translateY(-50%);
+                border:none;
+                background:#fff;
+                color:var(--red);
+                width:42px;
+                height:42px;
+                border-radius:50%;
+                box-shadow:var(--shadow);
+                cursor:pointer;
+                border:1px solid #ffd1d1
+            }
+            .c-prev{
+                left:10px
+            }
+            .c-next{
+                right:10px
+            }
+            .c-nav:hover{
+                background:#ffe8e8
+            }
 
-    .navrow{margin-top:14px;display:flex;justify-content:space-between;gap:12px;width:min(100%, var(--viewer))}
+            .dots{
+                display:flex;
+                gap:8px;
+                justify-content:center;
+                margin-top:10px
+            }
+            .dot{
+                width:10px;
+                height:10px;
+                border-radius:50%;
+                border:1px solid #ffd1d1;
+                background:#fff0f0;
+                cursor:pointer
+            }
+            .dot.is-active{
+                background:var(--red);
+                border-color:var(--red)
+            }
 
-    /* ===== Panel derecho: tabs + stats con badges ===== */
-    .tabs{display:flex;gap:10px;padding:8px;background:#fff0f0;border:1px solid #ffd1d1;border-radius:999px;flex-wrap:wrap}
-    .tab{padding:8px 12px;border-radius:999px;font-weight:800;color:var(--red);cursor:pointer;border:1px dashed transparent}
-    .tab[aria-selected="true"]{background:#fff;color:var(--red-700);border-color:#fecaca}
-    .tabview{padding:12px}
+            .viewer-actions{
+                margin-top:10px;
+                display:flex;
+                gap:10px
+            }
+            .btn{
+                padding:10px 12px;
+                border-radius:12px;
+                border:1px solid #fecaca;
+                background:#fff;
+                color:var(--red);
+                font-weight:800
+            }
+            .btn:hover{
+                background:#ffe8e8
+            }
+            .btn.disabled{
+                opacity:.5;
+                pointer-events:none
+            }
 
-    .s-row{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;margin:12px 0}
-    .s-tag{display:flex;align-items:center;gap:8px;font-weight:700}
-    .s-bar{height:12px;border-radius:999px;background:#e5e7eb;overflow:hidden;box-shadow:inset 0 0 0 1px #f1f5f9}
-    .s-bar i{display:block;height:100%;width:0%}
-    .s-bar i.hp{background:#3b82f6}
-    .s-bar i.ok{background:#16a34a}
-    .s-bar i.fast{background:#d97706}
-    .s-bar i.def{background:#0ea5e9}     
-    .s-bar i.sdef{background:#8b5cf6} 
-    .badge{min-width:38px;text-align:center;background:#1d4ed8;color:#fff;font-weight:800;border-radius:12px;padding:6px 10px}
-    .total{margin-top:16px;border-radius:14px;padding:14px 16px;color:#fff;background:var(--grad);display:flex;justify-content:space-between;align-items:center;font-weight:800}
+            .mini{
+                margin-top:14px;
+                display:grid;
+                grid-template-columns:1fr 1fr;
+                gap:12px;
+                width:min(100%, var(--viewer))
+            }
+            @media (max-width:520px){
+                .mini{
+                    grid-template-columns:1fr
+                }
+            }
+            .mini .box{
+                background:#fff;
+                border:1px solid #ffd1d1;
+                border-radius:14px;
+                padding:12px
+            }
+            .mini .lbl{
+                font-size:12px;
+                color:var(--muted)
+            }
+            .mini .val{
+                font-size:20px;
+                font-weight:800
+            }
 
-    .ability{margin:10px 0;padding:14px;border-radius:14px;background:linear-gradient(135deg,#ffefba,#ffc107);border:1px solid #ffd54f;box-shadow:var(--shadow)}
-    .ability .meta{display:flex;gap:10px;align-items:center;justify-content:space-between}
-    .ability .tag{background:#fff8db;border:1px solid #ffe08a;padding:4px 8px;border-radius:999px;font-weight:800;color:#8d6e00}
-    .info{color:var(--ink);line-height:1.6}
-    .muted{color:var(--muted)}
-    
-    /* --- FIX de descuadre en carrusel --- */
-figure { margin: 0; }                 /* quita margen por defecto */
-.c-track{ will-change: transform; }   /* suaviza el slide, sin jitter */
+            .navrow{
+                margin-top:14px;
+                display:flex;
+                justify-content:space-between;
+                gap:12px;
+                width:min(100%, var(--viewer))
+            }
 
-.c-slide{
-  position: relative;
-  margin: 0;
-  width: 100%;
-  height: 100%;
-  display: block;                      /* evita baseline raro */
-}
+            /* ===== Panel derecho ===== */
+            .tabs{
+                display:flex;
+                gap:10px;
+                padding:8px;
+                background:#fff0f0;
+                border:1px solid #ffd1d1;
+                border-radius:999px;
+                flex-wrap:wrap
+            }
+            .tab{
+                padding:8px 12px;
+                border-radius:999px;
+                font-weight:800;
+                color:var(--red);
+                cursor:pointer;
+                border:1px dashed transparent
+            }
+            .tab[aria-selected="true"]{
+                background:#fff;
+                color:var(--red-700);
+                border-color:#fecaca
+            }
+            .tabview{
+                padding:12px
+            }
 
-/* La imagen SIEMPRE llena el slide y queda centrada */
-.c-slide img{
-  position: absolute;
-  inset: 0;                            /* top/right/bottom/left = 0 */
-  display: block;                      /* quita línea base */
-  width: 100%;
-  height: 100%;
-  object-fit: contain;                 /* respeta proporción */
-  object-position: center bottom;      /* sensación de “apoyada” en el piso */
-  image-rendering: auto;               /* sin borrosidad por defecto */
-  filter: drop-shadow(0 16px 28px rgba(0,0,0,.12));
-}
+            .s-row{
+                display:grid;
+                grid-template-columns:auto 1fr auto;
+                gap:10px;
+                align-items:center;
+                margin:12px 0
+            }
+            .s-tag{
+                display:flex;
+                align-items:center;
+                gap:8px;
+                font-weight:700
+            }
+            .s-bar{
+                height:12px;
+                border-radius:999px;
+                background:#e5e7eb;
+                overflow:hidden;
+                box-shadow:inset 0 0 0 1px #f1f5f9
+            }
+            .s-bar i{
+                display:block;
+                height:100%;
+                width:0%
+            }
+            .s-bar i.hp{
+                background:#3b82f6
+            }
+            .s-bar i.ok{
+                background:#16a34a
+            }
+            .s-bar i.fast{
+                background:#d97706
+            }
+            .s-bar i.def{
+                background:#0ea5e9
+            }
+            .s-bar i.sdef{
+                background:#8b5cf6
+            }
+            .badge{
+                min-width:38px;
+                text-align:center;
+                background:#1d4ed8;
+                color:#fff;
+                font-weight:800;
+                border-radius:12px;
+                padding:6px 10px
+            }
+            .total{
+                margin-top:16px;
+                border-radius:14px;
+                padding:14px 16px;
+                color:#fff;
+                background:var(--grad);
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                font-weight:800
+            }
 
-/* Si quieres look retro solo para PNG pequeños, usa clase .retro (opcional) */
-.c-slide img.retro{
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;        /* fallback */
-  .ball-link { display:inline-flex; }
-.ball { cursor: pointer; }
-}
+            .ability{
+                margin:10px 0;
+                padding:14px;
+                border-radius:14px;
+                background:linear-gradient(135deg,#ffefba,#ffc107);
+                border:1px solid #ffd54f;
+                box-shadow:var(--shadow)
+            }
+            .ability .meta{
+                display:flex;
+                gap:10px;
+                align-items:center;
+                justify-content:space-between
+            }
+            .ability .tag{
+                background:#fff8db;
+                border:1px solid #ffe08a;
+                padding:4px 8px;
+                border-radius:999px;
+                font-weight:800;
+                color:#8d6e00
+            }
+            .info{
+                color:var(--ink);
+                line-height:1.6
+            }
+            .muted{
+                color:var(--muted)
+            }
 
-  </style>
-</head>
-<body>
+            /* --- descuadre en carrusel --- */
+            figure {
+                margin: 0;
+            }                 
+            .c-track{
+                will-change: transform;
+            }   
 
-  <!-- NAV -->
-  <nav class="nav">
-    <div class="nav-in">
-      <div th:if="${role == 'ROLE_Administrador'}">
-                    <div class="brand" onclick="window.location.href='/usuario/list'"><div class="ball" aria-hidden="true"></div><span>PokéAPI · Administrador</span>
+            .c-slide{
+                position: relative;
+                margin: 0;
+                width: 100%;
+                height: 100%;
+                display: block;                      
+            }
+
+            /* La imagen SIEMPRE llena el slide y queda centrada */
+            .c-slide img{
+                position: absolute;
+                inset: 0;                            
+                display: block;                     
+                width: 100%;
+                height: 100%;
+                object-fit: contain;                 
+                object-position: center bottom;      
+                image-rendering: auto;               
+                filter: drop-shadow(0 16px 28px rgba(0,0,0,.12));
+            }
+
+            /* Si quieres look retro solo para PNG pequeños, usa clase .retro (opcional) */
+            .c-slide img.retro{
+                image-rendering: pixelated;
+                image-rendering: crisp-edges;        /* fallback */
+                .ball-link {
+                    display:inline-flex;
+                }
+                .ball {
+                    cursor: pointer;
+                }
+            }
+
+        </style>
+    </head>
+    <body>
+
+        <!-- NAV -->
+<!--        <nav class="nav">
+            <div class="nav-in">
+                <div th:if="${role == 'ROLE_Administrador'}">
+                    <div class="brand" onclick="window.location.href = '/usuario/list'"><div class="ball" aria-hidden="true"></div><span>PokéAPI · Administrador</span>
                     </div>
                 </div>    
                 <div th:if="${role == 'ROLE_General'}">
-                    <div class="brand" onclick="window.location.href='/pokemon'"><div class="ball" aria-hidden="true"></div><span>PokéAPI · Usuarios</span>
+                    <div class="brand" onclick="window.location.href = '/pokemon'"><div class="ball" aria-hidden="true"></div><span>PokéAPI · Usuarios</span>
                     </div>
                 </div>
                 <div th:if="${role == 'ROLE_ANONYMOUS'}">
-                    <div class="brand" onclick="window.location.href='/pokemon'"><div class="ball" aria-hidden="true"></div><span>PokéAPI</span>
+                    <div class="brand" onclick="window.location.href = '/pokemon'"><div class="ball" aria-hidden="true"></div><span>PokéAPI</span>
                     </div>
                 </div>
-      <div th:if="${username != null}">
+                <div th:if="${username != null}">
                     <div th:if="${role == 'ROLE_Administrador'}">
                         <select id="opciones" name="opciones" class="login" onchange="handleSelectChange(this)">
                             <option value="" disabled selected th:text="${username}">Usuario</option>
@@ -195,189 +603,297 @@ figure { margin: 0; }                 /* quita margen por defecto */
                 <div th:if="${username == null}">
                     <a class="login" th:href="@{/login}">Login</a>
                 </div>
-    </div>
-  </nav>
-
-  <main class="wrap" th:if="${p != null}">
-    <div class="dex">
-      <!-- ===== LADO IZQUIERDO: Pokédex + visor ===== -->
-      <section class="dex-left">
-        <div class="lid">
-          <div class="title">
-            <div class="name" th:text="${p.name}">pikachu</div>
-            <div class="genus" th:text="${p.genus}">Pokémon</div>
-          </div>
-          <div class="idchip" th:text="'# ' + ${p.id}"># 25</div>
-        </div>
-
-        <div class="types">
-          <span class="type" th:each="t : ${p.types}" th:text="${t}">electric</span>
-        </div>
-
-        <!-- VISOR CUADRADO -->
-        <div class="viewer">
-          <div class="frame" id="frame">
-            <div class="c-viewport" id="vp">
-              <div class="c-track" id="track">
-                <figure class="c-slide" th:each="s, st : ${p.sprites}">
-                  <img th:src="${s.url}" th:alt="${p.name} + ' - ' + ${s.label}" loading="eager"/>
-                </figure>
-              </div>
             </div>
-            <button class="c-nav c-prev" id="prev" aria-label="Anterior">❮</button>
-            <button class="c-nav c-next" id="next" aria-label="Siguiente">❯</button>
-            <span class="cap" id="cap" th:text="${#lists.isEmpty(p.sprites)} ? ${p.name} : ${p.sprites.get(0).label}">Artwork</span>
-          </div>
+        </nav>-->
 
-          <div class="dots" id="dots">
-            <button class="dot" th:each="s, st : ${p.sprites}" th:classappend="${st.index==0}? ' is-active' : ''" th:attr="data-i=${st.index}"></button>
-          </div>
+<nav class="nav-poke" aria-label="Principal">
+            <div class="nav-in">
+                <!-- IZQUIERDA -->
+                <div class="nav-left">
+                    <div th:if="${role == 'ROLE_Administrador'}">
+                        <div class="brand" onclick="window.location.href = '/usuario/list'">
+                            <div class="ball" aria-hidden="true"></div>
+                            <span>PokéAPI · Administrador</span>
+                        </div>
+                    </div>
+                    <div th:if="${role == 'ROLE_General'}">
+                        <div class="brand" onclick="window.location.href = '/pokemon'">
+                            <div class="ball" aria-hidden="true"></div>
+                            <span>PokéAPI · Usuarios</span>
+                        </div>
+                    </div>
+                    <div th:if="${role == 'ROLE_ANONYMOUS'}">
+                        <div class="brand" onclick="window.location.href = '/pokemon'">
+                            <div class="ball" aria-hidden="true"></div>
+                            <span>PokéAPI</span>
+                        </div>
+                    </div>
+                </div>
 
-          <div class="viewer-actions">
-            <button class="btn" id="btnCry" th:if="${p.cry != null}">🔊 Grito</button>
-            <audio id="cryAudio" th:if="${p.cry != null}" th:src="${p.cry}"></audio>
-          </div>
-        </div>
+                <!-- DERECHA -->
+                <div class="nav-right">
+                    <div th:if="${username != null}">
+                        <!-- ADMIN -->
+                        <div th:if="${role == 'ROLE_Administrador'}" class="d-flex align-items-center gap-2 flex-wrap">
+                            <span class="nav-username d-none d-lg-inline" th:text="${username}">Usuario</span>
 
-        <div class="mini">
-          <div class="box">
-            <div class="lbl">Altura</div>
-            <div class="val" th:text="${#numbers.formatDecimal(p.heightM,1,1)} + ' m'">0.4 m</div>
-          </div>
-          <div class="box">
-            <div class="lbl">Peso</div>
-            <div class="val" th:text="${#numbers.formatDecimal(p.weightKg,1,1)} + ' kg'">6.0 kg</div>
-          </div>
-        </div>
+                            <!-- Desktop: botones -->
+                            <div class="nav-links-desktop d-none d-lg-flex">
+                                <a class="nav-btn" th:href="@{/pokemon}">Pokemons</a>
+                                <a class="nav-btn" th:href="@{/pokemon/totalPokemonesFavoritos}">Administrador</a>
+                                <a class="nav-btn" th:href="@{/pokemon/myAccount}">Mi cuenta</a>
+                                <a class="nav-btn" th:href="@{/logout}">Cerrar sesión</a>
+                            </div>
 
-        <div class="navrow">
-          <a class="btn" th:classappend="${p.id<=1}? ' disabled' : ''" th:href="@{'/pokemon/' + ${p.id-1}}">&lt; Anterior</a>
-          <a class="btn" th:href="@{'/pokemon/' + ${p.id+1}}">Siguiente &gt;</a>
-        </div>
-      </section>
+                            <!-- Móvil / tablet: SOLO dropdown -->
+                            <div class="nav-dropdown-mobile">
+                                <select id="adminMobileNav" class="login" onchange="handleSelectChange(this)">
+                                    <option value="" disabled selected th:text="${username}">Usuario</option>
+                                    <option value="pokemones">Pokemons</option>
+                                    <option value="administrador">Administrador</option>
+                                    <option value="/usuario/myAccount">Mi cuenta</option>
+                                    <option value="logout">Cerrar sesión</option>
+                                </select>
+                            </div>
+                        </div>
 
-      <!-- ===== LADO DERECHO: Panel de datos ===== -->
-      <section class="dex-right">
-        <div class="tabs" role="tablist" aria-label="Pestañas de detalle">
-          <button class="tab" id="t-stats" role="tab" aria-selected="true" onclick="showTab('stats')">Estadísticas</button>
-          <button class="tab" id="t-abilities" role="tab" aria-selected="false" onclick="showTab('abilities')">Habilidades</button>
-          <button class="tab" id="t-info" role="tab" aria-selected="false" onclick="showTab('info')">Info</button>
-        </div>
+                        <!-- NO ADMIN -->
+                        <div th:if="${role != 'ROLE_Administrador'}">
+                            <select id="opciones" name="opciones" class="login" onchange="handleSelectChange(this)">
+                                <option value="" disabled selected th:text="${username}">Usuario</option>
+                                <option value="/usuario/myAccount">Mi cuenta</option>
+                                <option value="logout">Cerrar sesión</option>
+                            </select>
+                        </div>
+                    </div>
 
-        <!-- ESTADÍSTICAS -->
-        <div id="view-stats" class="tabview" role="tabpanel" aria-labelledby="t-stats"
-             th:with="total=${p.stats.hp + p.stats.attack + p.stats.defense + p.stats.specialAttack + p.stats.specialDefense + p.stats.speed}">
-          <div class="s-row"><div class="s-tag">❤️ PS</div>         <div class="s-bar"><i id="b-hp"   class="hp"></i></div>   <span class="badge" th:text="${p.stats.hp}">0</span></div>
-          <div class="s-row"><div class="s-tag">➕ Ataque</div>      <div class="s-bar"><i id="b-atk"  class="ok"></i></div>   <span class="badge" th:text="${p.stats.attack}">0</span></div>
-          <div class="s-row"><div class="s-tag">🛡️ Defensa</div>   <div class="s-bar"><i id="b-def"  class="def"></i></div>              <span class="badge" th:text="${p.stats.defense}">0</span></div>
-          <div class="s-row"><div class="s-tag">⚡ At. Esp.</div>    <div class="s-bar"><i id="b-satk" class="ok"></i></div>   <span class="badge" th:text="${p.stats.specialAttack}">0</span></div>
-          <div class="s-row"><div class="s-tag">⭕ Def. Esp.</div>   <div class="s-bar"><i id="b-sdef" class="sdef"></i></div>              <span class="badge" th:text="${p.stats.specialDefense}">0</span></div>
-          <div class="s-row"><div class="s-tag">➡️ Velocidad</div>  <div class="s-bar"><i id="b-spd" class="fast"></i></div>   <span class="badge" th:text="${p.stats.speed}">0</span></div>
-
-          <div class="total"><span>Total</span><span th:text="${total}">0</span></div>
-        </div>
-
-        <!-- HABILIDADES -->
-        <div id="view-abilities" class="tabview" role="tabpanel" aria-labelledby="t-abilities" hidden>
-          <div th:if="${#lists.isEmpty(p.abilities)}" class="muted">No hay habilidades disponibles.</div>
-          <div th:each="ab : ${p.abilities}" class="ability">
-            <div class="meta">
-              <strong th:text="${ab.name}">Static</strong>
-              <span class="tag" th:if="${ab.hidden}">Oculta</span>
+                    <div th:if="${username == null}">
+                        <a class="login" th:href="@{/login}">Login</a>
+                    </div>
+                </div>
             </div>
-          </div>
+        </nav>
 
-          <div style="margin-top:10px;padding:12px;border:1px solid #dbeafe;background:#eff6ff;border-radius:14px">
-            <div class="muted" style="font-weight:800;margin-bottom:8px">Tipos de Pokémon</div>
-            <span class="type" th:each="t : ${p.types}" th:text="${t}">electric</span>
-          </div>
-        </div>
 
-        <!-- INFO -->
-        <div id="view-info" class="tabview" role="tabpanel" aria-labelledby="t-info" hidden>
-          <p class="info" th:text="${p.flavor}">Descripción de la Pokédex…</p>
-          <p class="muted" style="margin-top:10px"><strong>Base EXP:</strong> <span th:text="${p.baseExp}">0</span></p>
-        </div>
-      </section>
-    </div>
-  </main>
+        <main class="wrap" th:if="${p != null}">
+            <div class="dex">
+                <!-- ===== LADO IZQUIERDO: Pokédex + visor ===== -->
+                <section class="dex-left">
+                    <div class="lid">
+                        <div class="title">
+                            <div class="name" th:text="${p.name}">pikachu</div>
+                            <div class="genus" th:text="${p.genus}">Pokémon</div>
+                        </div>
+                        <div class="idchip" th:text="'# ' + ${p.id}"># 25</div>
+                    </div>
 
-  <main class="wrap" th:if="${p == null}">
-    <div class="dex-left" style="padding:16px">No se encontró información.</div>
-  </main>
+                    <div class="types">
+                        <span class="type" th:each="t : ${p.types}" th:text="${t}">electric</span>
+                    </div>
 
-  <script>
-    // Tabs
-    function showTab(key){
-      const tabs=['stats','abilities','info'];
-      for(const t of tabs){
-        document.getElementById('view-'+t).hidden = (t!==key);
-        document.getElementById('t-'+t).setAttribute('aria-selected', String(t===key));
-      }
-    }
+                    <!-- VISOR CUADRADO -->
+                    <div class="viewer">
+                        <div class="frame" id="frame">
+                            <div class="c-viewport" id="vp">
+                                <div class="c-track" id="track">
+                                    <figure class="c-slide" th:each="s, st : ${p.sprites}">
+                                        <img th:src="${s.url}" th:alt="${p.name} + ' - ' + ${s.label}" loading="eager"/>
+                                    </figure>
+                                </div>
+                            </div>
+                            <button class="c-nav c-prev" id="prev" aria-label="Anterior">❮</button>
+                            <button class="c-nav c-next" id="next" aria-label="Siguiente">❯</button>
+                            <span class="cap" id="cap" th:text="${#lists.isEmpty(p.sprites)} ? ${p.name} : ${p.sprites.get(0).label}">Artwork</span>
+                        </div>
 
-    // Barras (normalizadas al valor máximo del propio Pokémon)
-    window.addEventListener('load', ()=>{
-      const vals = Array.from(document.querySelectorAll('#view-stats .badge')).map(b=>+b.textContent||0);
-      const ids  = ['b-hp','b-atk','b-def','b-satk','b-sdef','b-spd'];
-      const max  = Math.max(1, ...vals);
-      vals.forEach((v,i)=>{ const el=document.getElementById(ids[i]); if(el) el.style.width=Math.max(6, Math.round(v/max*100))+'%'; });
-    });
+                        <div class="dots" id="dots">
+                            <button class="dot" th:each="s, st : ${p.sprites}" th:classappend="${st.index==0}? ' is-active' : ''" th:attr="data-i=${st.index}"></button>
+                        </div>
 
-    // Carrusel adaptativo
-    (function(){
-      const root = document.getElementById('frame'); if(!root) return;
-      const track = document.getElementById('track');
-      const slides = Array.from(track.children);
-      const dots = Array.from(document.querySelectorAll('#dots .dot'));
-      const prev = document.getElementById('prev');
-      const next = document.getElementById('next');
-      const cap  = document.getElementById('cap');
+                        <div class="viewer-actions">
+                            <button class="btn" id="btnCry" th:if="${p.cry != null}">🔊 Grito</button>
+                            <audio id="cryAudio" th:if="${p.cry != null}" th:src="${p.cry}"></audio>
+                        </div>
+                    </div>
 
-      let i=0, N=slides.length;
-      function setCaption(index){
-        const fig = slides[index];
-        const img = fig ? fig.querySelector('img') : null;
-        if(!img) return;
-        // label viene en el alt: "<name> - <label>"
-        const parts = (img.alt||'').split(' - ');
-        cap.textContent = parts[1] || parts[0] || 'Sprite';
-      }
-      function goTo(idx){
-        i = (idx+N)%N;
-        track.style.transform = `translateX(-${i*100}%)`;
-        dots.forEach((d,di)=>d.classList.toggle('is-active', di===i));
-        setCaption(i);
-      }
-      prev.addEventListener('click', ()=>goTo(i-1));
-      next.addEventListener('click', ()=>goTo(i+1));
-      dots.forEach((d,di)=>d.addEventListener('click', ()=>goTo(di)));
+                    <div class="mini">
+                        <div class="box">
+                            <div class="lbl">Altura</div>
+                            <div class="val" th:text="${#numbers.formatDecimal(p.heightM,1,1)} + ' m'">0.4 m</div>
+                        </div>
+                        <div class="box">
+                            <div class="lbl">Peso</div>
+                            <div class="val" th:text="${#numbers.formatDecimal(p.weightKg,1,1)} + ' kg'">6.0 kg</div>
+                        </div>
+                    </div>
 
-      // autoplay con pausa
-      let timer=null, over=false;
-      const start=()=> timer=setInterval(()=>goTo(i+1), 4000);
-      const stop =()=>{ clearInterval(timer); timer=null; };
-      root.addEventListener('mouseenter', ()=>{over=true; stop();});
-      root.addEventListener('mouseleave', ()=>{over=false; start();});
+                    <div class="navrow">
+                        <a class="btn" th:classappend="${p.id<=1}? ' disabled' : ''" th:href="@{'/pokemon/' + ${p.id-1}}">&lt; Anterior</a>
+                        <a class="btn" th:href="@{'/pokemon/' + ${p.id+1}}">Siguiente &gt;</a>
+                    </div>
+                </section>
 
-      // teclado & swipe
-      root.tabIndex = 0;
-      root.addEventListener('keydown', e=>{ if(e.key==='ArrowLeft') goTo(i-1); if(e.key==='ArrowRight') goTo(i+1); });
-      let sx=0, dx=0;
-      root.addEventListener('touchstart', e=>{sx=e.touches[0].clientX; dx=0; stop();},{passive:true});
-      root.addEventListener('touchmove',  e=>{dx=e.touches[0].clientX - sx;},{passive:true});
-      root.addEventListener('touchend',   ()=>{ if(Math.abs(dx)>40) goTo(i + (dx<0?1:-1)); if(!over) start(); });
+                <!-- ===== LADO DERECHO: Panel de datos ===== -->
+                <section class="dex-right">
+                    <div class="tabs" role="tablist" aria-label="Pestañas de detalle">
+                        <button class="tab" id="t-stats" role="tab" aria-selected="true" onclick="showTab('stats')">Estadísticas</button>
+                        <button class="tab" id="t-abilities" role="tab" aria-selected="false" onclick="showTab('abilities')">Habilidades</button>
+                        <button class="tab" id="t-info" role="tab" aria-selected="false" onclick="showTab('info')">Info</button>
+                    </div>
 
-      // audio (grito)
-      const audio = document.getElementById('cryAudio');
-      const btnCry = document.getElementById('btnCry');
-      if(audio && btnCry){ btnCry.addEventListener('click', ()=>{ audio.currentTime=0; audio.play().catch(()=>{}); }); }
+                    <!-- ESTADÍSTICAS -->
+                    <div id="view-stats" class="tabview" role="tabpanel" aria-labelledby="t-stats"
+                         th:with="total=${p.stats.hp + p.stats.attack + p.stats.defense + p.stats.specialAttack + p.stats.specialDefense + p.stats.speed}">
+                        <div class="s-row"><div class="s-tag">❤️ PS</div>         <div class="s-bar"><i id="b-hp"   class="hp"></i></div>   <span class="badge" th:text="${p.stats.hp}">0</span></div>
+                        <div class="s-row"><div class="s-tag">➕ Ataque</div>      <div class="s-bar"><i id="b-atk"  class="ok"></i></div>   <span class="badge" th:text="${p.stats.attack}">0</span></div>
+                        <div class="s-row"><div class="s-tag">🛡️ Defensa</div>   <div class="s-bar"><i id="b-def"  class="def"></i></div>              <span class="badge" th:text="${p.stats.defense}">0</span></div>
+                        <div class="s-row"><div class="s-tag">⚡ At. Esp.</div>    <div class="s-bar"><i id="b-satk" class="ok"></i></div>   <span class="badge" th:text="${p.stats.specialAttack}">0</span></div>
+                        <div class="s-row"><div class="s-tag">⭕ Def. Esp.</div>   <div class="s-bar"><i id="b-sdef" class="sdef"></i></div>              <span class="badge" th:text="${p.stats.specialDefense}">0</span></div>
+                        <div class="s-row"><div class="s-tag">➡️ Velocidad</div>  <div class="s-bar"><i id="b-spd" class="fast"></i></div>   <span class="badge" th:text="${p.stats.speed}">0</span></div>
 
-      goTo(0); start();
-    })();
-  </script>
-  <script>
-      // Select de usuario
+                        <div class="total"><span>Total</span><span th:text="${total}">0</span></div>
+                    </div>
+
+                    <!-- HABILIDADES -->
+                    <div id="view-abilities" class="tabview" role="tabpanel" aria-labelledby="t-abilities" hidden>
+                        <div th:if="${#lists.isEmpty(p.abilities)}" class="muted">No hay habilidades disponibles.</div>
+                        <div th:each="ab : ${p.abilities}" class="ability">
+                            <div class="meta">
+                                <strong th:text="${ab.name}">Static</strong>
+                                <span class="tag" th:if="${ab.hidden}">Oculta</span>
+                            </div>
+                        </div>
+
+                        <div style="margin-top:10px;padding:12px;border:1px solid #dbeafe;background:#eff6ff;border-radius:14px">
+                            <div class="muted" style="font-weight:800;margin-bottom:8px">Tipos de Pokémon</div>
+                            <span class="type" th:each="t : ${p.types}" th:text="${t}">electric</span>
+                        </div>
+                    </div>
+
+                    <!-- INFO -->
+                    <div id="view-info" class="tabview" role="tabpanel" aria-labelledby="t-info" hidden>
+                        <p class="info" th:text="${p.flavor}">Descripción de la Pokédex…</p>
+                        <p class="muted" style="margin-top:10px"><strong>Base EXP:</strong> <span th:text="${p.baseExp}">0</span></p>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <main class="wrap" th:if="${p == null}">
+            <div class="dex-left" style="padding:16px">No se encontró información.</div>
+        </main>
+
+        <script>
+            // Tabs
+            function showTab(key) {
+                const tabs = ['stats', 'abilities', 'info'];
+                for (const t of tabs) {
+                    document.getElementById('view-' + t).hidden = (t !== key);
+                    document.getElementById('t-' + t).setAttribute('aria-selected', String(t === key));
+                }
+            }
+
+            // Barras (normalizadas al valor máximo del propio Pokémon)
+            window.addEventListener('load', () => {
+                const vals = Array.from(document.querySelectorAll('#view-stats .badge')).map(b => +b.textContent || 0);
+                const ids = ['b-hp', 'b-atk', 'b-def', 'b-satk', 'b-sdef', 'b-spd'];
+                const max = Math.max(1, ...vals);
+                vals.forEach((v, i) => {
+                    const el = document.getElementById(ids[i]);
+                    if (el)
+                        el.style.width = Math.max(6, Math.round(v / max * 100)) + '%';
+                });
+            });
+
+            // Carrusel adaptativo
+            (function () {
+                const root = document.getElementById('frame');
+                if (!root)
+                    return;
+                const track = document.getElementById('track');
+                const slides = Array.from(track.children);
+                const dots = Array.from(document.querySelectorAll('#dots .dot'));
+                const prev = document.getElementById('prev');
+                const next = document.getElementById('next');
+                const cap = document.getElementById('cap');
+
+                let i = 0, N = slides.length;
+                function setCaption(index) {
+                    const fig = slides[index];
+                    const img = fig ? fig.querySelector('img') : null;
+                    if (!img)
+                        return;
+                    // label viene en el alt: "<name> - <label>"
+                    const parts = (img.alt || '').split(' - ');
+                    cap.textContent = parts[1] || parts[0] || 'Sprite';
+                }
+                function goTo(idx) {
+                    i = (idx + N) % N;
+                    track.style.transform = `translateX(-${i * 100}%)`;
+                    dots.forEach((d, di) => d.classList.toggle('is-active', di === i));
+                    setCaption(i);
+                }
+                prev.addEventListener('click', () => goTo(i - 1));
+                next.addEventListener('click', () => goTo(i + 1));
+                dots.forEach((d, di) => d.addEventListener('click', () => goTo(di)));
+
+                // autoplay con pausa
+                let timer = null, over = false;
+                const start = () => timer = setInterval(() => goTo(i + 1), 4000);
+                const stop = () => {
+                    clearInterval(timer);
+                    timer = null;
+                };
+                root.addEventListener('mouseenter', () => {
+                    over = true;
+                    stop();
+                });
+                root.addEventListener('mouseleave', () => {
+                    over = false;
+                    start();
+                });
+
+                // teclado & swipe
+                root.tabIndex = 0;
+                root.addEventListener('keydown', e => {
+                    if (e.key === 'ArrowLeft')
+                        goTo(i - 1);
+                    if (e.key === 'ArrowRight')
+                        goTo(i + 1);
+                });
+                let sx = 0, dx = 0;
+                root.addEventListener('touchstart', e => {
+                    sx = e.touches[0].clientX;
+                    dx = 0;
+                    stop();
+                }, {passive: true});
+                root.addEventListener('touchmove', e => {
+                    dx = e.touches[0].clientX - sx;
+                }, {passive: true});
+                root.addEventListener('touchend', () => {
+                    if (Math.abs(dx) > 40)
+                        goTo(i + (dx < 0 ? 1 : -1));
+                    if (!over)
+                        start();
+                });
+
+                // audio (grito)
+                const audio = document.getElementById('cryAudio');
+                const btnCry = document.getElementById('btnCry');
+                if (audio && btnCry) {
+                    btnCry.addEventListener('click', () => {
+                        audio.currentTime = 0;
+                        audio.play().catch(() => {
+                        });
+                    });
+                }
+
+                goTo(0);
+                start();
+            })();
+        </script>
+        <script>
+            // Select de usuario
             function handleSelectChange(selectElement) {
                 var selectedValue = selectElement.value;
                 if (selectedValue == "logout") {
@@ -392,9 +908,9 @@ figure { margin: 0; }                 /* quita margen por defecto */
                 if (selectedValue = "pokemones") {
                     window.location.href = "/pokemon";
                 }
-    
+
 
             }
-  </script>
-</body>
+        </script>
+    </body>
 </html>

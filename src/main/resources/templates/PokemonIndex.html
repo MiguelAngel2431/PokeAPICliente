@@ -8,7 +8,7 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
 
-        <!-- JQuery -->
+        <!-- JQuery + Bootstrap -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
@@ -38,8 +38,7 @@
                 color:var(--ink)
             }
 
-            /* ===== NAV ===== */
-            .nav{
+            .nav-poke{
                 position:sticky;
                 top:0;
                 z-index:2000;
@@ -115,11 +114,9 @@
             /* NAV links / botones */
             .nav-links-desktop{
                 display:flex;
-                align-items:center;
                 gap:10px;
                 flex-wrap:wrap;
             }
-
 
             .nav-username{
                 display:inline-flex;
@@ -135,7 +132,6 @@
                 font-size:13px;
                 cursor:default;
             }
-
 
             .nav-btn{
                 background:#fff;
@@ -158,33 +154,33 @@
             /* ===== NAV RESPONSIVE ===== */
             @media (max-width: 991.98px){
                 .nav-in{
-                    flex-wrap:wrap;
                     padding:12px 10px;
-                    justify-content:center;
                 }
-                .nav-left,
+
+                .nav-left{
+                    justify-content:flex-start;
+                }
+
                 .nav-right{
-                    flex:0 0 100%;
-                    justify-content:center;
+                    margin-left:auto;
+                    justify-content:flex-end;
                 }
-                .brand{
-                    justify-content:center;
-                }
+
                 .brand span{
                     font-size:16px;
-                    white-space:normal;
-                    text-align:center;
+                    white-space:nowrap;
                 }
+
                 .nav-links-desktop{
-                    display:none;
+                    display:none;           /* oculta botones grandes en móvil */
                 }
+
                 .nav-dropdown-mobile{
-                    display:block;
-                    width:100%;
-                    max-width:260px;
+                    display:block;          /* muestra el select para admin */
                 }
+
                 .login{
-                    width:100%;
+                    width:auto;
                     text-align:center;
                     padding:8px 10px;
                 }
@@ -767,8 +763,8 @@
     </head>
     <body>
 
-        <!-- NAV RESPONSIVA -->
-        <nav class="nav" aria-label="Principal">
+        <!-- NAV (usa .nav-poke en lugar de .nav) -->
+        <nav class="nav-poke" aria-label="Principal">
             <div class="nav-in">
                 <!-- IZQUIERDA -->
                 <div class="nav-left">
@@ -987,9 +983,7 @@
                      data-speed=${p.stats.speed},
                      data-generation=${p.generation},
                      data-habitat=${p.habitat}">
-                    <div class="card-inner" onclick="flip(this.parentElement)" tabindex="0" onkeypress="if (event.key === 'Enter') {
-                                flip(this.parentElement);
-                            }">
+                    <div class="card-inner" onclick="flip(this.parentElement)" tabindex="0" onkeypress="if (event.key === 'Enter') { flip(this.parentElement); }">
                         <!-- FRONT -->
                         <article class="face front" aria-label="Frente">
                             <div class="top">
@@ -1127,145 +1121,142 @@
 
             /* Tipos */
             setupDropdown(
-                    'ddTypes',
-                    (root, panel) => {
-                const list = panel.querySelectorAll('#typeList input[type=checkbox]');
-                const selected = Array.from(list).filter(c => c.checked && c.value !== '__all').map(c => c.value);
-                const base = new URL(window.location.href);
-                base.searchParams.set('page', '1');
+                'ddTypes',
+                (root, panel) => {
+                    const list = panel.querySelectorAll('#typeList input[type=checkbox]');
+                    const selected = Array.from(list).filter(c => c.checked && c.value !== '__all').map(c => c.value);
+                    const base = new URL(window.location.href);
+                    base.searchParams.set('page', '1');
 
-                const term = (document.getElementById('q')?.value || '').trim();
-                if (term)
-                    base.searchParams.set('q', term);
-                else
-                    base.searchParams.delete('q');
+                    const term = (document.getElementById('q')?.value || '').trim();
+                    if (term)
+                        base.searchParams.set('q', term);
+                    else
+                        base.searchParams.delete('q');
 
-                if (selected.length > 0)
-                    base.searchParams.set('types', selected.join(','));
-                else
-                    base.searchParams.delete('types');
+                    if (selected.length > 0)
+                        base.searchParams.set('types', selected.join(','));
+                    else
+                        base.searchParams.delete('types');
 
-                const loc = new URL(window.location.href).searchParams.get('loc');
-                if (loc)
-                    base.searchParams.set('loc', loc);
-                const hab = new URL(window.location.href).searchParams.get('hab');
-                if (hab)
-                    base.searchParams.set('hab', hab);
+                    const loc = new URL(window.location.href).searchParams.get('loc');
+                    if (loc)
+                        base.searchParams.set('loc', loc);
+                    const hab = new URL(window.location.href).searchParams.get('hab');
+                    if (hab)
+                        base.searchParams.set('hab', hab);
 
-                window.location.href = base.toString();
-            },
-                    (root, panel) => {
-                panel.querySelectorAll('#typeList input[type=checkbox]').forEach(c => c.checked = false);
-                const all = panel.querySelector('#t_all');
-                if (all)
-                    all.checked = true;
-            }
+                    window.location.href = base.toString();
+                },
+                (root, panel) => {
+                    panel.querySelectorAll('#typeList input[type=checkbox]').forEach(c => c.checked = false);
+                    const all = panel.querySelector('#t_all');
+                    if (all) all.checked = true;
+                }
             );
 
             /* Locations */
             setupDropdown(
-                    'ddLoc',
-                    (root, panel) => {
-                const val = panel.querySelector('input[name="loc-radio"]:checked')?.value ?? '';
-                const base = new URL(window.location.href);
-                base.searchParams.set('page', '1');
+                'ddLoc',
+                (root, panel) => {
+                    const val = panel.querySelector('input[name="loc-radio"]:checked')?.value ?? '';
+                    const base = new URL(window.location.href);
+                    base.searchParams.set('page', '1');
 
-                const term = (document.getElementById('q')?.value || '').trim();
-                if (term)
-                    base.searchParams.set('q', term);
-                else
-                    base.searchParams.delete('q');
+                    const term = (document.getElementById('q')?.value || '').trim();
+                    if (term)
+                        base.searchParams.set('q', term);
+                    else
+                        base.searchParams.delete('q');
 
-                const types = new URL(window.location.href).searchParams.get('types');
-                if (types)
-                    base.searchParams.set('types', types);
-                else
-                    base.searchParams.delete('types');
+                    const types = new URL(window.location.href).searchParams.get('types');
+                    if (types)
+                        base.searchParams.set('types', types);
+                    else
+                        base.searchParams.delete('types');
 
-                if (val)
-                    base.searchParams.set('loc', val);
-                else
-                    base.searchParams.delete('loc');
+                    if (val)
+                        base.searchParams.set('loc', val);
+                    else
+                        base.searchParams.delete('loc');
 
-                const hab = new URL(window.location.href).searchParams.get('hab');
-                if (hab)
-                    base.searchParams.set('hab', hab);
+                    const hab = new URL(window.location.href).searchParams.get('hab');
+                    if (hab)
+                        base.searchParams.set('hab', hab);
 
-                window.location.href = base.toString();
-            },
-                    (root, panel) => {
-                const radios = panel.querySelectorAll('input[name="loc-radio"]');
-                radios.forEach(r => r.checked = r.value === '');
-                root.dataset.current = '';
-                document.getElementById('locLabel').textContent = 'Todas';
-            },
-                    (root, panel) => {
-                const current = root.dataset.current || '';
-                const radios = panel.querySelectorAll('input[name="loc-radio"]');
-                let matched = false;
-                radios.forEach(r => {
-                    if (r.value === current) {
-                        r.checked = true;
-                        matched = true;
-                    }
-                });
-                if (!matched)
-                    radios[0].checked = true;
-                document.getElementById('locLabel').textContent = current ? current.charAt(0).toUpperCase() + current.slice(1) : 'Todas';
-            }
+                    window.location.href = base.toString();
+                },
+                (root, panel) => {
+                    const radios = panel.querySelectorAll('input[name="loc-radio"]');
+                    radios.forEach(r => r.checked = r.value === '');
+                    root.dataset.current = '';
+                    document.getElementById('locLabel').textContent = 'Todas';
+                },
+                (root, panel) => {
+                    const current = root.dataset.current || '';
+                    const radios = panel.querySelectorAll('input[name="loc-radio"]');
+                    let matched = false;
+                    radios.forEach(r => {
+                        if (r.value === current) {
+                            r.checked = true;
+                            matched = true;
+                        }
+                    });
+                    if (!matched) radios[0].checked = true;
+                    document.getElementById('locLabel').textContent = current ? current.charAt(0).toUpperCase() + current.slice(1) : 'Todas';
+                }
             );
 
             /* Habitats */
             setupDropdown(
-                    'ddHab',
-                    (root, panel) => {
-                const val = panel.querySelector('input[name="hab-radio"]:checked')?.value ?? '';
-                const base = new URL(window.location.href);
-                base.searchParams.set('page', '1');
+                'ddHab',
+                (root, panel) => {
+                    const val = panel.querySelector('input[name="hab-radio"]:checked')?.value ?? '';
+                    const base = new URL(window.location.href);
+                    base.searchParams.set('page', '1');
 
-                const term = (document.getElementById('q')?.value || '').trim();
-                if (term)
-                    base.searchParams.set('q', term);
-                else
-                    base.searchParams.delete('q');
+                    const term = (document.getElementById('q')?.value || '').trim();
+                    if (term)
+                        base.searchParams.set('q', term);
+                    else
+                        base.searchParams.delete('q');
 
-                const types = new URL(window.location.href).searchParams.get('types');
-                if (types)
-                    base.searchParams.set('types', types);
-                else
-                    base.searchParams.delete('types');
+                    const types = new URL(window.location.href).searchParams.get('types');
+                    if (types)
+                        base.searchParams.set('types', types);
+                    else
+                        base.searchParams.delete('types');
 
-                const loc = new URL(window.location.href).searchParams.get('loc');
-                if (loc)
-                    base.searchParams.set('loc', loc);
+                    const loc = new URL(window.location.href).searchParams.get('loc');
+                    if (loc)
+                        base.searchParams.set('loc', loc);
 
-                if (val)
-                    base.searchParams.set('hab', val);
-                else
-                    base.searchParams.delete('hab');
+                    if (val)
+                        base.searchParams.set('hab', val);
+                    else
+                        base.searchParams.delete('hab');
 
-                window.location.href = base.toString();
-            },
-                    (root, panel) => {
-                const radios = panel.querySelectorAll('input[name="hab-radio"]');
-                radios.forEach(r => r.checked = r.value === '');
-                root.dataset.current = '';
-                document.getElementById('habLabel').textContent = 'Todos';
-            },
-                    (root, panel) => {
-                const current = root.dataset.current || '';
-                const radios = panel.querySelectorAll('input[name="hab-radio"]');
-                let matched = false;
-                radios.forEach(r => {
-                    if (r.value === current) {
-                        r.checked = true;
-                        matched = true;
-                    }
-                });
-                if (!matched)
-                    radios[0].checked = true;
-                document.getElementById('habLabel').textContent = current ? current.replace('-', ' ') : 'Todos';
-            }
+                    window.location.href = base.toString();
+                },
+                (root, panel) => {
+                    const radios = panel.querySelectorAll('input[name="hab-radio"]');
+                    radios.forEach(r => r.checked = r.value === '');
+                    root.dataset.current = '';
+                    document.getElementById('habLabel').textContent = 'Todos';
+                },
+                (root, panel) => {
+                    const current = root.dataset.current || '';
+                    const radios = panel.querySelectorAll('input[name="hab-radio"]');
+                    let matched = false;
+                    radios.forEach(r => {
+                        if (r.value === current) {
+                            r.checked = true;
+                            matched = true;
+                        }
+                    });
+                    if (!matched) radios[0].checked = true;
+                    document.getElementById('habLabel').textContent = current ? current.replace('-', ' ') : 'Todos';
+                }
             );
 
             /* Orden (cliente) */
@@ -1280,27 +1271,26 @@
                         return collator.compare(b.dataset.name, a.dataset.name);
                     return 0;
                 });
-                for (const c of cards)
-                    grid.appendChild(c);
+                for (const c of cards) grid.appendChild(c);
             }
             setupDropdown(
-                    'ddSort',
-                    (root, panel) => {
-                const mode = panel.querySelector('input[name="sort-radio"]:checked')?.value || 'name-asc';
-                sortGrid(mode);
-                const label = document.getElementById('sortLabel');
-                label.textContent = (mode === 'name-desc') ? 'Nombre Z–A' : 'Nombre A–Z';
-            },
-                    (root, panel) => {
-                const radios = panel.querySelectorAll('input[name="sort-radio"]');
-                radios.forEach(r => r.checked = (r.value === 'name-asc'));
-                sortGrid('name-asc');
-                document.getElementById('sortLabel').textContent = 'Nombre A–Z';
-            },
-                    (root, panel) => {
-                const radios = panel.querySelectorAll('input[name="sort-radio"]');
-                radios.forEach(r => r.checked = (r.value === 'name-asc'));
-            }
+                'ddSort',
+                (root, panel) => {
+                    const mode = panel.querySelector('input[name="sort-radio"]:checked')?.value || 'name-asc';
+                    sortGrid(mode);
+                    const label = document.getElementById('sortLabel');
+                    label.textContent = (mode === 'name-desc') ? 'Nombre Z–A' : 'Nombre A–Z';
+                },
+                (root, panel) => {
+                    const radios = panel.querySelectorAll('input[name="sort-radio"]');
+                    radios.forEach(r => r.checked = (r.value === 'name-asc'));
+                    sortGrid('name-asc');
+                    document.getElementById('sortLabel').textContent = 'Nombre A–Z';
+                },
+                (root, panel) => {
+                    const radios = panel.querySelectorAll('input[name="sort-radio"]');
+                    radios.forEach(r => r.checked = (r.value === 'name-asc'));
+                }
             );
 
             /* Chips eliminar tipo */
@@ -1308,11 +1298,9 @@
             if (chips) {
                 chips.addEventListener('click', (e) => {
                     const btn = e.target.closest('.chip-x');
-                    if (!btn)
-                        return;
+                    if (!btn) return;
                     const chip = btn.closest('.sel-chip');
-                    if (!chip)
-                        return;
+                    if (!chip) return;
                     const t = chip.getAttribute('data-type');
                     const base = new URL(window.location.href);
                     const types = (base.searchParams.get('types') || '').split(',').filter(Boolean);
@@ -1392,8 +1380,8 @@
 
                     const usuarioData = {usuario: {idUsuario: idUsuario}, idPokemon: idPokemon};
                     const url = agregar
-                            ? 'http://localhost:8080/api/usuario/addFavorites'
-                            : 'http://localhost:8080/api/usuario/removeFavorites';
+                        ? 'http://localhost:8080/api/usuario/addFavorites'
+                        : 'http://localhost:8080/api/usuario/removeFavorites';
 
                     $.ajax({
                         url: url,
@@ -1449,7 +1437,7 @@
 
                     iconEl.appendChild(el);
                     el.addEventListener('animationend', () => el.remove());
-            }
+                }
             }
 
             document.addEventListener('DOMContentLoaded', () => {

@@ -850,7 +850,7 @@
         </section>
 
         <!-- Paginación -->
-        <div class="pagi">
+<!--        <div class="pagi">
             <a class="p-btn" th:href="@{'/pokemon'(page=${page-1}, size=${size}, q=${q}, types=${typesQuery}, loc=${loc}, hab=${hab})}" th:attr="disabled=${page<=1}? 'disabled' : null">← Anterior</a>
             <div class="pill" th:text="'Página ' + ${page} + ' de ' + ${totalPages}">Página 1 de 1</div>
             <a class="p-btn" th:href="@{'/pokemon'(page=${page+1}, size=${size}, q=${q}, types=${typesQuery}, loc=${loc}, hab=${hab})}" th:attr="disabled=${page>=totalPages}? 'disabled' : null">Siguiente →</a>
@@ -864,7 +864,41 @@
                     <option th:selected="${size==96}" value="96">96</option>
                 </select>
             </div>
-        </div>
+        </div>-->
+
+<div class="pagi">
+    <a class="p-btn"
+       th:href="@{'/pokemon/totalPokemonesFavoritos'(page=${page-1}, size=${size})}"
+        th:attr="disiable=${page<=1}?'disabled': null">
+           ← Anterior
+    </a>
+    
+    <div class="pill" th:text="' Pagina ' + ${page} + ' de ' + ${totalPages}">
+        pagina 1 de 1
+    </div>
+    
+      <a class="p-btn"
+       th:href="@{'/pokemon/totalPokemonesFavoritos'(page=${page+1}, size=${size})}"
+       th:attr="disabled=${page>=totalPages}? 'disabled' : null">
+        Siguiente →
+    </a>
+    
+    <div class="page-size">
+        
+        <label for="pageSize"><strong>Tamaño:</strong></label>
+        <select id="pageSize" th:value="${side}">
+            
+            <option th:selected="${size==12}" value="12">12</option>
+            <option th:selected="${size==24}" value="24">24</option>
+            <option th:selected="${size==48}" value="48">48</option>
+            <option th:selected="${size==96}" value="96">96</option>
+            
+        </select>
+        
+    </div>
+    
+    
+</div>
     </main>
 
     <script>
