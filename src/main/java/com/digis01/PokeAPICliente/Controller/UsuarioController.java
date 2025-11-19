@@ -32,22 +32,27 @@ public class UsuarioController {
         return "RegisterForm";
     }
 
-    @PostMapping("/add")
-    public String add(@ModelAttribute("Usuario") com.digis01.PokeAPICliente.JPA.Usuario usuario,
-                      RedirectAttributes ra,
-                      Model model) {
-        Result result = usuarioService.Add(usuario);
-        if (result != null && result.correct) {
-            ra.addFlashAttribute("mensaje", "Registro exitoso. ¡Ahora inicia sesión!");
-            return "redirect:/login";
-        } else {
-            model.addAttribute("mensajeError", (result != null && result.errorMessage != null)
-                    ? result.errorMessage
-                    : "No se pudo registrar el usuario.");
-            model.addAttribute("Usuario", usuario);
-            return "RegisterForm";
-        }
+   @PostMapping("/add")
+public String add(
+        @ModelAttribute("Usuario") com.digis01.PokeAPICliente.JPA.Usuario usuario,
+        Model model) {
+
+    Result result = usuarioService.Add(usuario);
+
+    if (result != null && result.correct) {
+        model.addAttribute("mensaje", "Registro exitoso. ¡Ahora inicia sesión!");
+        return "login";  
+    } else {
+        model.addAttribute("mensajeError",
+                (result != null && result.errorMessage != null)
+                        ? result.errorMessage
+                        : "No se pudo registrar el usuario.");
+
+        model.addAttribute("Usuario", usuario);
+        return "RegisterForm";
     }
+}
+
 
     /* ============ LISTAR ============ */
     @GetMapping("/list")
@@ -186,13 +191,12 @@ public class UsuarioController {
     @PostMapping("/edit/{id}")
     public String update(@PathVariable("id") Integer id,
                          @ModelAttribute("Usuario") com.digis01.PokeAPICliente.JPA.Usuario usuario,
-                         RedirectAttributes ra,
                          Model model) {
         usuario.setIdUsuario(id);
         Result result = usuarioService.Update(usuario);
 
         if (result != null && result.correct) {
-            ra.addFlashAttribute("mensaje", "Usuario actualizado correctamente.");
+            model.addAttribute("mensaje" , "Usuario actualizado correctamente.");
             return "redirect:/usuario/list";
         } else {
             model.addAttribute("mensajeError", (result != null && result.errorMessage != null)
