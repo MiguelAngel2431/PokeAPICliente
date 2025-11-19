@@ -1,90 +1,550 @@
 <!doctype html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Usuario · Editar</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Usuario · Editar</title>
 
-  <!-- Bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 
-  <style>
-    :root{ --red:#ef4444; --ring:#ffd1d1; }
-    .nav-grad{ background:linear-gradient(180deg,#fff 0,#fff 60%, #000 60%, #000 63%, #ef4444 63%, #ef4444 100%); }
-    .ball{ width:34px;height:34px;border-radius:50%;
-      background:radial-gradient(circle at 50% 48%, #fff 0 12px, transparent 13px),
-                 linear-gradient(#fff 50%, #000 0 52%, #ef4444 0);
-      border:3px solid #000; box-shadow: inset 0 0 0 2px #fff; cursor:pointer; }
-    .form-control:focus{ border-color:var(--ring); box-shadow:0 0 0 .25rem rgba(239,68,68,.15) }
-  </style>
+    <!-- Fuente Poppins (igual que el dashboard) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root{
+            --red:#ef4444;
+            --red-700:#b91c1c;
+            --ink:#0f172a;
+            --muted:#64748b;
+            --chip:#fee2e2;
+            --shadow:0 12px 28px rgba(15,23,42,.12);
+            --radius:18px;
+            --bg:#ffffff;
+            --ring:#ffd1d1;
+            --soft:#fff7f7;
+        }
+
+        *{
+            box-sizing:border-box;
+        }
+
+        html,body{
+            margin:0;
+            background:var(--bg);
+            font-family:Poppins,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+            color:var(--ink);
+        }
+
+        /* ===== NAV (NO SE TOCÓ) ===== */
+        .nav{
+            position:sticky;
+            top:0;
+            z-index:2000;
+            background:linear-gradient(180deg,#fff 0,#fff 60%, #000 60%, #000 63%, #ef4444 63%, #0000FF 100%);
+            box-shadow:0 10px 20px rgba(15,23,42,.25);
+            width:100%;
+            backdrop-filter:blur(6px);
+        }
+        .nav::after{
+            content:"";
+            position:absolute;
+            inset:0;
+            background:linear-gradient(90deg,rgba(255,255,255,.22),rgba(255,255,255,0),rgba(255,255,255,.12));
+            pointer-events:none;
+            mix-blend-mode:soft-light;
+        }
+        .nav-in{
+            position:relative;
+            max-width:1160px;
+            margin:0 auto;
+            padding:14px 16px;
+            display:flex;
+            align-items:center;
+            gap:12px;
+        }
+        .nav-left{
+            display:flex;
+            align-items:center;
+            gap:12px;
+        }
+        .nav-right{
+            display:flex;
+            align-items:center;
+            gap:10px;
+            margin-left:auto !important;
+            flex-wrap:wrap;
+            justify-content:flex-end;
+        }
+
+        .brand{
+            display:flex;
+            gap:10px;
+            align-items:center;
+            font-weight:800;
+            letter-spacing:.5px;
+            cursor:pointer;
+            padding:4px 10px;
+            border-radius:999px;
+            background:rgba(255,255,255,.8);
+            border:1px solid rgba(148,163,184,.35);
+            box-shadow:0 8px 18px rgba(15,23,42,.18);
+            transition:transform .25s ease, box-shadow .25s ease, background .25s ease, border-color .25s ease;
+        }
+        .brand span{
+            font-size:16px;
+            color:var(--ink);
+            white-space:nowrap;
+        }
+        .brand:hover{
+            transform:translateY(-1px);
+            background:#ffffff;
+            border-color:#e2e8f0;
+            box-shadow:0 14px 28px rgba(15,23,42,.26);
+        }
+
+        .ball{
+            width:34px;
+            height:34px;
+            border-radius:50%;
+            background:
+                radial-gradient(circle at 50% 48%, #fff 0 12px, transparent 13px),
+                linear-gradient(#fff 50%, #000 0 52%, #ef4444 0);
+            border:3px solid #000;
+            box-shadow: inset 0 0 0 2px #fff, 0 4px 10px rgba(0,0,0,.35);
+            flex:0 0 34px;
+            transition:transform .25s ease, box-shadow .25s ease;
+        }
+        .brand:hover .ball{
+            transform:translateY(-1px) rotate(-8deg) scale(1.03);
+            box-shadow: inset 0 0 0 2px #fff, 0 7px 16px rgba(0,0,0,.45);
+        }
+
+        .login{
+            background:#fff;
+            color:var(--red);
+            font-weight:800;
+            padding:8px 14px;
+            border-radius:999px;
+            border:1px solid #fecaca;
+            font-size:13px;
+            box-shadow:0 4px 10px rgba(148,163,184,.25);
+            display:inline-flex;
+            align-items:center;
+            gap:6px;
+            transition:background .2s ease, transform .2s ease, box-shadow .2s ease;
+        }
+        .login:hover{
+            background:#ffe8e8;
+            transform:translateY(-1px);
+            box-shadow:0 7px 16px rgba(148,163,184,.35);
+        }
+
+        .nav-links-desktop{
+            display:flex;
+            align-items:center;
+            gap:10px;
+            flex-wrap:wrap;
+        }
+
+        .nav-username{
+            display:inline-flex;
+            align-items:center;
+            gap:6px;
+            background:rgba(255,255,255,.95);
+            color:var(--red);
+            font-weight:800;
+            padding:6px 12px;
+            border-radius:999px;
+            border:1px solid #fecaca;
+            text-decoration:none;
+            font-size:12px;
+            cursor:default;
+            max-width:180px;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+        }
+
+        @media (max-width: 991.98px){
+            .nav-username{
+                width:100%;
+                justify-content:center;
+                max-width:260px;
+                margin:6px auto 0;
+            }
+        }
+
+        .nav-btn{
+            background:#fff;
+            color:var(--red);
+            font-weight:800;
+            padding:8px 12px;
+            border-radius:999px;
+            border:1px solid #fecaca;
+            text-decoration:none;
+            font-size:13px;
+            cursor:pointer;
+            display:inline-flex;
+            align-items:center;
+            gap:6px;
+            box-shadow:0 3px 8px rgba(148,163,184,.25);
+            transition:background .2s ease, transform .2s ease, box-shadow .2s ease;
+        }
+        .nav-btn:hover{
+            background:#ffe8e8;
+            transform:translateY(-1px);
+            box-shadow:0 6px 14px rgba(148,163,184,.35);
+            text-decoration:none;
+            color:var(--red);
+        }
+
+        .nav-dropdown-mobile{
+            display:none;
+        }
+
+        @media (max-width: 991.98px){
+            .nav-in{
+                flex-wrap:wrap;
+                padding:10px 10px;
+                justify-content:center;
+            }
+            .nav-left,
+            .nav-right{
+                flex:0 0 100%;
+                justify-content:center;
+            }
+            .brand{
+                justify-content:center;
+                width:100%;
+                max-width:320px;
+            }
+            .brand span{
+                font-size:15px;
+                white-space:normal;
+                text-align:center;
+            }
+            .nav-links-desktop{
+                display:none;
+            }
+            .nav-dropdown-mobile{
+                display:block;
+                width:100%;
+                max-width:260px;
+            }
+            .login{
+                width:100%;
+                justify-content:center;
+                padding:8px 10px;
+            }
+        }
+
+        .form-control:focus{
+            border-color:var(--ring);
+            box-shadow:0 0 0 .25rem rgba(239,68,68,.15)
+        }
+
+        /* ================== CONTENIDO (NUEVO DISEÑO) ================== */
+        .page-shell{
+            max-width:1160px;
+            margin:24px auto 40px;
+            padding:0 16px;
+        }
+
+        .page-header{
+            display:flex;
+            align-items:flex-start;
+            justify-content:space-between;
+            gap:16px;
+            margin-bottom:18px;
+        }
+        .page-title{
+            font-size:24px;
+            font-weight:800;
+            letter-spacing:.3px;
+            margin:0 0 6px;
+        }
+        .page-sub{
+            margin:0;
+            font-size:13px;
+            color:var(--muted);
+        }
+        .pill-row{
+            display:flex;
+            flex-wrap:wrap;
+            gap:8px;
+            margin-top:8px;
+        }
+        .pill{
+            font-size:11px;
+            padding:4px 10px;
+            border-radius:999px;
+            border:1px solid #fecaca;
+            background:#fff7f7;
+            color:var(--red-700);
+            font-weight:600;
+            display:inline-flex;
+            align-items:center;
+            gap:6px;
+        }
+        .pill span{
+            font-weight:800;
+        }
+
+        .alert{
+            border-radius:14px;
+        }
+
+        .card-edit{
+            border-radius:22px;
+            border:1px solid #e5e7eb;
+            box-shadow:var(--shadow);
+            overflow:hidden;
+        }
+        .card-edit .card-header{
+            border-bottom:1px solid #f1f5f9;
+            background:linear-gradient(135deg,#fff7f7,#ffffff);
+        }
+        .card-edit .card-header h1{
+            display:flex;
+            align-items:center;
+            gap:8px;
+        }
+        .card-edit .card-header .tag{
+            font-size:11px;
+            font-weight:700;
+            text-transform:uppercase;
+            letter-spacing:.06em;
+            color:var(--muted);
+            background:#fef2f2;
+            padding:2px 8px;
+            border-radius:999px;
+        }
+
+        .section-title{
+            font-size:13px;
+            font-weight:700;
+            text-transform:uppercase;
+            letter-spacing:.08em;
+            color:var(--muted);
+            margin-bottom:4px;
+        }
+        .divider-soft{
+            height:1px;
+            margin:4px 0 14px;
+            background:linear-gradient(90deg,rgba(148,163,184,.15),rgba(148,163,184,0));
+        }
+
+        label.form-label{
+            font-size:13px;
+            font-weight:600;
+            color:#334155;
+        }
+
+        .id-chip{
+            font-size:12px;
+            border-radius:999px;
+            border:1px dashed #e5e7eb;
+            background:#f9fafb;
+            padding:6px 10px;
+            display:flex;
+            align-items:center;
+            gap:6px;
+            color:#6b7280;
+            margin-bottom:4px;
+        }
+        .id-chip strong{
+            font-weight:700;
+            color:#111827;
+        }
+
+        .btn-danger{
+            background:var(--red);
+            border-color:var(--red);
+            font-weight:700;
+            border-radius:999px;
+            padding:.55rem 1.4rem;
+        }
+        .btn-danger:hover{
+            background:var(--red-700);
+            border-color:var(--red-700);
+        }
+        .btn-outline-secondary{
+            border-radius:999px;
+            padding:.55rem 1.4rem;
+        }
+
+        .card-footer{
+            border-top:1px solid #f1f5f9;
+        }
+        .card-footer small{
+            font-size:11px;
+        }
+
+        @media (max-width:768px){
+            .page-header{
+                flex-direction:column;
+                align-items:flex-start;
+            }
+        }
+    </style>
 </head>
 <body>
-  <!-- NAV -->
-  <nav class="nav-grad shadow-sm">
-    <div class="container d-flex align-items-center justify-content-between py-3">
-      <div class="d-flex align-items-center gap-2">
-        <div class="ball" aria-hidden="true" onclick="location.href='/'"></div>
-        <strong>PokéAPI · Editar usuario</strong>
-      </div>
-      <a class="btn btn-sm btn-outline-dark" th:href="@{/usuario/list}">Volver</a>
-    </div>
-  </nav>
+    <nav class="nav" aria-label="Principal">
+        <div class="nav-in">
+            <div class="nav-left">
+                <div th:if="${role == 'ROLE_Administrador'}">
+                    <div class="brand" onclick="window.location.href = '/usuario/list'">
+                        <div class="ball" aria-hidden="true"></div>
+                        <span>PokéAPI · Administrador</span>
+                    </div>
+                </div>
+                <div th:if="${role == 'ROLE_General'}">
+                    <div class="brand" onclick="window.location.href = '/pokemon'">
+                        <div class="ball" aria-hidden="true"></div>
+                        <span>PokéAPI · Usuarios</span>
+                    </div>
+                </div>
+                <div th:if="${role == 'ROLE_ANONYMOUS'}">
+                    <div class="brand" onclick="window.location.href = '/pokemon'">
+                        <div class="ball" aria-hidden="true"></div>
+                        <span>PokéAPI</span>
+                    </div>
+                </div>
+            </div>
 
-  <main class="container py-4">
-    <div class="row justify-content-center">
-      <div class="col-lg-8">
-        <div th:if="${mensajeError}" class="alert alert-danger" th:text="${mensajeError}">Error</div>
+            <div class="nav-right">
+                <div th:if="${username != null}">
+                    <!-- ADMIN -->
+                    <div th:if="${role == 'ROLE_Administrador'}" class="d-flex align-items-center gap-2 flex-wrap">
+                        <span class="nav-username d-none d-lg-inline" th:text="${username}">Usuario</span>
 
-        <div class="card shadow-sm">
-          <div class="card-header bg-white">
-            <h1 class="h5 m-0">Editar usuario</h1>
-          </div>
-          <div class="card-body">
-            <form th:action="@{'/usuario/edit/' + ${Usuario.idUsuario}}" th:object="${Usuario}" method="post" class="row g-3">
+                        <!-- Desktop: botones -->
+                        <div class="nav-links-desktop d-none d-lg-flex">
+                            <a class="nav-btn" th:href="@{/pokemon}">Pokemons</a>
+                            <a class="nav-btn" th:href="@{/pokemon/totalPokemonesFavoritos}">Administrador</a>
+                            <a class="nav-btn" th:href="@{/pokemon/myAccount}">Mi cuenta</a>
+                            <a class="nav-btn" th:href="@{/logout}">Cerrar sesión</a>
+                        </div>
 
-              <div class="col-md-2">
-                <label class="form-label">ID</label>
-                <input class="form-control" th:value="${Usuario.idUsuario}" disabled>
-              </div>
+                        <!-- Móvil / tablet: SOLO dropdown -->
+                        <div class="nav-dropdown-mobile">
+                            <select id="adminMobileNav" class="login" onchange="handleSelectChange(this)">
+                                <option value="" disabled selected th:text="${username}">Usuario</option>
+                                <option value="pokemones">Pokemons</option>
+                                <option value="administrador">Administrador</option>
+                                <option value="/usuario/myAccount">Mi cuenta</option>
+                                <option value="logout">Cerrar sesión</option>
+                            </select>
+                        </div>
+                    </div>
 
-              <div class="col-md-4">
-                <label for="nombre" class="form-label">Nombre</label>
-                <input id="nombre" class="form-control" th:field="*{nombre}" required>
-              </div>
+                    <!-- NO ADMIN -->
+                    <div th:if="${role != 'ROLE_Administrador'}">
+                        <select id="opciones" name="opciones" class="login" onchange="handleSelectChange(this)">
+                            <option value="" disabled selected th:text="${username}">Usuario</option>
+                            <option value="/usuario/myAccount">Mi cuenta</option>
+                            <option value="logout">Cerrar sesión</option>
+                        </select>
+                    </div>
+                </div>
 
-              <div class="col-md-3">
-                <label for="apP" class="form-label">Apellido paterno</label>
-                <input id="apP" class="form-control" th:field="*{apellidoPaterno}">
-              </div>
-
-              <div class="col-md-3">
-                <label for="apM" class="form-label">Apellido materno</label>
-                <input id="apM" class="form-control" th:field="*{apellidoMaterno}">
-              </div>
-
-              <div class="col-md-6">
-                <label for="username" class="form-label">Username</label>
-                <input id="username" class="form-control" th:field="*{username}" required>
-              </div>
-
-              <div class="col-md-6">
-                <label for="email" class="form-label">Email</label>
-                <input id="email" type="email" class="form-control" th:field="*{email}">
-              </div>
-
-              <div class="col-12 d-flex gap-2">
-                <button type="submit" class="btn btn-danger">Guardar cambios</button>
-                <a th:href="@{/usuario/list}" class="btn btn-outline-secondary">Cancelar</a>
-              </div>
-            </form>
-          </div>
-          <div class="card-footer bg-white">
-            <small class="text-muted">Los campos marcados como requeridos deben completarse.</small>
-          </div>
+                <div th:if="${username == null}">
+                    <a class="login" th:href="@{/login}">Login</a>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </main>
+    </nav>
+
+    <main class="page-shell">
+        <header class="page-header">
+            <div>
+                <h1 class="page-title">Editar usuario</h1>
+                <p class="page-sub">Actualiza los datos básicos del entrenador.</p>
+
+                
+            </div>
+        </header>
+
+        <div class="row justify-content-center gx-4 gy-3">
+            <div class="col-xl-8 col-lg-9">
+                <!-- Mensaje de error -->
+                <div th:if="${mensajeError}" class="alert alert-danger mb-3" th:text="${mensajeError}">
+                    Error
+                </div>
+
+                <!-- CARD FORMULARIO -->
+                <div class="card card-edit">
+                    <div class="card-header bg-white">
+                        <h1 class="h5 m-0">
+                            Datos del usuario
+                            <span class="tag">Edición</span>
+                        </h1>
+                    </div>
+                    <div class="card-body">
+                        <!-- Chip con ID solo informativo -->
+                        <div class="id-chip mb-3" th:if="${Usuario != null}">
+                            ID de registro:
+                            <strong th:text="${Usuario.idUsuario}">1</strong>
+                        </div>
+
+                        <div class="section-title">Información básica</div>
+                        <div class="divider-soft"></div>
+
+                        <form th:action="@{'/usuario/edit/' + ${Usuario.idUsuario}}"
+                              th:object="${Usuario}"
+                              method="post"
+                              class="row g-3">
+
+                            <div class="col-md-4">
+                                <label for="nombre" class="form-label">Nombre</label>
+                                <input id="nombre" class="form-control" th:field="*{nombre}" required>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="apP" class="form-label">Apellido paterno</label>
+                                <input id="apP" class="form-control" th:field="*{apellidoPaterno}">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="apM" class="form-label">Apellido materno</label>
+                                <input id="apM" class="form-control" th:field="*{apellidoMaterno}">
+                            </div>
+
+                            <div class="section-title mt-3">Acceso</div>
+                            <div class="divider-soft"></div>
+
+                            <div class="col-md-6">
+                                <label for="username" class="form-label">Username</label>
+                                <input id="username" class="form-control" th:field="*{username}" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email</label>
+                                <input id="email" type="email" class="form-control" th:field="*{email}">
+                            </div>
+
+                            <div class="col-12 d-flex flex-wrap gap-2 mt-3">
+                                <button type="submit" class="btn btn-danger">
+                                    Guardar cambios
+                                </button>
+                                <a th:href="@{/usuario/list}" class="btn btn-outline-secondary">
+                                    Cancelar
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card-footer bg-white">
+                        <small class="text-muted">
+                            Los campos marcados como requeridos deben completarse. Los cambios entran en efecto inmediatamente.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
 </body>
 </html>

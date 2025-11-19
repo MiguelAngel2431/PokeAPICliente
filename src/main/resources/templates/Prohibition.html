@@ -1,88 +1,363 @@
 <!DOCTYPE html>
-<!--
-Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
--->
-<html>
-    <head>
-        <title>Acceso inabilitado</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Acceso inhabilitado · PokéAPI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <style>
-            @import url('https://fonts.googleapis.com/css?family=Lobster|Open+Sans');
+    <!-- Iconos opcionales (no obligatorio) -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 
-            body{
-                background: url(https://i.imgur.com/faFcxS1.png);
-                background-color: #3E3E3E
-                    animation: scroll 70s infinite linear;
-                font-family: "Open Sans", sans-serif;
-                color: white;
-            }
-            @keyframes scroll{
-                from {
-                    background-position: 0 0;
-                }
-                to {
-                    background-position: 100% 0;
-                }
-            }
-            .logo{
-                margin-left: auto;
-                margin-right: auto;
-                font-family: lobster;
-                font-size: 120px;
-                text-align: center;
-            }
-            .error{
-                margin-left: auto;
-                margin-right: auto;
-                text-align: center;
-                font-size: 40px;
-                background: rgba(0,0,0,.3);
-                width:240px;
-                border-radius:2px;
-            }
-            .error2{
-                margin-left: auto;
-                margin-right: auto;
-                text-align: center;
-                background: rgba(0,0,0,.3);
-                width: 300px;
-                padding:10px;
-                border-radius:2px;
-            }
-            a:link, a:visited, a:active{
-                color: white;
-                text-decoration: none;
-            }
-            .options{
-                background: rgba(0,0,0,.3);
-                width:100px;
-                margin-right: auto;
-                margin-left: auto;
-                padding:10px;
-                border-radius:2px;
-            }
-            back:hover{
-                text-shadow: 0px 0px 10px #3498db;
-            }
-        </style>
+    <!-- Fuente -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
 
-    </head>
-    <body>
-        <div class="logo">
-            <img src="https://pipedream.com/s.v0/app_mvNhzR/logo/orig" alt="Error">
+    <style>
+        :root{
+            --red:#ef4444;
+            --red-700:#b91c1c;
+            --ink:#0f172a;
+            --muted:#9ca3af;
+            --ring:#fecaca;
+            --bg:#020617;
+        }
+
+        *{
+            box-sizing:border-box;
+            margin:0;
+            padding:0;
+        }
+
+        body{
+            min-height:100vh;
+            font-family:'Poppins',system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+            color:#f9fafb;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            background:
+                radial-gradient(circle at top left,#ef444422,transparent 55%),
+                radial-gradient(circle at bottom right,#0ea5e922,transparent 55%),
+                #020617;
+            position:relative;
+            overflow:hidden;
+        }
+
+        /* Fondo animado tipo grid / estrellas */
+        body::before{
+            content:"";
+            position:absolute;
+            inset:-40px;
+            background-image:
+              radial-gradient(#ffffff10 1px, transparent 0);
+            background-size:24px 24px;
+            opacity:.35;
+            animation: drift 40s linear infinite;
+        }
+
+        body::after{
+            content:"";
+            position:absolute;
+            inset:0;
+            background:radial-gradient(circle at 10% 0%,rgba(15,23,42,.7),transparent 55%);
+            mix-blend-mode:soft-light;
+            pointer-events:none;
+        }
+
+        @keyframes drift{
+            from{ transform:translate3d(0,0,0); }
+            to  { transform:translate3d(-80px,-40px,0); }
+        }
+
+        .shell{
+            position:relative;
+            z-index:1;
+            width:100%;
+            max-width:480px;
+            padding:20px;
+        }
+
+        .card{
+            background:linear-gradient(145deg,rgba(15,23,42,.96),rgba(244, 11, 22, 0.8));
+            border-radius:22px;
+            border:1px solid rgba(148,163,184,.45);
+            box-shadow:
+                0 24px 60px rgba(15,23,42,.85),
+                0 0 0 1px rgba(15,23,42,.7);
+            padding:22px 22px 20px;
+            position:relative;
+            overflow:hidden;
+        }
+
+        .card::before{
+            content:"";
+            position:absolute;
+            width:140px;
+            height:140px;
+            border-radius:50%;
+            background:radial-gradient(circle,#fecaca55,#f9731655,transparent 70%);
+            top:-40px;
+            right:-20px;
+            filter:blur(4px);
+        }
+
+        .tag{
+            display:inline-flex;
+            align-items:center;
+            gap:6px;
+            font-size:11px;
+            text-transform:uppercase;
+            letter-spacing:.22em;
+            color:#e5e7eb;
+            padding:4px 10px;
+            border-radius:999px;
+            background:rgba(15,23,42,.75);
+            border:1px solid rgba(148,163,184,.6);
+            margin-bottom:14px;
+        }
+
+        .tag i{
+            color:#facc15;
+        }
+
+        .top{
+            display:flex;
+            align-items:center;
+            gap:14px;
+            margin-bottom:14px;
+        }
+
+        .logo-wrap{
+            position:relative;
+            width:84px;
+            height:84px;
+            border-radius:24px;
+            background:radial-gradient(circle at 30% 0%,#ffffff,transparent 60%);
+            padding:10px;
+            box-shadow:
+                0 16px 40px rgba(15,23,42,.9),
+                0 0 0 1px rgba(15,23,42,.8);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            animation: float 3.2s ease-in-out infinite;
+        }
+
+        .logo-wrap::after{
+            content:"";
+            position:absolute;
+            inset:6px;
+            border-radius:18px;
+            border:1px dashed rgba(148,163,184,.7);
+        }
+
+        .logo-wrap img{
+            max-width:100%;
+            max-height:100%;
+            display:block;
+        }
+
+        @keyframes float{
+            0%,100%{ transform:translateY(0); }
+            50%    { transform:translateY(-6px); }
+        }
+
+        .headline{
+            flex:1;
+            display:flex;
+            flex-direction:column;
+            gap:4px;
+        }
+
+        .headline h1{
+            font-size:24px;
+            font-weight:800;
+            letter-spacing:.03em;
+        }
+
+        .headline p{
+            font-size:13px;
+            color:#e5e7eb;
+        }
+
+        .code-badge{
+            display:inline-flex;
+            align-items:center;
+            gap:6px;
+            margin-top:4px;
+            font-size:12px;
+            padding:4px 9px;
+            border-radius:999px;
+            background:rgba(15,23,42,.85);
+            border:1px solid rgba(248,250,252,.2);
+            color:#e5e7eb;
+        }
+
+        .code-badge strong{
+            font-weight:800;
+            color:#fecaca;
+        }
+
+        .body-text{
+            margin:12px 0 18px;
+            font-size:13px;
+            line-height:1.6;
+            color:#e5e7eb;
+        }
+
+        .body-text span{
+            color:#fecaca;
+            font-weight:600;
+        }
+
+        .hint{
+            font-size:11px;
+            color:var(--muted);
+        }
+
+        .actions{
+            display:flex;
+            flex-wrap:wrap;
+            gap:10px;
+            margin-top:6px;
+        }
+
+        .btn{
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            gap:8px;
+            padding:9px 16px;
+            border-radius:999px;
+            font-size:13px;
+            font-weight:700;
+            text-decoration:none;
+            cursor:pointer;
+            border:1px solid transparent;
+            transition:transform .2s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease, color .2s ease;
+            white-space:nowrap;
+        }
+
+        .btn-primary{
+            background:linear-gradient(135deg,#ef4444,#f97316);
+            border-color:#fecaca;
+            color:#111827;
+            box-shadow:0 12px 30px rgba(248,113,113,.55);
+        }
+
+        .btn-primary:hover{
+            transform:translateY(-1px);
+            box-shadow:0 16px 36px rgba(248,113,113,.75);
+            text-decoration:none;
+        }
+
+        .btn-ghost{
+            background:rgba(15,23,42,.4);
+            border-color:rgba(148,163,184,.7);
+            color:#e5e7eb;
+        }
+
+        .btn-ghost:hover{
+            background:rgba(15,23,42,.8);
+            border-color:#e5e7eb;
+            transform:translateY(-1px);
+        }
+
+        .btn i{
+            font-size:14px;
+        }
+
+        .footer{
+            margin-top:12px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:8px;
+            font-size:11px;
+            color:var(--muted);
+        }
+
+        .footer span{
+            opacity:.9;
+        }
+
+        .chip-role{
+            padding:3px 9px;
+            border-radius:999px;
+            border:1px solid rgba(148,163,184,.7);
+            background:rgba(15,23,42,.8);
+        }
+
+        @media (max-width:480px){
+            .card{
+                padding:18px 16px 16px;
+            }
+            .top{
+                flex-direction:row;
+                align-items:center;
+            }
+            .logo-wrap{
+                width:76px;
+                height:76px;
+            }
+            .headline h1{
+                font-size:22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="shell">
+        <div class="card">
+            <div class="tag">
+                <i class="fa fa-lock"></i>
+                ACCESO RESTRINGIDO
+            </div>
+
+            <div class="top">
+                <div class="logo-wrap">
+                    <!-- ✅ Mantengo tu imagen de PokéAPI -->
+                    <img src="https://pipedream.com/s.v0/app_mvNhzR/logo/orig" alt="PokéAPI · Acceso restringido">
+                </div>
+                <div class="headline">
+                    <h1>Acceso inhabilitado</h1>
+                    <p>No tienes permiso para entrar a esta sección del panel.</p>
+                    <div class="code-badge">
+                        Código <strong>403</strong> · Permiso denegado
+                    </div>
+                </div>
+            </div>
+
+            <div class="body-text">
+                Este recurso está disponible solo para usuarios con privilegios especiales.
+                <br>
+                Si crees que se trata de un error, <span>contacta al administrador</span> para revisar tus permisos.
+            </div>
+
+            <p class="hint">
+                Puedes volver al listado principal de Pokémons o regresar al inicio de sesión.
+            </p>
+
+            <div class="actions">
+                <!-- Ajusta los href según tus rutas reales -->
+                <a href="/pokemon" class="btn btn-primary">
+                    <i class="fa fa-home"></i>
+                    Ir al inicio
+                </a>
+                <a href="/login" class="btn btn-ghost">
+                    <i class="fa fa-sign-in"></i>
+                    Iniciar sesión con otra cuenta
+                </a>
+            </div>
+
+            <div class="footer">
+                <span>PokéAPI Cliente · Panel seguro</span>
+                <span class="chip-role">
+                    <i class="fa fa-shield"></i> Solo administradores
+                </span>
+            </div>
         </div>
-        <br>
-        <div class="error">
-            Error 403!
-        </div>
-        <br>
-        <div class="error2">
-            No tienes permiso para acceder a este recurso, contacta al administrador
-        </div>
-        <br>
-    </body>
+    </div>
+</body>
 </html>

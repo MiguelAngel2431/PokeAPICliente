@@ -379,10 +379,12 @@
                         <strong>Error:</strong> Nombre de usuario o contraseña inválidos. 
                     </div>
 
-                    <div th:if="${mensaje}">
-                        <div class="alert alert-success" role="alert" th:text="${mensaje}">
-                            This is a success alert—check it out!
-                        </div>
+                    <div th:if="${mensaje}" class="alert alert-success" role="alert" th:text="${mensaje}">
+                        Registro exitoso. ¡Ahora inicia sesión!
+                    </div>
+
+                    <div th:if="${mensajeError}" class="alert alert-danger" role="alert" th:text="${mensajeError}">
+                        Ocurrió un error.
                     </div>
 
                     <h1 class="title-iniciarsesion">Iniciar Sesión</h1>
@@ -393,7 +395,6 @@
                             <div class="form-group">
                                 <label for="exampleInputEmail1">Usuario</label>
                                 <input type="text" class="form-control" id="username" name="username" aria-describedby="emailHelp" placeholder="Ingresa tu username">
-                                <!--<small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>-->
                             </div>
                             <br>
                             <div class="form-group">
@@ -402,8 +403,7 @@
                             </div>
                             <br>
                             <button type="submit" class="btn btn-danger w-100">Iniciar sesión</button>
-                            <br>
-                            <br>
+                            <br><br>
                             <a th:href="@{/login/recuperarPassword}">¿Olvidaste tu contraseña?</a>
                         </form>
                     </div>
@@ -431,7 +431,6 @@
                     playerVars: {
                         autoplay: 0, // no reproducir todavía
                         loop: 1,
-                        //playlist: 'vu_zg45ONA0' // necesario para el loop
                     }
                 });
             }
@@ -440,19 +439,16 @@
                 const bannerBlanco = document.getElementById('bannerBlanco');
                 const boton = document.getElementById('scrollBtn');
 
-                // Desplazamiento suave al banner blanco
                 if (bannerBlanco) {
                     bannerBlanco.scrollIntoView({behavior: 'smooth'});
                 }
 
-                // Desaparecer el botón suavemente
                 if (boton) {
                     boton.style.transition = "opacity 0.6s";
                     boton.style.opacity = "0";
                     setTimeout(() => boton.style.display = "none", 600);
                 }
 
-                // Reproducir el audio de YouTube (ya permitido por el clic del usuario)
                 if (player && typeof player.playVideo === 'function') {
                     player.playVideo();
                 }

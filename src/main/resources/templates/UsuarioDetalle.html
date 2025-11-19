@@ -1,83 +1,657 @@
 <!doctype html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Usuario · Detalle</title>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <title>Usuario · Detalle</title>
 
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+        <!-- Bootstrap -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"/>
 
-  <style>
-    :root{ --red:#ef4444; }
-    .nav-grad{
-      background:linear-gradient(180deg,#fff 0,#fff 60%, #000 60%, #000 63%, #ef4444 63%, #ef4444 100%);
-    }
-    .ball{
-      width:34px;height:34px;border-radius:50%;
-      background:
-        radial-gradient(circle at 50% 48%, #fff 0 12px, transparent 13px),
-        linear-gradient(#fff 50%, #000 0 52%, #ef4444 0);
-      border:3px solid #000; box-shadow: inset 0 0 0 2px #fff; cursor:pointer;
-    }
-  </style>
-</head>
-<body>
-  <!-- NAV -->
-  <nav class="nav-grad shadow-sm">
-    <div class="container d-flex align-items-center justify-content-between py-3">
-      <div class="d-flex align-items-center gap-2">
-        <div class="ball" aria-hidden="true" onclick="location.href='/pokemon'"></div>
-        <strong>PokéAPI · Usuario</strong>
-      </div>
-      <a class="btn btn-sm btn-outline-dark" th:href="@{/usuario/list}">Volver</a>
-    </div>
-  </nav>
+        <!-- Fuente Poppins (igual que el dashboard) -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
 
-  <main class="container py-4" id="content">
-    <!-- FRAGMENTO que usa el offcanvas: /usuario/by-username -> 'UsuarioDetalle :: content' -->
-    <div th:fragment="content">
-      <div th:if="${mensajeError}" class="alert alert-danger" th:text="${mensajeError}">Usuario no encontrado</div>
+        <style>
+            :root{
+                --red:#ef4444;
+                --red-700:#b91c1c;
+                --ink:#0f172a;
+                --muted:#64748b;
+                --chip:#fee2e2;
+                --shadow:0 12px 28px rgba(15,23,42,.12);
+                --radius:18px;
+                --bg:#ffffff;
+                --ring:#ffd1d1;
+                --soft:#fff7f7;
+            }
 
-      <div th:if="${usuario != null}" class="card shadow-sm">
-        <div class="card-header bg-white">
-          <h1 class="h5 m-0">Detalle del usuario</h1>
-        </div>
-        <div class="card-body">
-          <dl class="row mb-0">
-            <dt class="col-sm-3">ID</dt>
-            <dd class="col-sm-9" th:text="${usuario.idUsuario}">1</dd>
+            *{
+                box-sizing:border-box;
+            }
 
-            <dt class="col-sm-3">Nombre</dt>
-            <dd class="col-sm-9" th:text="${usuario.nombre != null ? usuario.nombre : '—'}">Ash</dd>
+            html,body{
+                margin:0;
+                background:var(--bg);
+                font-family:Poppins,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+                color:var(--ink);
+            }
 
-            <dt class="col-sm-3">Apellidos</dt>
-            <dd class="col-sm-9">
-              <span th:text="${usuario.apellidoPaterno != null ? usuario.apellidoPaterno : '—'}">Ketchum</span>
-              <span th:text="${' ' + (usuario.apellidoMaterno != null ? usuario.apellidoMaterno : '')}"></span>
-            </dd>
+            /* ===== NAV ===== */
+           .nav{
+            position:sticky;
+            top:0;
+            z-index:2000;
+            background:linear-gradient(180deg,#fff 0,#fff 60%, #000 60%, #000 63%, #ef4444 63%, #0000FF 100%);
+            box-shadow:0 10px 20px rgba(15,23,42,.25);
+            width:100%;
+            backdrop-filter:blur(6px);
+        }
+        .nav::after{
+            content:"";
+            position:absolute;
+            inset:0;
+            background:linear-gradient(90deg,rgba(255,255,255,.22),rgba(255,255,255,0),rgba(255,255,255,.12));
+            pointer-events:none;
+            mix-blend-mode:soft-light;
+        }
+        .nav-in{
+            position:relative;
+            max-width:1160px;
+            margin:0 auto;
+            padding:14px 16px;
+            display:flex;
+            align-items:center;
+            gap:12px;
+        }
+        .nav-left{
+            display:flex;
+            align-items:center;
+            gap:12px;
+        }
+        .nav-right{
+            display:flex;
+            align-items:center;
+            gap:10px;
+            margin-left:auto !important;
+            flex-wrap:wrap;
+            justify-content:flex-end;
+        }
 
-            <dt class="col-sm-3">Username</dt>
-            <dd class="col-sm-9" th:text="${usuario.username != null ? usuario.username : '—'}">ash</dd>
+        .brand{
+            display:flex;
+            gap:10px;
+            align-items:center;
+            font-weight:800;
+            letter-spacing:.5px;
+            cursor:pointer;
+            padding:4px 10px;
+            border-radius:999px;
+            background:rgba(255,255,255,.8);
+            border:1px solid rgba(148,163,184,.35);
+            box-shadow:0 8px 18px rgba(15,23,42,.18);
+            transition:transform .25s ease, box-shadow .25s ease, background .25s ease, border-color .25s ease;
+        }
+        .brand span{
+            font-size:16px;
+            color:var(--ink);
+            white-space:nowrap;
+        }
+        .brand:hover{
+            transform:translateY(-1px);
+            background:#ffffff;
+            border-color:#e2e8f0;
+            box-shadow:0 14px 28px rgba(15,23,42,.26);
+        }
 
-            <dt class="col-sm-3">Email</dt>
-            <dd class="col-sm-9">
-              <a th:if="${usuario.email != null}"
-                 th:href="${'mailto:' + usuario.email}"
-                 th:text="${usuario.email}">ash@pokemon.com</a>
-              <span th:if="${usuario.email == null}" class="text-muted">—</span>
-            </dd>
+        .ball{
+            width:34px;
+            height:34px;
+            border-radius:50%;
+            background:
+                radial-gradient(circle at 50% 48%, #fff 0 12px, transparent 13px),
+                linear-gradient(#fff 50%, #000 0 52%, #ef4444 0);
+            border:3px solid #000;
+            box-shadow: inset 0 0 0 2px #fff, 0 4px 10px rgba(0,0,0,.35);
+            flex:0 0 34px;
+            transition:transform .25s ease, box-shadow .25s ease;
+        }
+        .brand:hover .ball{
+            transform:translateY(-1px) rotate(-8deg) scale(1.03);
+            box-shadow: inset 0 0 0 2px #fff, 0 7px 16px rgba(0,0,0,.45);
+        }
 
-            <dt class="col-sm-3">Rol</dt>
-            <dd class="col-sm-9" th:text="${usuario.rol != null ? usuario.rol.nombre : '—'}">—</dd>
-          </dl>
-        </div>
-        <div class="card-footer bg-white d-flex gap-2">
-          <a class="btn btn-outline-primary" th:href="@{'/usuario/edit/' + ${usuario.idUsuario}}">Editar</a>
-          <a class="btn btn-outline-secondary" th:href="@{/usuario/list}">Volver al listado</a>
-        </div>
-      </div>
-    </div>
-    <!-- /fragment -->
-  </main>
-</body>
+        .login{
+            background:#fff;
+            color:var(--red);
+            font-weight:800;
+            padding:8px 14px;
+            border-radius:999px;
+            border:1px solid #fecaca;
+            font-size:13px;
+            box-shadow:0 4px 10px rgba(148,163,184,.25);
+            display:inline-flex;
+            align-items:center;
+            gap:6px;
+            transition:background .2s ease, transform .2s ease, box-shadow .2s ease;
+        }
+        .login:hover{
+            background:#ffe8e8;
+            transform:translateY(-1px);
+            box-shadow:0 7px 16px rgba(148,163,184,.35);
+        }
+
+        /* Contenido centrado */
+        .wrap{
+            max-width:1160px;
+            margin:18px auto;
+            padding:0 16px
+        }
+
+        .nav-links-desktop{
+            display:flex;
+            align-items:center;
+            gap:10px;
+            flex-wrap:wrap;
+        }
+
+        .nav-username{
+            display:inline-flex;
+            align-items:center;
+            gap:6px;
+            background:rgba(255,255,255,.95);
+            color:var(--red);
+            font-weight:800;
+            padding:6px 12px;
+            border-radius:999px;
+            border:1px solid #fecaca;
+            text-decoration:none;
+            font-size:12px;
+            cursor:default;
+            max-width:180px;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+        }
+
+        @media (max-width: 991.98px){
+            .nav-username{
+                width:100%;
+                justify-content:center;
+                max-width:260px;
+                margin:6px auto 0;
+            }
+        }
+
+        .nav-btn{
+            background:#fff;
+            color:var(--red);
+            font-weight:800;
+            padding:8px 12px;
+            border-radius:999px;
+            border:1px solid #fecaca;
+            text-decoration:none;
+            font-size:13px;
+            cursor:pointer;
+            display:inline-flex;
+            align-items:center;
+            gap:6px;
+            box-shadow:0 3px 8px rgba(148,163,184,.25);
+            transition:background .2s ease, transform .2s ease, box-shadow .2s ease;
+        }
+        .nav-btn:hover{
+            background:#ffe8e8;
+            transform:translateY(-1px);
+            box-shadow:0 6px 14px rgba(148,163,184,.35);
+            text-decoration:none;
+            color:var(--red);
+        }
+
+        .nav-dropdown-mobile{
+            display:none;
+        }
+
+        /* ===== NAV RESPONSIVE ===== */
+        @media (max-width: 991.98px){
+            .nav-in{
+                flex-wrap:wrap;
+                padding:10px 10px;
+                justify-content:center;
+            }
+            .nav-left,
+            .nav-right{
+                flex:0 0 100%;
+                justify-content:center;
+            }
+            .brand{
+                justify-content:center;
+                width:100%;
+                max-width:320px;
+            }
+            .brand span{
+                font-size:15px;
+                white-space:normal;
+                text-align:center;
+            }
+            .nav-links-desktop{
+                display:none;
+            }
+            .nav-dropdown-mobile{
+                display:block;
+                width:100%;
+                max-width:260px;
+            }
+            .login{
+                width:100%;
+                justify-content:center;
+                padding:8px 10px;
+            }
+        }
+            
+            /* CONTENIDO */
+            main.wrap{
+                max-width:1160px;
+                margin:20px auto 32px;
+                padding:0 16px;
+            }
+
+            .page-head{
+                display:flex;
+                justify-content:space-between;
+                align-items:flex-end;
+                gap:10px;
+                margin-bottom:16px;
+                flex-wrap:wrap;
+            }
+            .page-title{
+                font-size:24px;
+                font-weight:800;
+                margin:0;
+            }
+            .page-sub{
+                font-size:13px;
+                color:var(--muted);
+                margin:0;
+            }
+
+            /* ALERTS */
+            .alert{
+                border-radius:999px;
+                padding:8px 14px;
+                font-size:13px;
+            }
+
+            /* CARD DETALLE USUARIO */
+            .user-card{
+                background:#fff;
+                border-radius:var(--radius);
+                box-shadow:var(--shadow);
+                border:1px solid #e2e8f0;
+                padding:20px 20px 16px;
+            }
+
+            .user-layout{
+                display:grid;
+                grid-template-columns:1.5fr 1.1fr;
+                gap:20px;
+            }
+            @media (max-width:768px){
+                .user-layout{
+                    grid-template-columns:1fr;
+                }
+            }
+
+            /* Perfil principal */
+            .profile-head{
+                display:flex;
+                gap:14px;
+                align-items:flex-start;
+            }
+            .avatar{
+                width:64px;
+                height:64px;
+                border-radius:50%;
+                background:radial-gradient(circle at 30% 20%, #fee2e2, #ef4444);
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                color:#fff;
+                font-weight:800;
+                font-size:26px;
+                box-shadow:0 8px 16px rgba(239,68,68,.45);
+                flex-shrink:0;
+            }
+            .profile-main{
+                flex:1;
+                min-width:0;
+            }
+            .fullname{
+                font-size:18px;
+                font-weight:800;
+                margin-bottom:4px;
+                display:flex;
+                flex-wrap:wrap;
+                gap:4px;
+            }
+            .chips-row{
+                display:flex;
+                flex-wrap:wrap;
+                gap:6px;
+                margin-bottom:8px;
+            }
+            .chip-username{
+                font-size:11px;
+                padding:4px 10px;
+                border-radius:999px;
+                background:#fef2f2;
+                border:1px solid #fecaca;
+                color:var(--red-700);
+            }
+            .chip-role{
+                font-size:11px;
+                padding:4px 10px;
+                border-radius:999px;
+                background:#eff6ff;
+                border:1px solid #bfdbfe;
+                color:#1d4ed8;
+                text-transform:uppercase;
+                letter-spacing:.08em;
+                font-weight:700;
+            }
+            .meta-small{
+                font-size:12px;
+                color:var(--muted);
+                display:flex;
+                flex-wrap:wrap;
+                gap:8px;
+                align-items:center;
+            }
+            .dot{
+                width:4px;
+                height:4px;
+                border-radius:50%;
+                background:#cbd5e1;
+            }
+
+            /* Campos detalle */
+            .field-grid{
+                display:grid;
+                grid-template-columns:1fr 1fr;
+                gap:12px;
+            }
+            @media (max-width:640px){
+                .field-grid{
+                    grid-template-columns:1fr;
+                }
+            }
+            .field{
+                border-radius:14px;
+                border:1px solid #e2e8f0;
+                padding:10px 12px;
+                background:#f8fafc;
+            }
+            .field-label{
+                font-size:11px;
+                text-transform:uppercase;
+                letter-spacing:.08em;
+                color:var(--muted);
+                margin-bottom:2px;
+            }
+            .field-value{
+                font-size:13px;
+                font-weight:600;
+                color:var(--ink);
+                word-break:break-word;
+            }
+            .field-value.muted{
+                color:var(--muted);
+                font-weight:500;
+                font-style:italic;
+            }
+            .field-value a{
+                color:var(--red-700);
+                text-decoration:none;
+            }
+            .field-value a:hover{
+                text-decoration:underline;
+            }
+
+            /* FOOTER BOTONES */
+            .card-footer-actions{
+                margin-top:16px;
+                padding-top:12px;
+                border-top:1px solid #e2e8f0;
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                flex-wrap:wrap;
+                gap:10px;
+            }
+            .btn-outline-red{
+                border-radius:999px;
+                border:1px solid #fecaca;
+                background:#fff;
+                color:var(--red-700);
+                font-size:13px;
+                font-weight:700;
+                padding:8px 16px;
+                text-decoration:none;
+            }
+            .btn-outline-red:hover{
+                background:#fee2e2;
+                text-decoration:none;
+                color:var(--red-700);
+            }
+            .btn-soft{
+                border-radius:999px;
+                border:1px solid #e2e8f0;
+                background:#f8fafc;
+                color:var(--muted);
+                font-size:13px;
+                font-weight:600;
+                padding:8px 16px;
+                text-decoration:none;
+            }
+            .btn-soft:hover{
+                background:#e5e7eb;
+                text-decoration:none;
+                color:var(--ink);
+            }
+            .foot-hint{
+                font-size:11px;
+                color:var(--muted);
+            }
+        </style>
+    </head>
+    <body>
+
+        <nav class="nav" aria-label="Principal">
+            <div class="nav-in">
+                <!-- IZQUIERDA -->
+                <div class="nav-left">
+                    <div th:if="${role == 'ROLE_Administrador'}">
+                        <div class="brand" onclick="window.location.href = '/usuario/list'">
+                            <div class="ball" aria-hidden="true"></div>
+                            <span>PokéAPI · Administrador</span>
+                        </div>
+                    </div>
+                    <div th:if="${role == 'ROLE_General'}">
+                        <div class="brand" onclick="window.location.href = '/pokemon'">
+                            <div class="ball" aria-hidden="true"></div>
+                            <span>PokéAPI · Usuarios</span>
+                        </div>
+                    </div>
+                    <div th:if="${role == 'ROLE_ANONYMOUS'}">
+                        <div class="brand" onclick="window.location.href = '/pokemon'">
+                            <div class="ball" aria-hidden="true"></div>
+                            <span>PokéAPI</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DERECHA -->
+                <div class="nav-right">
+                    <div th:if="${username != null}">
+                        <!-- ADMIN -->
+                        <div th:if="${role == 'ROLE_Administrador'}" class="d-flex align-items-center gap-2 flex-wrap">
+                            <span class="nav-username d-none d-lg-inline" th:text="${username}">Usuario</span>
+
+                            <!-- Desktop: botones -->
+                            <div class="nav-links-desktop d-none d-lg-flex">
+                                <a class="nav-btn" th:href="@{/pokemon}">Pokemons</a>
+                                <a class="nav-btn" th:href="@{/pokemon/totalPokemonesFavoritos}">Administrador</a>
+                                <a class="nav-btn" th:href="@{/pokemon/myAccount}">Mi cuenta</a>
+                                <a class="nav-btn" th:href="@{/logout}">Cerrar sesión</a>
+                            </div>
+
+                            <!-- Móvil / tablet: SOLO dropdown -->
+                            <div class="nav-dropdown-mobile">
+                                <select id="adminMobileNav" class="login" onchange="handleSelectChange(this)">
+                                    <option value="" disabled selected th:text="${username}">Usuario</option>
+                                    <option value="pokemones">Pokemons</option>
+                                    <option value="administrador">Administrador</option>
+                                    <option value="/usuario/myAccount">Mi cuenta</option>
+                                    <option value="logout">Cerrar sesión</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- NO ADMIN -->
+                        <div th:if="${role != 'ROLE_Administrador'}">
+                            <select id="opciones" name="opciones" class="login" onchange="handleSelectChange(this)">
+                                <option value="" disabled selected th:text="${username}">Usuario</option>
+                                <option value="/usuario/myAccount">Mi cuenta</option>
+                                <option value="logout">Cerrar sesión</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div th:if="${username == null}">
+                        <a class="login" th:href="@{/login}">Login</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <main class="wrap" id="content">
+
+            <header class="page-head">
+                <div>
+                    <h1 class="page-title">Detalle de usuario</h1>
+                    <p class="page-sub">Consulta la información del usuario registrado en el sistema.</p>
+                </div>
+            </header>
+
+            <div th:fragment="content">
+
+                <!-- Mensaje de error -->
+                <div th:if="${mensajeError}" class="alert alert-danger mb-3" role="alert">
+                    <strong>⚠</strong>
+                    <span class="ms-2" th:text="${mensajeError}">Usuario no encontrado</span>
+                </div>
+
+                <!-- Card de detalle -->
+                <section th:if="${usuario != null}" class="user-card">
+
+                    <div class="user-layout">
+                        <!-- Columna izquierda: perfil -->
+                        <div>
+                            <div class="profile-head">
+                                <div class="avatar"
+                                     th:text="${#strings.toUpperCase((usuario.nombre != null && !#strings.isEmpty(usuario.nombre)) ? usuario.nombre.substring(0,1) : 'U')}">
+                                    U
+                                </div>
+
+                                <div class="profile-main">
+                                    <div class="fullname">
+                                        <span th:text="${usuario.nombre != null ? usuario.nombre : 'Usuario sin nombre'}">Ash</span>
+                                        <span th:if="${usuario.apellidoPaterno != null}"
+                                              th:text="${' ' + usuario.apellidoPaterno}">Ketchum</span>
+                                        <span th:if="${usuario.apellidoMaterno != null}"
+                                              th:text="${' ' + usuario.apellidoMaterno}"></span>
+                                    </div>
+
+                                    <div class="chips-row">
+                                        <span class="chip-username" th:if="${usuario.username != null}">
+                                            @<span th:text="${usuario.username}">ash</span>
+                                        </span>
+                                        <span class="chip-role"
+                                              th:text="${(usuario.rol != null && usuario.rol.nombre != null) ? usuario.rol.nombre : 'Sin rol'}">
+                                            Sin rol
+                                        </span>
+                                    </div>
+
+                                    <div class="meta-small">
+                                        <span>Perfil activo en PokéAPI</span>
+                                        <span class="dot"></span>
+                                        <span th:text="${usuario.email != null ? usuario.email : 'Sin correo registrado'}">
+                                            ash@pokemon.com
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Columna derecha: campos -->
+                        <aside class="field-grid">
+                            <div class="field">
+                                <div class="field-label">Nombre completo</div>
+                                <div class="field-value">
+                                    <span th:text="${usuario.nombre != null ? usuario.nombre : 'No capturado'}">Ash</span>
+                                    <span th:if="${usuario.apellidoPaterno != null}"
+                                          th:text="${' ' + usuario.apellidoPaterno}">Ketchum</span>
+                                    <span th:if="${usuario.apellidoMaterno != null}"
+                                          th:text="${' ' + usuario.apellidoMaterno}"></span>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <div class="field-label">Username</div>
+                                <div class="field-value"
+                                     th:text="${usuario.username != null ? usuario.username : 'No definido'}">
+                                    ash
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <div class="field-label">Correo electrónico</div>
+                                <div class="field-value" th:if="${usuario.email != null}">
+                                    <a th:href="${'mailto:' + usuario.email}" th:text="${usuario.email}">
+                                        ash@pokemon.com
+                                    </a>
+                                </div>
+                                <div class="field-value muted" th:if="${usuario.email == null}">
+                                    Sin correo registrado
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <div class="field-label">Rol asignado</div>
+                                <div class="field-value"
+                                     th:text="${(usuario.rol != null && usuario.rol.nombre != null) ? usuario.rol.nombre : 'Sin rol'}">
+                                    Sin rol
+                                </div>
+                            </div>
+                        </aside>
+                    </div>
+
+                    <!-- Footer de acciones -->
+                    <div class="card-footer-actions">
+                        <div class="d-flex flex-wrap gap-2">
+                            <a class="btn-outline-red"
+                               th:href="@{'/usuario/edit/' + ${usuario.idUsuario}}">
+                                ✏️ Editar usuario
+                            </a>
+                            <a class="btn-soft" th:href="@{/usuario/list}">
+                                ← Volver al listado
+                            </a>
+                        </div>
+                        <span class="foot-hint">Vista de administración · PokéAPI</span>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </body>
 </html>
