@@ -860,9 +860,16 @@
                                 <div class="chips">
                                     <span class="chip-type" th:each="t : ${p.types}" th:text="${t}">electric</span>
                                 </div>
-
+                                
+                                <!-- Total de veces que el pokemon ha sido agregado a favoritos -->
                                 <div class="fav-counter">
+                                    <span th:if="${p.totalFavoritos == 1}">
+                                    Guardado <span th:text="${p.totalFavoritos} + ' vez'">0 veces</span>
+                                    </span>
+                                    
+                                    <span th:if="${p.totalFavoritos > 1}">
                                     Guardado <span th:text="${p.totalFavoritos} + ' veces'">0 veces</span>
+                                    </span>
                                 </div>
 
                                 <div class="hint">Toca para ver estadísticas</div>
