@@ -29,7 +29,6 @@
                 --blue:#2563eb;
                 --amber:#d97706;
                 --grad:linear-gradient(90deg,#ff5a5f 0%,#ef4444 35%,#f97316 100%);
-                /* tamaño del visor de sprites: cuadrado responsive */
                 --viewer: clamp(280px, min(60vh, 80vw), 640px);
             }
             *{
@@ -629,10 +628,9 @@
                 filter: drop-shadow(0 16px 28px rgba(0,0,0,.12));
             }
 
-            /* Si quieres look retro solo para PNG pequeños, usa clase .retro (opcional) */
             .c-slide img.retro{
                 image-rendering: pixelated;
-                image-rendering: crisp-edges;        /* fallback */
+                image-rendering: crisp-edges;       
                 .ball-link {
                     display:inline-flex;
                 }
