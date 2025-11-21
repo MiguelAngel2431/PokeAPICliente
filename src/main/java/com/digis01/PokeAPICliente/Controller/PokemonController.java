@@ -23,6 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 // ⬇️ nuevo import para obtener la URL actual (redirectTo)
 import jakarta.servlet.http.HttpServletRequest;
+import java.text.Collator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -55,7 +56,8 @@ public class PokemonController {
             @RequestParam(value = "types", required = false) String typesCsv,
             @RequestParam(value = "loc", required = false) String loc, 
             @RequestParam(value = "hab", required = false) String hab, 
-            @RequestParam(value = "id", required = false) String id 
+            @RequestParam(value = "id", required = false) String id ,
+            @RequestParam(value = "sort", defaultValue = "name-asc") String sort 
     ) {
         
         svc.warmupAsync(false);
@@ -115,8 +117,25 @@ public class PokemonController {
                     .toList();
         }
         
+        
+        
         // // --- NUEVO: FILTRO POR HABITAT ---
 
+        // Filtro asc / desc / id
+        Collator collator = Collator.getInstance(new Locale("es"));
+        collator.setStrength(Collator.PRIMARY);
+        Comparator<PokemonCardDTO> byNameAsc = Comparator.comparing(p -> p.name, Comparator.nullsLast(collator));
+        Comparator<PokemonCardDTO>byId = Comparator.comparing(p->p.id);
+        
+        Comparator<PokemonCardDTO> comparadorFinal = switch(sort){
+        
+            case "name-desc"  -> byNameAsc.reversed();
+            case "name-id" -> byId;
+            default -> byNameAsc;    
+        };
+        
+        all = all.stream().sorted(comparadorFinal).toList();
+        
         // --- PAGINACIÓN ---
         int currentPage = Math.max(1, page);
         int pageSize = Math.max(1, size);
@@ -186,6 +205,8 @@ public class PokemonController {
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("count", total);
         model.addAttribute("typesAll", typesAll);
+        model.addAttribute("sort",sort);
+        
 
         // estado de filtros para la UI
         model.addAttribute("q", term);

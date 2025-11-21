@@ -913,6 +913,8 @@
                 <form class="search" role="search" method="get" th:action="@{/pokemon}">
                     <input id="q" name="q" type="search" placeholder="Buscar por nombre… (ej. mewtwo, pikachu)"
                            aria-label="Buscar pokémon" th:value="${q}"/>
+                     <input type="hidden" name="sort" th:value="${sort}"/>
+                    
                     <button class="btn-find" type="submit">Buscar</button>
                     <div class="hint">Presiona Enter o “Buscar” para consultar en todo el Pokédex</div>
 
@@ -1028,9 +1030,9 @@
                             <button class="btn" type="button" id="btnClearSort">Restablecer</button>
                         </div>
                         <div class="dd-scroll" id="sortList">
-                            <label class="row-opt"><input type="radio" name="sort-radio" value="name-asc" checked><span>Nombre A–Z</span></label>
-                            <label class="row-opt"><input type="radio" name="sort-radio" value="name-desc"><span>Nombre Z–A</span></label>
-                            <label class="row-opt"><input type="radio" name="sort-radio" value="name-id"><span># Pokemon</span></label>
+                            <label class="row-opt"><input type="radio" name="sort-radio" value="name-asc" th:checked="${sort}=='name-asc'"><span>Nombre A–Z</span></label>
+                            <label class="row-opt"><input type="radio" name="sort-radio" value="name-desc" th:checked="${sort}=='name-desc'"><span>Nombre Z–A</span></label>
+                            <label class="row-opt"><input type="radio" name="sort-radio" value="name-id"th:checked="${sort}=='name-id'"><span># Pokemon</span></label>
                         </div>
                         <div class="dd-actions">
                             <button class="btn" type="button" id="btnApplySort">Aplicar</button>
@@ -1136,9 +1138,9 @@
 
             <!-- PAGINACIÓN -->
             <div class="pagi">
-                <a class="p-btn" th:href="@{'/pokemon'(page=${page-1}, size=${size}, q=${q}, types=${typesQuery}, loc=${loc}, hab=${hab})}" th:attr="disabled=${page<=1}? 'disabled' : null">← Anterior</a>
+                <a class="p-btn" th:href="@{'/pokemon'(page=${page-1}, size=${size}, q=${q}, types=${typesQuery}, loc=${loc}, hab=${hab}, sort=${sort})}" th:attr="disabled=${page<=1}? 'disabled' : null">← Anterior</a>
                 <div class="pill" th:text="'Página ' + ${page} + ' de ' + ${totalPages}">Página 1 de 1</div>
-                <a class="p-btn" th:href="@{'/pokemon'(page=${page+1}, size=${size}, q=${q}, types=${typesQuery}, loc=${loc}, hab=${hab})}" th:attr="disabled=${page>=totalPages}? 'disabled' : null">Siguiente →</a>
+                <a class="p-btn" th:href="@{'/pokemon'(page=${page+1}, size=${size}, q=${q}, types=${typesQuery}, loc=${loc}, hab=${hab},sort=${sort})}" th:attr="disabled=${page>=totalPages}? 'disabled' : null">Siguiente →</a>
 
                 <div class="page-size">
                     <label for="pageSize"><strong>Tamaño:</strong></label>
@@ -1347,26 +1349,60 @@
                 });
                 for (const c of cards) grid.appendChild(c);
             }
-            setupDropdown(
-                'ddSort',
-                (root, panel) => {
-                    const mode = panel.querySelector('input[name="sort-radio"]:checked')?.value || 'name-asc';
-                    sortGrid(mode);
-                    const label = document.getElementById('sortLabel');
-                    label.textContent = (mode === 'name-desc') ? 'Nombre Z–A' : 'Nombre A–Z';
-                    mostrarMensaje();
-                },
-                (root, panel) => {
-                    const radios = panel.querySelectorAll('input[name="sort-radio"]');
-                    radios.forEach(r => r.checked = (r.value === 'name-asc'));
-                    sortGrid('name-asc');
-                    document.getElementById('sortLabel').textContent = 'Nombre A–Z';
-                },
-                (root, panel) => {
-                    const radios = panel.querySelectorAll('input[name="sort-radio"]');
-                    radios.forEach(r => r.checked = (r.value === 'name-asc'));
-                }
-            );
+//            setupDropdown(
+//                'ddSort',
+//                (root, panel) => {
+//                    const mode = panel.querySelector('input[name="sort-radio"]:checked')?.value || 'name-asc';
+//                    sortGrid(mode);
+//                    const label = document.getElementById('sortLabel');
+//                    label.textContent = (mode === 'name-desc') ? 'Nombre Z–A' : 'Nombre A–Z';
+//                    mostrarMensaje();
+//                },
+//                (root, panel) => {
+//                    const radios = panel.querySelectorAll('input[name="sort-radio"]');
+//                    radios.forEach(r => r.checked = (r.value === 'name-asc'));
+//                    sortGrid('name-asc');
+//                    document.getElementById('sortLabel').textContent = 'Nombre A–Z';
+//                },
+//                (root, panel) => {
+//                    const radios = panel.querySelectorAll('input[name="sort-radio"]');
+//                    radios.forEach(r => r.checked = (r.value === 'name-asc'));
+//                }
+//            );
+
+                setupDropdown(
+    'ddSort',
+    (root, panel) => {
+      const mode = panel.querySelector('input[name="sort-radio"]:checked')?.value || 'name-asc';
+      const base = new URL(window.location.href);
+      base.searchParams.set('sort', mode);   
+      base.searchParams.set('page', '1');    
+      window.location.href = base.toString();
+    },
+    (root, panel) => {
+      const base = new URL(window.location.href);
+      base.searchParams.set('sort', 'name-asc');
+      base.searchParams.set('page', '1');
+      window.location.href = base.toString();
+    },
+    (root, panel) => {
+      const label = document.getElementById('sortLabel');
+      const current = new URL(window.location.href).searchParams.get('sort') || 'name-asc';
+      label.textContent = current === 'name-desc' ? 'Nombre Z–A'
+                        : current === 'name-id'   ? '# Pokemon'
+                        : 'Nombre A–Z';
+    }
+  );
+
+  // Cuando cambie el tamaño de página, también preserva sort:
+//  const pageSizeSel = document.getElementById('pageSize');
+//  pageSizeSel?.addEventListener('change', () => {
+//    const base = new URL(window.location.href);
+//    base.searchParams.set('page', '1');
+//    base.searchParams.set('size', pageSizeSel.value);
+//    // sort ya está en la URL, no lo tocamos
+//    window.location.href = base.toString();
+//  });
     
             function mostrarMensaje() {
                 $.ajax({
@@ -1431,9 +1467,9 @@
             }
 
             /* Orden por defecto */
-            window.addEventListener('load', () => {
-                sortGrid('name-asc');
-            });
+//            window.addEventListener('load', () => {
+//                sortGrid('name-asc');
+//            });
 
             /* Select usuario (dropdowns nav) */
             function handleSelectChange(selectElement) {
