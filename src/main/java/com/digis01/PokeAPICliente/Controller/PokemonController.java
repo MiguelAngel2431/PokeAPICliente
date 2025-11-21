@@ -54,7 +54,8 @@ public class PokemonController {
             @RequestParam(value = "q", required = false) String q,
             @RequestParam(value = "types", required = false) String typesCsv,
             @RequestParam(value = "loc", required = false) String loc, 
-            @RequestParam(value = "hab", required = false) String hab 
+            @RequestParam(value = "hab", required = false) String hab, 
+            @RequestParam(value = "id", required = false) String id 
     ) {
         
         svc.warmupAsync(false);
@@ -113,6 +114,8 @@ public class PokemonController {
                     .filter(p -> p.habitat != null && p.habitat.equalsIgnoreCase(wantedHab))
                     .toList();
         }
+        
+        // // --- NUEVO: FILTRO POR HABITAT ---
 
         // --- PAGINACIÓN ---
         int currentPage = Math.max(1, page);

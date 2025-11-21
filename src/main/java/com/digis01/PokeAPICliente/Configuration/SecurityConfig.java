@@ -33,7 +33,7 @@ public class SecurityConfig {
                 .csrf(csrf ->csrf.disable())
                 .securityContext(context -> context.requireExplicitSave(false))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/pokemon/**", "/api/auth/**", "/usuario/add", "/usuario", "/login/**", "/api/usuario/**").permitAll()
+                        .requestMatchers("/pokemon/**", "/api/auth/**", "/usuario/add", "/usuario", "/login/**", "/api/usuario/**", "/usuario/mostrarMensaje").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

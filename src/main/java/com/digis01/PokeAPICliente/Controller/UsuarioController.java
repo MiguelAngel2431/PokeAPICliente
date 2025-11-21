@@ -294,4 +294,11 @@ public class UsuarioController {
             return "UsuarioEdit";
         }
     }
+    
+    @GetMapping("/mostrarMensaje")
+    @ResponseBody
+    public String mostrarMensaje() {
+        System.out.println("Hola xd");
+        return "Ok";
+    }
 }

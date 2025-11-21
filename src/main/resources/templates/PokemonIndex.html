@@ -1030,12 +1030,14 @@
                         <div class="dd-scroll" id="sortList">
                             <label class="row-opt"><input type="radio" name="sort-radio" value="name-asc" checked><span>Nombre A–Z</span></label>
                             <label class="row-opt"><input type="radio" name="sort-radio" value="name-desc"><span>Nombre Z–A</span></label>
+                            <label class="row-opt"><input type="radio" name="sort-radio" value="name-id"><span># Pokemon</span></label>
                         </div>
                         <div class="dd-actions">
                             <button class="btn" type="button" id="btnApplySort">Aplicar</button>
                         </div>
                     </div>
                 </div>
+                
             </section>
 
             <!-- GRID -->
@@ -1043,6 +1045,7 @@
                 <div class="card"
                      th:each="p : ${pokemones}"
                      th:attr="data-name=${p.name},
+                     data-id=${p.id},
                      data-types=${#strings.arrayJoin(p.types, ',')},
                      data-hp=${p.stats.hp},
                      data-attack=${p.stats.attack},
@@ -1336,6 +1339,10 @@
                         return collator.compare(a.dataset.name, b.dataset.name);
                     if (mode === 'name-desc')
                         return collator.compare(b.dataset.name, a.dataset.name);
+                    if (mode === 'name-id') //Orden por Id
+                        //mostrarMensaje();
+                        return Number(a.dataset.id) - Number(b.dataset.id);
+                        
                     return 0;
                 });
                 for (const c of cards) grid.appendChild(c);
@@ -1347,6 +1354,7 @@
                     sortGrid(mode);
                     const label = document.getElementById('sortLabel');
                     label.textContent = (mode === 'name-desc') ? 'Nombre Z–A' : 'Nombre A–Z';
+                    mostrarMensaje();
                 },
                 (root, panel) => {
                     const radios = panel.querySelectorAll('input[name="sort-radio"]');
@@ -1359,6 +1367,19 @@
                     radios.forEach(r => r.checked = (r.value === 'name-asc'));
                 }
             );
+    
+            function mostrarMensaje() {
+                $.ajax({
+                    url: "/usuario/mostrarMensaje",
+                    type: "GET",
+                    success: function() {
+                        console.log("Mandado!");
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.error("Error en la peticion");
+                    }
+                });
+            }
 
             /* Chips eliminar tipo */
             const chips = document.getElementById('selChips');
