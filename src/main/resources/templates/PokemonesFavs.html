@@ -38,7 +38,6 @@
                 color:var(--ink)
             }
 
-    /* NAV (adaptado a .nav para pokemonesFav) */
     .nav-poke{
         position:sticky;
         top:0;
@@ -1232,7 +1231,7 @@
             </div>-->
             
 
-    <div class="pagi">
+<!--    <div class="pagi">
     <a class="p-btn"
        th:href="@{'/pokemon/myAccount'(page=${page-1}, size=${size})}"
         th:attr="disiable=${page<=1}?'disabled': null">
@@ -1264,7 +1263,43 @@
     </div>
     
     
+</div>-->
+
+
+    <div class="pagi">
+    <span class="p-btn" th:if="${page <= 1}" style="opacity:0.5; cursor:not-allowed;">
+        ← Anterior
+    </span>
+    <a class="p-btn"
+       th:if="${page > 1}"
+       th:href="@{'/pokemon/myAccount'(page=${page-1}, size=${size})}">
+        ← Anterior
+    </a>
+
+    <div class="pill" th:text="'Página ' + ${page} + ' de ' + ${totalPages}">
+        Página 1 de 1
+    </div>
+
+    <a class="p-btn"
+       th:if="${page < totalPages}"
+       th:href="@{'/pokemon/myAccount'(page=${page+1}, size=${size})}">
+        Siguiente →
+    </a>
+    <span class="p-btn" th:if="${page >= totalPages}" style="opacity:0.5; cursor:not-allowed;">
+        Siguiente →
+    </span>
+
+    <div class="page-size">
+        <label for="pageSize"><strong>Tamaño:</strong></label>
+        <select id="pageSize" th:value="${size}">
+            <option th:selected="${size==12}" value="12">12</option>
+            <option th:selected="${size==24}" value="24">24</option>
+            <option th:selected="${size==48}" value="48">48</option>
+            <option th:selected="${size==96}" value="96">96</option>
+        </select>
+    </div>
 </div>
+
 
             
         </main>
@@ -1308,7 +1343,6 @@
                 const base = new URL(window.location.href);
                 base.searchParams.set('page', '1');
 
-                // q actual del input
                 const inputQ = document.getElementById('q');
                 const term = (inputQ?.value || '').trim();
                 if (term)
@@ -1332,7 +1366,6 @@
                 window.location.href = base.toString();
             });
 
-            /* ---- Chips seleccionados (quitar) ---- */
             const chips = document.getElementById('selChips');
             if (chips) {
                 chips.addEventListener('click', (e) => {
@@ -1355,7 +1388,6 @@
                 });
             }
 
-            /* ---- Ordenamiento por nombre ---- */
             const grid = document.getElementById('grid');
             const sortSel = document.getElementById('sortBy');
 
@@ -1384,7 +1416,6 @@
                 const base = new URL(window.location.href);
                 base.searchParams.set('page', '1');
 
-                // preserva q
                 const inputQ = document.getElementById('q');
                 const term = (inputQ?.value || '').trim();
                 if (term)
@@ -1392,21 +1423,18 @@
                 else
                     base.searchParams.delete('q');
 
-                // preserva types
                 const types = new URL(window.location.href).searchParams.get('types');
                 if (types)
                     base.searchParams.set('types', types);
                 else
                     base.searchParams.delete('types');
 
-                // agrega o elimina param actual
                 const v = selEl.value;
                 if (v)
                     base.searchParams.set(param, v);
                 else
                     base.searchParams.delete(param);
 
-                // preserva el otro select si existe
                 if (param === 'loc' && habitatSel && habitatSel.value)
                     base.searchParams.set('hab', habitatSel.value);
                 if (param === 'hab' && locationSel && locationSel.value)
@@ -1419,7 +1447,6 @@
             if (habitatSel)
                 habitatSel.addEventListener('change', () => applySelectParam(habitatSel, 'hab'));
 
-            // Page size → recarga preservando q/types/loc/hab
             const pageSizeSel = document.getElementById('pageSize');
             if (pageSizeSel) {
                 pageSizeSel.addEventListener('change', () => {
@@ -1450,7 +1477,6 @@
                 });
             }
 
-            // Init
             window.addEventListener('load', () => {
                 if (sortSel)
                     sortGrid();

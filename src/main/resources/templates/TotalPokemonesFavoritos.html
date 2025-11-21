@@ -944,7 +944,7 @@
             </div>
         </div>-->
 
-<div class="pagi">
+<!--<div class="pagi">
     <a class="p-btn"
        th:href="@{'/pokemon/totalPokemonesFavoritos'(page=${page-1}, size=${size})}"
         th:attr="disiable=${page<=1}?'disabled': null">
@@ -976,7 +976,42 @@
     </div>
     
     
+</div>-->
+ <div class="pagi">
+    <span class="p-btn" th:if="${page <= 1}" style="opacity:0.5; cursor:not-allowed;">
+        ← Anterior
+    </span>
+    <a class="p-btn"
+       th:if="${page > 1}"
+       th:href="@{'/pokemon/totalPokemonesFavoritos'(page=${page-1}, size=${size})}">
+        ← Anterior
+    </a>
+
+    <div class="pill" th:text="'Página ' + ${page} + ' de ' + ${totalPages}">
+        Página 1 de 1
+    </div>
+
+    <a class="p-btn"
+       th:if="${page < totalPages}"
+       th:href="@{'/pokemon/totalPokemonesFavoritos'(page=${page+1}, size=${size})}">
+        Siguiente →
+    </a>
+    <span class="p-btn" th:if="${page >= totalPages}" style="opacity:0.5; cursor:not-allowed;">
+        Siguiente →
+    </span>
+
+    <div class="page-size">
+        <label for="pageSize"><strong>Tamaño:</strong></label>
+        <select id="pageSize" th:value="${size}">
+            <option th:selected="${size==12}" value="12">12</option>
+            <option th:selected="${size==24}" value="24">24</option>
+            <option th:selected="${size==48}" value="48">48</option>
+            <option th:selected="${size==96}" value="96">96</option>
+        </select>
+    </div>
 </div>
+
+
     </main>
 
     <script>
