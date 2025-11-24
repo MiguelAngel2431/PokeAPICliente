@@ -131,7 +131,7 @@ public class PokemonController {
         
             case "name-desc"  -> byNameAsc.reversed();
             case "name-id" -> byId;
-            default -> byNameAsc;    
+            default -> byNameAsc; // Poner por default el ordenamiento ascendente   
         };
         
         all = all.stream().sorted(comparadorFinal).toList();
