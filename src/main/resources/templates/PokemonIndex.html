@@ -1375,14 +1375,18 @@
     (root, panel) => {
       const mode = panel.querySelector('input[name="sort-radio"]:checked')?.value || 'name-asc';
       const base = new URL(window.location.href);
-      base.searchParams.set('sort', mode);   
-      base.searchParams.set('page', '1');    
+      const currentPage = base.searchParams.get('page') || '1'; // ← conservar página
+
+      base.searchParams.set('sort', mode);
+      base.searchParams.set('page', curr    entPage);
       window.location.href = base.toString();
     },
     (root, panel) => {
       const base = new URL(window.location.href);
+      
+      const currentPage = base.searchParams.get('page') || '1';
       base.searchParams.set('sort', 'name-asc');
-      base.searchParams.set('page', '1');
+      base.searchParams.set('page', currentPage);
       window.location.href = base.toString();
     },
     (root, panel) => {

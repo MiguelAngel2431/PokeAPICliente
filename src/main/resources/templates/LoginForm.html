@@ -358,7 +358,7 @@
         <div class="container-fluid">
             <div class="row h-100">
                 <!-- BANNER ROJO -->
-                <div class="col-md-12 banner-red d-flex flex-column align-items-center justify-content-center animate__animated animate__fadeInLeft animate__delay-1s">
+                <div th:if="!${param.error}" class="col-md-12 banner-red d-flex flex-column align-items-center justify-content-center animate__animated animate__fadeInLeft animate__delay-1s">
                     <div class="image">
                         <img src="https://pokestop.io/img/pokemon/psyduck-256x256.png" alt="alt"/>
                     </div>
@@ -414,8 +414,9 @@
         </div>
 
         <!-- BOTÓN QUE SOLO APARECE EN MÓVILES -->
+        <div th:if="!${param.error}">
         <button id="scrollBtn" class="scroll-btn d-md-none" onclick="irAlFormulario()">Continuar ➜</button>
-
+        </div>
         <!-- CARGAMOS LA API DE YOUTUBE -->
         <script src="https://www.youtube.com/iframe_api"></script>
 
